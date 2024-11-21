@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Payment</title>
+    <script>
+        // JavaScript to calculate the total amount dynamically
+        function calculateTotal() {
+            const checkboxes = document.querySelectorAll('input[name="months"]:checked');
+            let total = 0;
+
+            checkboxes.forEach(checkbox => {
+                const amount = parseFloat(checkbox.dataset.amount);
+                total += amount;
+            });
+
+            document.getElementById('total_amount').textContent = total.toFixed(2);
+        }
+
+        // JavaScript to print the receipt
+        function printReceipt() {
+            const receipt = document.getElementById('receipt').innerHTML;
+            const originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = receipt;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+</head>
+<body>
+    <h2>Payment for {{ student.first_name }} {{ student.last_name }}</h2>
+
+    <form method="post" onsubmit="return confirm('Are you sure you want to process this payment?');">
+        {% csrf_token %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Month</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in pending_payments %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="months" value="{{ payment.month }}"
+                               data-amount="{{ payment.amount }}" onchange="calculateTotal()">
+                    </td>
+                    <td>{{ payment.get_month_display }}</td>
+                    <td>{{ payment.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Total: <span id="total_amount">0.00</span></h3>
+        <button type="submit">Pay Selected Months</button>
+    </form>
+
+    <!-- Receipt Section -->
+    <div id="receipt" style="display: none;">
+        <h2>Receipt</h2>
+        <p>Student: {{ student.first_name }} {{ student.last_name }}</p>
+        <p>Date: {{ now }}</p>
+        <p>Total Paid: <span id="total_amount">0.00</span></p>
+        <p>Processed By: {{ request.user.username }}</p>
+    </div>
+
+    <button onclick="printReceipt()">Print Receipt</button>
+</body>
+</html>

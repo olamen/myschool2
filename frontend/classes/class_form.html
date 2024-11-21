@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% load static %} {% block body %}
+<div class="main-content">
+  <div class="breadcrumb-wrap mb-20">
+    {% if messages %}
+        <div class="container mt-4">
+          {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+    <div class="container mt-5">
+      <h1>
+        {% if cls %}Modifier la Classe{% else %}Créer une Classe{% endif %}
+      </h1>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="name" class="form-label">Nom de la Classe:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ cls.name|default:'' }}"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="monthly_salary_fee" class="form-label"
+            >Frais Mensuels:</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="monthly_salary_fee"
+            name="monthly_salary_fee"
+            value="{{ cls.monthly_salary_fee|default:'' }}"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

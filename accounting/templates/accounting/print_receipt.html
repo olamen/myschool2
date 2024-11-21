@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receipt</title>
+</head>
+<body>
+    <h2>Receipt</h2>
+    <p>Receipt Number: {{ transaction.receipt_number }}</p>
+    <p>Student: {{ transaction.student.first_name }} {{ transaction.student.last_name }}</p>
+    <p>Total Paid: {{ transaction.total_amount }}</p>
+    <p>Months Paid: {{ transaction.months_paid|safe }}</p>
+    <p>Processed By: {{ transaction.user.username }}</p>
+    <p>Payment Date: {{ transaction.payment_date }}</p>
+    <button onclick="window.print()">Print</button>
+</body>
+</html>

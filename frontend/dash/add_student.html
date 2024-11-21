@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+{% load static %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="form-area">
+            <div class="form-row">
+                <div class="form-panel">
+                    <div class="logo mb-5">
+                        <a href=" {% url "index" %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+                        <p class="text-center mt-20"><span class="d-block fw-bold mb-10 fs-6">Ajouter un Élève</span> formulaire d'Inscription d'un Nouveau Élève</p>                        
+                    </div>
+                    <form class="mb-6" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <label for="photo">Photo de l'élève :</label>
+                                <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" placeholder=" Prénom" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" placeholder=" Nom" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <input type="number" class="form-control form-control-lg" id="nni" name="nni" placeholder=" NNI 10 chiffres" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-123"></i>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <label for="student_class">Classe :</label>
+                                <select id="student_class" name="student_class" class="form-select form-control" required>
+                                    {% for class in classes %}
+                                        <option value="{{ class.id }}">{{ class.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <label for="gender">Genre :</label>
+                                <select id="gender" name="gender" class="form-select form-control" required>
+                                    <option value="M">Garçon</option>
+                                    <option value="F">Fille</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <input type="number" class="form-control form-control-lg" id="mobile" name="mobile" placeholder=" Téléphone" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-telephone"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <input type="date" class="form-control form-control-lg" id="enrollment_date" name="enrollment_date" placeholder=" Date d'inscription" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <label for="has_discount">Réduction :</label>
+                                <input class="form-check-input" type="checkbox" id="has_discount" name="has_discount"><br>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-lg btn-primary w-100">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+</html>

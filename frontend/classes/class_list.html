@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="main-content">
+    <div class="breadcrumb-wrap mb-20">
+        {% if messages %}
+<div class="alert-messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="container mt-5">
+    <h1>Classes Actives</h1>
+    <a href="{% url 'class_create' %}" class="btn btn-success mb-3">Créer une Classe</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Frais Mensuels</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cls in classes %}
+            <tr>
+                <td>{{ cls.name }}</td>
+                <td>{{ cls.monthly_salary_fee }}</td>
+                <td>
+                    <a href="{% url 'class_update' cls.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                    <a href="{% url 'class_archive' cls.id %}" class="btn btn-warning btn-sm">Archiver</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+{% endblock %}

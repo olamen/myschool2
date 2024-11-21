@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="main-content">
+    <div class="breadcrumb-wrap mb-20">
+<div class="container mt-5">
+    <!-- Student Information -->
+    <h1>Détails de l'Étudiant</h1>
+    <div class="card mb-4">
+        <div class="row g-0">
+            <div class="col-md-4 photodetail">
+                <img
+                    src="{% if student.photo %}{{ student.photo.url }}{% else %}{% static 'images/child-placeholder.png' %}{% endif %}"
+                    class="img-fluid rounded-start"
+                    alt="Photo de l'Étudiant"
+                />
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ student.first_name }} {{ student.last_name }}</h5>
+                    <p><strong>Classe:</strong> {{ student.student_class.name }}</p>
+                    <p><strong>Date d'inscription:</strong> {{ student.enrollment_date }}</p>
+                    <p><strong>Téléphone:</strong> {{ student.mobile }}</p>
+                    <p><strong>Genre:</strong> {{ student.get_gender_display }}</p>
+                    <p><strong>Frais finaux:</strong> {{ student.get_final_fee }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parent(s) Information -->
+    <h2>Parent(s)</h2>
+    {% if parents %}
+        <div class="row">
+            {% for parent in parents %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img
+                        src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}"
+                        class="card-img-top"
+                        alt="Photo du Parent"
+                    />
+                    <div class="card-body">
+                        <h5 class="card-title">{{ parent.first_name }} {{ parent.last_name }}</h5>
+                        <p><strong>Email:</strong> {{ parent.email }}</p>
+                        <p><strong>Téléphone:</strong> {{ parent.phone_number }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Aucun parent enregistré pour cet étudiant.</p>
+    {% endif %}
+
+    <!-- Siblings -->
+    <h2 class="btn btn-primary btn-lg">Frères et Sœurs</h2>
+    {% if siblings %}
+        <ul class="list-group mb-4">
+            {% for sibling in siblings %}
+                <li class="list-group-item">
+                    <strong>{{ sibling.first_name }} {{ sibling.last_name }}</strong> - Classe: {{ sibling.student_class.name }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun frère ou sœur enregistré pour cet étudiant.</p>
+    {% endif %}
+
+    <!-- Payment History -->
+    <h2 class="btn btn-primary btn-lg">Historique des Paiements</h2>
+    {% if payments %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Montant</th>
+                    <th>Date de Paiement</th>
+                    <th>Méthode</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.amount_paid }}</td>
+                    <td>{{ payment.payment_date }}</td>
+                    <td>{{ payment.method }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun paiement enregistré pour cet étudiant.</p>
+    {% endif %}
+
+    <!-- Transaction History -->
+    <h2 class="btn btn-success btn-lg">Historique des Transactions</h2>
+    {% if transactions %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Montant Total</th>
+                    <th>Date de la Transaction</th>
+                    <th>Mois Payés</th>
+                    <th>Numéro de Reçu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.total_amount }}</td>
+                    <td>{{ transaction.payment_date }}</td>
+                    <td>{{ transaction.months_paid }}</td>
+                    <td>{{ transaction.receipt_number }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune transaction enregistrée pour cet étudiant.</p>
+    {% endif %}
+</div>
+</div>
+</div>
+{% endblock body %}

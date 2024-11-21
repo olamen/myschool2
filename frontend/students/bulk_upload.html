@@ -1,0 +1,29 @@
+{% extends "../base.html" %}
+<!DOCTYPE html>
+{% load static %}
+{% block body %}
+<div class="container-fluid">
+    <div class="form-area">
+        <div class="form-row">
+            <div class="form-panel">
+                <div class="logo mb-5">
+                    <a href=" {% url "index" %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+                    <p class="text-center mt-20"><span class="d-block fw-bold mb-10 fs-6">Ajouter un Élève</span> formulaire d'Inscription d'un Nouveau Élève</p>                        
+                </div>
+
+
+                <h2>Télécharger le modèle en excel des étudiants</h2>
+
+                <!-- Form to upload the filled Excel template -->
+                <form method="post" action="{% url 'bulk_upload_students' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="excel_file">Télécharger le modèle Excel:</label>
+                    <input type="file" id="excel_file" name="excel_file" accept=".xlsx" required>
+                    <button type="submit">Upload Students</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endblock body %}
+</html>

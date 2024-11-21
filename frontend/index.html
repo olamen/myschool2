@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+
+        <!-- main sidebar -->
+        <div class="main-content">
+            <div class="top-boxes mb-10">
+                <div class="row g-10">
+                    <div class="col-xl-3 col-lg-3 col-sm-6">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <div class="part-icon bg-primary">
+                                    <i class="bi-person-badge-fill"></i>
+                                </div>
+                                <div class="part-txt">
+                                    <p><span>Total des Etudients</span>{{ total_students }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-sm-6">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <div class="part-icon bg-info">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="part-txt">
+                                    <p><span>Followers</span>183.000</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-sm-6">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <div class="part-icon bg-success">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                </div>
+                                <div class="part-txt">
+                                    <p><span>Following</span>80.000</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-sm-6">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <div class="part-icon bg-danger">
+                                    <i class="bi bi-bookmark-dash-fill"></i>
+                                </div>
+                                <div class="part-txt">
+                                    <p><span>Saved Post</span>112</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-10">
+                <div class="col-xl-6 col-lg-6">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <span>Profile Visit</span>
+                        </div>
+                        <div class="panel-body">
+                            <div id="chart-profile-visit"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <span>Analytics</span>
+                        </div>
+                        <div class="panel-body">
+                            <div id="chart-analytics"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-10">
+                <div class="col-xl-4 col-lg-4">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <span>Recent Messages</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="recent-message">
+                                <ul>
+                                    <li>
+                                        <a href="#" class="message-box">
+                                            <div class="part-img">
+                                                <img src=" {% static 'images/avatar-1.jpg' %} " alt="image">
+                                            </div>
+                                            <div class="part-txt">
+                                                <p>Steven Brown</p>
+                                                <span>@sbrown</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="message-box">
+                                            <div class="part-img">
+                                                <img src=" {% static 'images/avatar-2.jpg' %} " alt="image">
+                                            </div>
+                                            <div class="part-txt">
+                                                <p>Keith Mendoza</p>
+                                                <span>@kmendoza</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="message-box">
+                                            <div class="part-img">
+                                                <img src="{% static 'images/avatar-3.jpg' %}" alt="image">
+                                            </div>
+                                            <div class="part-txt">
+                                                <p>John Page</p>
+                                                <span>@jpage</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="message-box">
+                                            <div class="part-img">
+                                                <img src="{% static 'images/avatar-4.jpg' %}" alt="image">
+                                            </div>
+                                            <div class="part-txt">
+                                                <p>Zachary Philips</p>
+                                                <span>@zphilips</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="message-box">
+                                            <div class="part-img">
+                                                <img src="{% static 'images/avatar-5.jpg' %}" alt="image">
+                                            </div>
+                                            <div class="part-txt">
+                                                <p>Daniel Wise</p>
+                                                <span>@dwise</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="part-btn">Start Conversation</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8 col-lg-8">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <span>Latest Comments</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive latest-comments">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="user">
+                                                    <div class="img">
+                                                        <img src="assets/images/avatar-1.jpg" alt="User">
+                                                    </div>
+                                                    <div class="txt">
+                                                        <a href="#">Steven Brown</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment">
+                                                    <p>Really great work bro! Good Luck</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="user">
+                                                    <div class="img">
+                                                        <img src="assets/images/avatar-2.jpg" alt="User">
+                                                    </div>
+                                                    <div class="txt">
+                                                        <a href="#">Keith Mendoza</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment">
+                                                    <p>You have really amazing templates and a lot of time Good luck!</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="user">
+                                                    <div class="img">
+                                                        <img src="assets/images/avatar-3.jpg" alt="User">
+                                                    </div>
+                                                    <div class="txt">
+                                                        <a href="#">John Page</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment">
+                                                    <p>We don't see you a loooongg time ago. Then you appear with a such amazing item! Really good job boy.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="user">
+                                                    <div class="img">
+                                                        <img src="assets/images/avatar-4.jpg" alt="User">
+                                                    </div>
+                                                    <div class="txt">
+                                                        <a href="#">Zachary Philips</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment">
+                                                    <p>Very nice indeed, you're really working with passion and patience too GLWS!</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="user">
+                                                    <div class="img">
+                                                        <img src="assets/images/avatar-5.jpg" alt="User">
+                                                    </div>
+                                                    <div class="txt">
+                                                        <a href="#">Daniel Wise</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="comment">
+                                                    <p>Really awesome and Great work, Looks pretty cool. GLWS</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-10">
+                <div class="col-xl-6 col-lg-6">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <span>Le Nombres d'Éleves Par Classe</span>
+                            <div class="right">
+                                <a href="#" class="action-btn">Show All</a>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="transaction-history">
+                                <ul>
+                                    {% for class in class_counts %}
+                                        <li>
+                                            <div class="left">
+                                                <span class="transaction-badge">C</span>
+                                                <span class="transaction-with">Class : {{ class.name }}</span>
+                                            </div>
+                                            <div class="right">
+                                                <span class="badge bg-secondary rounded-pill">{{ class.student_count }}</span>
+                                                <span class="text-success">| Éleves</span>
+                                            </div>
+                                             </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock body %}

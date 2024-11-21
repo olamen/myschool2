@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expenses</title>
+</head>
+<body>
+    <h1>List of Expenses</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Description</th>
+        </tr>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.name }}</td>
+            <td>{{ expense.amount }}</td>
+            <td>{{ expense.date }}</td>
+            <td>{{ expense.description }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% load static %} {% block body %}
+<div class="container mt-5">
+  <div class="main-content">
+    <div class="breadcrumb-wrap mb-20">
+      <h1>Classes Archivées</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Frais Mensuels</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cls in classes %}
+          <tr>
+            <td>{{ cls.name }}</td>
+            <td>{{ cls.monthly_salary_fee }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

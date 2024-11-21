@@ -1,0 +1,67 @@
+{% extends "base.html" %} {% load static %} {% block body %}
+<div class="breadcrumb-wrap mb-20">
+  <div class="container mt-5">
+  {% if messages %}
+  <div class="container mt-4">
+    {% for message in messages %}
+    <div
+      class="alert alert-{{ message.tags }} alert-dismissible fade show"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <h1 class="mb-4">Détails du Parent</h1>
+  <div class="card mb-4">
+    <img
+      src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}"
+      class="card-img-top"
+      alt="Photo du Parent"
+    />
+    <div class="card-body">
+      <h5 class="card-title">{{ parent.first_name }} {{ parent.last_name }}</h5>
+      <p class="card-text"><strong>Email:</strong> {{ parent.email }}</p>
+      <p class="card-text">
+        <strong>Téléphone:</strong> {{ parent.phone_number }}
+      </p>
+      <p class="card-text"><strong>Adresse:</strong> {{ parent.address }}</p>
+    </div>
+  </div>
+
+  <h2>Enfants</h2>
+  <div class="row">
+    {% for child in children %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <img
+          src="{% if child.photo %}{{ child.photo.url }}{% else %}{% static 'images/child-placeholder.png' %}{% endif %}"
+          class="card-img-top"
+          alt="Photo de l'enfant"
+        />
+        <div class="card-body">
+          <h5 class="card-title">
+            {{ child.first_name }} {{ child.last_name }}
+          </h5>
+          <p class="card-text">
+            <strong>Classe:</strong> {{ child.student_class.name }}
+          </p>
+          <p class="card-text">
+            <strong>Téléphone:</strong> {{ child.mobile }}
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</div>
+</div>
+{% endblock body %}

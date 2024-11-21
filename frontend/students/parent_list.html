@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>List des etudients</title>
+
+    <link rel="shortcut icon" href="favicon.png" />
+  </head>
+  <body>
+    {% block body %}
+    <!-- main sidebar -->
+    <div class="main-content">
+      <div class="breadcrumb-wrap mb-20">
+        <div
+          class="d-md-flex d-block justify-content-between align-items-center"
+        >
+          <div class="left">
+            <h1>Data Table</h1>
+            <p>
+              DataTables is a plug-in for the jQuery Javascript library. It adds
+              all of these advanced features to any HTML table.
+            </p>
+          </div>
+          <div class="right">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="index.html">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <i class="bi bi-caret-right"></i>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Data Table
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="row g-10">
+        <div class="col-xl-12 col-lg-12">
+          <div class="panel mb-10">
+            <div class="panel-body">
+              <table
+                id="myTable"
+                class="table table-light data-table table-hover text-nowrap"
+              >
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Children</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for parent in parents %}
+                  <tr>
+                    <td>
+                      <div class="col-md-4">
+                        {% if parent.photo %}
+                        <img
+                          src="{{ parent.photo.url }}"
+                          class="img-fluid rounded-start zoom"
+                          alt="parent Photo"
+                        />
+                        {% else %}
+                        <img
+                          src=" {% static 'images/child.png' %} "
+                          class="img-fluid rounded-start zoom"
+                          alt="Placeholder Photo"
+                        />
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                      <a href="{% url 'parent_detail' parent.id %}">
+                        {{ parent.first_name }} {{ parent.last_name }}
+                      </a>
+                    </td>
+                    <td>{{ parent.email }}</td>
+                    <td>{{ parent.phone_number }}</td>
+                    <td>{{ parent.get_children_names }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endblock body %}
+  </body>
+</html>

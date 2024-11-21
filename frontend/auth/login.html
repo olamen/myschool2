@@ -1,0 +1,54 @@
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Ecole | Connexion </title>
+    <link rel="stylesheet" type="text/css" href=" {% static 'css/iofrm-style.css' %} ">
+    <link rel="stylesheet" type="text/css" href=" {% static 'css/iofrm-theme39.css' %} ">
+</head>
+<body>
+    <div class="form-body without-side">
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="iofrm-layout">
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="image-container">
+                        <img src=" {% static 'images/graphic13-1.svg' %} " alt="">
+                    </div>
+                    <div class="form-items">
+                        <img class="img-float" src=" {% static 'images/graphic13-2.svg' %} " alt="">
+                        <div class="website-logo-inside logo-normal">
+                            <a href="#">
+                                <div class="logo">
+                                    <img class="logo-size" src=" {% static 'images/logo-light.svg' %} " alt="">
+                                </div>
+                            </a>
+                        </div>
+                        <h3 class="font-md">#MonÉcole 🚀 | Allons de l’avant vers une gestion scolaire moderne et efficace ! 🎓 </h3>
+                       
+                        <form method="post">
+                            {% csrf_token %}
+                            <input class="form-control" type="text" name="username" placeholder="Nom d'utilisateur:" required>
+                            <input class="form-control" type="password" name="password" placeholder="Mot de passe:" required>
+                            <div class="form-button d-flex">
+                            <button id="submit" type="submit" class="btn btn-primary">Connexion</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
