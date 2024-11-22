@@ -64,7 +64,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-CORS_ALLOW_ALL_ORIGINS = True # but not secure on production i use the one below
+MIDDLEWARE += ['django.middleware.common.BrokenLinkEmailsMiddleware']
+#CORS_ALLOW_ALL_ORIGINS = True # but not secure on production i use the one below
 
 # CORS_ALLOWED_ORIGINS = [
 #      "http://localhost:4200",  # The URL of your Angular app
