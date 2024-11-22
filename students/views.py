@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum, Count
 from accounting.models import Payment, Transaction
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import action
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -57,10 +58,15 @@ class IndexViewSet(viewsets.ModelViewSet):
     renderer_classes = [TemplateHTMLRenderer]  # Enable HTML rendering
 
     @action(detail=False, methods=['get'], renderer_classes=[TemplateHTMLRenderer])
+    @login_required(login_url='login')  # Redirect unauthenticated users to the login page
+
     def index(self, request):
         """Render a list of students in an HTML template."""
         # Get total count of students
         total_students = Student.objects.count()
+        # Check if user has the 'Super Admin' role
+        if not request.user.role == 'Super Admin':
+            return redirect('403')  # Redirect to a custom "403 Forbidden" page if not authorized
         
         # Get the count of students per class
         class_counts = Class.objects.annotate(student_count=Count('students'))
