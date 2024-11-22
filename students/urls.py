@@ -2,6 +2,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from students import views_teacher
+
 from .views_class import class_archive, class_archived_list, class_list, class_create, class_update 
 
 from .views_parent import parent_create, parent_detail, parent_list
@@ -36,6 +38,14 @@ urlpatterns = [
     path('classes/update/<int:class_id>/', class_update, name='class_update'),
     path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
     path('classes/archived/', class_archived_list, name='class_archived_list'),
+
+
+    path('teachers/', views_teacher.teacher_list, name='teacher_list'),
+    path('teachers/create/', views_teacher.teacher_create, name='teacher_create'),
+    path('teachers/<int:pk>/update/', views_teacher.teacher_update, name='teacher_update'),
+    path('teachers/<int:pk>/archive/', views_teacher.teacher_archive, name='teacher_archive'),
+    path('teachers/archived/', views_teacher.teacher_archived_list, name='teacher_archived_list'),
+    path('teachers/<int:pk>/restore/', views_teacher.teacher_restore, name='teacher_restore'),
 
 
     path('parents/', parent_list, name='parent_list'),

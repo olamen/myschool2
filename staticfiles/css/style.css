@@ -993,6 +993,13 @@ button {
   background: #9cd02d;
   border-color: #9cd02d;
 }
+.btn-primary a{
+  color: #fff;
+}
+.col-md-4.photodetail {
+  border-right: 2px solid #ddd;
+  padding: 0px;
+}
 .btn-primary.btn-primary.disabled {
   background: #D2E34A;
   border-color: #D2E34A;
@@ -2197,7 +2204,7 @@ table.dataTable thead th:last-child, table.dataTable thead td:last-child {
   bottom: 0;
   right: 0;
   overflow: auto;
-  background: url(../images/background.jpg) center center no-repeat;
+  background: url(../images/background.png) center center no-repeat;
   background-size: cover;
   overflow: auto;
   z-index: 2;

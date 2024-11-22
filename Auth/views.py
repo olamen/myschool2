@@ -31,6 +31,7 @@ def user_logout(request):
     logout(request)
     messages.success(request, "Déconnexion réussie.")
     return redirect('login')
+
 @login_required
 def super_admin_dashboard(request):
     return render(request, 'dashboard/super_admin.html')

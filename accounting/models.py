@@ -20,7 +20,7 @@ class Expense(models.Model):
 
 class Fee(models.Model):
     """
-    Model for tracking school fees (monthly, yearly) assigned to a student or parent.
+    Model for tracking school fees (monthly, yearly) assigned to a student or parent1.
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='fees')
     amount_due = models.DecimalField(max_digits=10, decimal_places=2)

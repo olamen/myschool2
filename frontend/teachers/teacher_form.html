@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% load static %}
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>List des etudients</title>
+
+    <link rel="shortcut icon" href="favicon.png" />
+</head>
+
+<body>
+    {% block body %}
+    <!-- main sidebar -->
+    <div class="main-content">
+        <div class="breadcrumb-wrap mb-20">
+            <div class="d-md-flex d-block justify-content-between align-items-center">
+                <div class="left">
+                    <div class="container">
+                        <div class="container">
+                            <h1>{% if teacher %}Modifier l'enseignant{% else %}Ajouter un enseignant{% endif %}</h1>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="name">Nom</label>
+                                    <input type="text" name="name" id="name" class="form-control" value="{{ teacher.name|default_if_none:'' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subject">Matière</label>
+                                    <input type="text" name="subject" id="subject" class="form-control" value="{{ teacher.subject|default_if_none:'' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary">Salaire</label>
+                                    <input type="number" name="salary" id="salary" class="form-control" value="{{ teacher.salary|default_if_none:'' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary_type">Type de salaire</label>
+                                    <select name="salary_type" id="salary_type" class="form-control">
+                                        <option value="monthly" {% if teacher.salary_type == "monthly" %}selected{% endif %}>Mensuel</option>
+                                        <option value="hourly" {% if teacher.salary_type == "hourly" %}selected{% endif %}>Horaire</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="enrollment_date">Date d'embauche</label>
+                                    <input type="date" name="enrollment_date" id="enrollment_date" class="form-control" value="{{ teacher.enrollment_date|default_if_none:'' }}" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>

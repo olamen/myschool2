@@ -42,13 +42,10 @@ class Student(models.Model):
 
 
     def get_final_fee(self):
-        if self.student_class.is_free:
-            return 0
-        elif self.has_discount:  # Check if the student has a discount
-            discount_amount = (self.student_class.monthly_salary_fee * 20) / 100  # 20% discount
+        if self.has_discount:
+            discount_amount = (self.student_class.monthly_salary_fee * 20) / 100
             return self.student_class.monthly_salary_fee - discount_amount
-        else:
-            return self.student_class.monthly_salary_fee
+        return self.student_class.monthly_salary_fee
 
 
     def __str__(self):
@@ -79,10 +76,33 @@ class Parent(models.Model):
         return ", ".join([f"{child.first_name} {child.last_name}" for child in self.children.all()])
 
 class Teacher(models.Model):
+    SALARY_TYPE_CHOICES = [
+        ('hourly', 'Hourly'),
+        ('monthly', 'Monthly'),
+    ]
+
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=50)
     enrollment_date = models.DateField()
     salary = models.PositiveIntegerField(null=False)
+    salary_type = models.CharField(
+        max_length=10,
+        choices=SALARY_TYPE_CHOICES,
+        default='monthly'
+    )  # Field to specify salary type
+    is_active = models.BooleanField(default=False)
+
+    def calculate_monthly_salary(self, hours_worked=0):
+        """
+        Calculate the monthly salary based on the salary type.
+        For hourly salary, hours_worked must be provided.
+        """
+        if self.salary_type == 'hourly':
+            if hours_worked <= 0:
+                raise ValueError("Hours worked must be greater than 0 for hourly salary.")
+            return self.salary * hours_worked
+        # If salary type is monthly, return the base salary
+        return self.salary
 
     def __str__(self):
         return self.name

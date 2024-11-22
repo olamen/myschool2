@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% load static %}
+<html lang="fr">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>List des etudients</title>
+
+        <link rel="shortcut icon" href="favicon.png" />
+    </head>
+
+    <body>
+        {% block body %}
+        <!-- main sidebar -->
+        <div class="main-content">
+            <div class="breadcrumb-wrap mb-20">
+                <div
+                    class="d-md-flex d-block justify-content-between align-items-center">
+                    <div class="left">
+                        <div class="container">
+                            <div class="container">
+                                <h1>Enseignants archivés</h1>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Matière</th>
+                                            <th>Salaire</th>
+                                            <th>Type de salaire</th>
+                                            <th>Date d'embauche</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for teacher in teachers %}
+                                        <tr>
+                                            <td>{{ teacher.name }}</td>
+                                            <td>{{ teacher.subject }}</td>
+                                            <td>{{ teacher.salary }}</td>
+                                            <td>{{
+                                                teacher.get_salary_type_display
+                                                }}</td>
+                                            <td>{{ teacher.enrollment_date
+                                                }}</td>
+                                            <td>
+                                                <a
+                                                    href="{% url 'teacher_restore' teacher.id %}"
+                                                    class="btn btn-success">Restaurer</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </body>
