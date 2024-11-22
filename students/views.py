@@ -1,4 +1,5 @@
 # students/views.py
+from django.http import HttpResponseForbidden
 from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404, redirect, render
@@ -15,6 +16,13 @@ from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
 from .models import AppConfig, Homework, Student, Subject, Teacher, Class, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer, CompositionSerializer, HomeworkSerializer, StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
+
+
+def forbidden_view(request, exception=None):
+    """
+    Custom view for handling 403 Forbidden errors.
+    """
+    return HttpResponseForbidden(render(request, '403.html'))
 
 class IsSuperAdmin(BasePermission):
     """
