@@ -24,67 +24,45 @@ def forbidden_view(request, exception=None):
     """
     return HttpResponseForbidden(render(request, '403.html'))
 
-class IsSuperAdmin(BasePermission):
+class HasRolePermission(BasePermission):
     """
-    Allows access only to users with the role 'Super Admin'.
+    Custom permission to grant access based on user roles.
     """
+    allowed_roles = []
+
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'Super Admin'
-class Admins(BasePermission):
-    """
-    Allows access only to users with the role 'Super Admin'.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'Admins'
+        return request.user.is_authenticated and request.user.role in self.allowed_roles
     
-class Adminf(BasePermission):
-    """
-    Allows access only to users with the role 'Super Admin'.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'Adminf'
-    
-class Professor(BasePermission):
-    """
-    Allows access only to users with the role 'Super Admin'.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'Professor'
-    
-class ParentStudent(BasePermission):
-    """
-    Allows access only to users with the role 'Super Admin'.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'Parent/Student'
     
 class IndexViewSet(viewsets.ModelViewSet):
+    """
+    Index view for managing the dashboard and student summary.
+    """
     queryset = Student.objects.all()
-    user = CustomUser.objects.all()
-    serializer_class = Student
-    permission_classes = [IsAuthenticated, IsSuperAdmin]
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated, HasRolePermission]
     renderer_classes = [TemplateHTMLRenderer]  # Enable HTML rendering
 
     @action(detail=False, methods=['get'], renderer_classes=[TemplateHTMLRenderer])
-    @login_required(login_url='login')  # Redirect unauthenticated users to the login page
-
     def index(self, request):
-        """Render a list of students in an HTML template."""
+        """
+        Render a dashboard view for students and classes.
+        """
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        # Restrict access to Super Admin
+        HasRolePermission.allowed_roles = ['Super Admin']
+
         # Get total count of students
         total_students = Student.objects.count()
-        # Check if user has the 'Super Admin' role
-        if not request.user.role == 'Super Admin':
-            return redirect('403')  # Redirect to a custom "403 Forbidden" page if not authorized
-        
+
         # Get the count of students per class
         class_counts = Class.objects.annotate(student_count=Count('students'))
-        print(f"Total Students: {total_students}")
-        for class_obj in class_counts:
-            print(f"Class {class_obj.name}: {class_obj.student_count} students")
 
         context = {
             'total_students': total_students,
-            'class_counts': class_counts,  # List of classes with student counts
+            'class_counts': class_counts,
         }
         return render(request, 'index.html', context)
         
