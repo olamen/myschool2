@@ -16,6 +16,7 @@ urlpatterns = [
     path('accounting/', include('accounting.urls')),
     path('auth/', include('Auth.urls')),
     path('403/', views.forbidden_view, name='403'),  # Optional
+    
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
