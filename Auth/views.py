@@ -16,8 +16,10 @@ def user_login(request):
             # Redirect based on role
             if user.role == 'Super Admin':
                 return redirect('index')
-            elif user.role == 'Admin':
-                return redirect('admin_dashboard')
+            elif user.role == 'Admins':
+                return redirect('dashs')
+            elif user.role == 'Adminf':
+                return redirect('dashf')
             elif user.role == 'Professor':
                 return redirect('professor_dashboard')
             else:  # Parent/Student
