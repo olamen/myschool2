@@ -47,7 +47,7 @@ def report_card_pdf(request, student_id, exam_id):
 def homework_list(request):
     """List all homework."""
     homeworks = Homework.objects.all()
-    return render(request, 'students/homework_list.html', {'homeworks': homeworks})
+    return render(request, 'notes/homework_list.html', {'homeworks': homeworks})
 
 def add_homework(request):
     """Add new homework."""
