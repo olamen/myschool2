@@ -32,28 +32,35 @@ class HasRolePermission(BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in self.allowed_roles
+
 @login_required
 def indexview(request):
-        """
-        Render a dashboard view for students and classes.
-        """
+    # Redirect based on role if logged in
+    if request.user.role == 'Super Admin':
+        # This is the correct page for Super Admin; no redirect needed
+        pass
+    elif request.user.role == 'Admins':
+        return redirect('dashs')
+    elif request.user.role == 'Adminf':
+        return redirect('dashf')
+    elif request.user.role == 'Professor':
+        return redirect('professor_dashboard')
+    elif request.user.role == 'Parent/Student':
+        return redirect('parent_student_dashboard')
 
-        # Restrict access to Super Admin
-        HasRolePermission.allowed_roles = ['Super Admin']
+    # Logic for the Super Admin view
+    total_students = Student.objects.count()
+    clsses = Class.objects.count()
 
-        # Get total count of students
-        total_students = Student.objects.count()
-        clsses = Class.objects.count()
+    # Get the count of students per class
+    class_counts = Class.objects.annotate(student_count=Count('students'))
 
-        # Get the count of students per class
-        class_counts = Class.objects.annotate(student_count=Count('students'))
-
-        context = {
-            'total_students': total_students,
-            'class_counts': class_counts,
-            'clsses_counts': clsses,
-        }
-        return render(request, 'index.html', context)
+    context = {
+        'total_students': total_students,
+        'class_counts': class_counts,
+        'clsses_counts': clsses,
+    }
+    return render(request, 'index.html', context)
 
 
     
