@@ -25,7 +25,7 @@ def forbidden_view(request, exception=None):
     return HttpResponseForbidden(render(request, '403.html'))
 
 @login_required
-def indexview(self, request):
+def indexview(request):
         """
         Render a dashboard view for students and classes.
         """
