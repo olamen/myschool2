@@ -110,7 +110,7 @@ class Teacher(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=100)  # Nom du sujet
-    class_enrolled = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='subjects')  # La classe à laquelle appartient le sujet
+    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # La classe à laquelle appartient le sujet
     coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet (ex: 1.0, 2.0)
 
     def __str__(self):
@@ -125,7 +125,7 @@ class Attendance(models.Model):
         choices=[('Present', 'Present'), ('Absent', 'Absent')],  # Choix de statut
         default='Absent'  # Par défaut, l'étudiant est absent
     )
-    class_enrolled = models.ForeignKey(Class, on_delete=models.CASCADE)  # La classe à laquelle l'étudiant appartient
+    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE)  # La classe à laquelle l'étudiant appartient
 
     def __str__(self):
          return f"Attendance for {self.student.first_name} {self.student.last_name} on {self.date}"
