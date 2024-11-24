@@ -43,13 +43,12 @@ class IndexViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, HasRolePermission]
     renderer_classes = [TemplateHTMLRenderer]  # Enable HTML rendering
 
+    @login_required
     @action(detail=False, methods=['get'], renderer_classes=[TemplateHTMLRenderer])
     def index(self, request):
         """
         Render a dashboard view for students and classes.
         """
-        if not request.user.is_authenticated:
-            return redirect('login')
 
         # Restrict access to Super Admin
         HasRolePermission.allowed_roles = ['Super Admin']
