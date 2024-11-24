@@ -24,6 +24,14 @@ def forbidden_view(request, exception=None):
     """
     return HttpResponseForbidden(render(request, '403.html'))
 
+class HasRolePermission(BasePermission):
+    """
+    Custom permission to grant access based on user roles.
+    """
+    allowed_roles = []
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in self.allowed_roles
 @login_required
 def indexview(request):
         """
@@ -47,14 +55,7 @@ def indexview(request):
         }
         return render(request, 'index.html', context)
 
-class HasRolePermission(BasePermission):
-    """
-    Custom permission to grant access based on user roles.
-    """
-    allowed_roles = []
 
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role in self.allowed_roles
     
     
 class IndexViewSet(viewsets.ModelViewSet):
