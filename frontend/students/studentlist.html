@@ -12,8 +12,6 @@
   <body>
     {% block body %}
     <!-- main sidebar -->
-    <div class="main-content">
-      <div class="breadcrumb-wrap mb-20">
         {% if messages %}
         <div class="container mt-4">
           {% for message in messages %}
@@ -130,9 +128,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
     {% endblock body %}
   </body>
 </html>

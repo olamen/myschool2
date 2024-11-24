@@ -107,7 +107,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     def student_list(self, request):
         """Render a list of students in an HTML template."""
         students = Student.objects.all()
-        return render(request, 'dash/studentlist.html', {'students': students})
+        return render(request, 'students/studentlist.html', {'students': students})
 
    
     @action(detail=True, methods=['get'], renderer_classes=[TemplateHTMLRenderer])
