@@ -72,7 +72,7 @@
                         <li class="sidebar-item has-sub">
                             <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
                                 title="Components" tabindex="0"><i class="bi bi-stack"></i> <span>La
-                                    comptabilité</span></a>
+                                    Comptabilité</span></a>
                             <ul class="sub-menu">
                                 <li><a href="component_alert.html" class="sub-menu-item">Alert</a></li>
                             </ul>
@@ -107,36 +107,10 @@
                             <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
                                 title="Icons" tabindex="0"><i class="bi bi-egg-fill"></i> <span>Les Notes</span></a>
                             <ul class="sub-menu">
-                                <li><a href="{% url 'add_exam' %}">Ajouter un Examen</a></li>
-                                <li><a href=" {% url 'exam_list' %} " class="sub-menu-item">Notes </a></li>
-                                <li><a href="{% url 'add_exam' %}">Ajouter un Examen</a></li>
-                                <li><a href="{% url 'dd_homework' %}">Ajouter un Devoir</a></li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item"><a href="chart.html" class="sidebar-link" data-bs-toggle="tooltip"
-                                data-bs-placement="right" title="Charts" tabindex="0"><i
-                                    class="bi bi-bar-chart-fill"></i> <span>Apexcharts</span></a></li>
-                        <li class="sidebar-title"><span>Pages</span></li>
-                        <li class="sidebar-item"><a href="email.html" class="sidebar-link" data-bs-toggle="tooltip"
-                                data-bs-placement="right" title="Email Application" tabindex="0"><i
-                                    class="bi bi-envelope-fill"></i> <span>Email Application</span></a></li>
-                        <li class="sidebar-item has-sub">
-                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Authentication" tabindex="0"><i class="bi bi-person-badge-fill"></i>
-                                <span>Authentication</span></a>
-                            <ul class="sub-menu">
-                                <li><a href="login.html" class="sub-menu-item">Login</a></li>
-                                <li><a href="register.html" class="sub-menu-item">Register</a></li>
-                                <li><a href="password.html" class="sub-menu-item">Forgot Password</a></li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item has-sub">
-                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Errors" tabindex="0"><i class="bi bi-x-octagon-fill"></i> <span>Errors</span></a>
-                            <ul class="sub-menu">
-                                <li><a href="403.html" class="sub-menu-item">403</a></li>
-                                <li><a href="404.html" class="sub-menu-item">404</a></li>
-                                <li><a href="500.html" class="sub-menu-item">500</a></li>
+                                <li><a href="{% url 'add_homework' %}">Ajouter un Devoir</a></li>
+                                <li><a href="{% url 'homework_list' %}">Listes des Devoirs</a></li>
+                                <li><a href="{% url 'add_composition' %}">Ajouter un Examen</a></li>
+                                <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Listes des compositions </a></li>
                             </ul>
                         </li>
                     </ul>
