@@ -105,6 +105,18 @@
                         </li>
                         <li class="sidebar-item has-sub">
                             <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Components" tabindex="0"><i class="bi bi-person"></i> <span>Les
+                                    Sujet</span></a>
+
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'subject_create' %} " class="sub-menu-item">Ajouter un
+                                    Sujet</a></li>
+                                <li><a href="{% url 'subject_list' %}" class="sub-menu-item">Liste des Sujet</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
                                 title="Icons" tabindex="0"><i class="bi bi-egg-fill"></i> <span>Les Notes</span></a>
                             <ul class="sub-menu">
                                 <li><a href="{% url 'add_homework' %}" class="sub-menu-item">Ajouter un Devoir</a></li>
@@ -149,6 +161,7 @@
                 {% endfor %}
             </div>
             {% endif %}
+
             {% endblock body %}
         </div>
     </div>

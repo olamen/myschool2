@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+{{ block.super }}
+<h1>Liste des sujets</h1>
+<a href="{% url 'subject_create' %}" class="btn btn-primary">Créer un sujet</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Classe</th>
+            <th>Coefficient</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subject in subjects %}
+        <tr>
+            <td>{{ subject.name }}</td>
+            <td>{{ subject.class_enrolled.name }}</td>
+            <td>{{ subject.coefficient }}</td>
+            <td>{{ "Actif" if subject.is_active else "Inactif" }}</td>
+            <td>
+                <a href="{% url 'subject_update' subject.id %}"
+                    class="btn btn-warning">Modifier</a>
+                <a href="{% url 'subject_toggle_status' subject.id %}"
+                    class="btn btn-secondary">
+                    {{ "Désactiver" if subject.is_active else "Activer" }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

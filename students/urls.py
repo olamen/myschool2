@@ -2,14 +2,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from students import views_teacher
+from students import views_subject, views_teacher
 
 from .views_class import class_archive, class_archived_list, class_list, class_create, class_update 
 
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, IndexViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview
+from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -52,7 +52,8 @@ urlpatterns = [
     path('parents/add/', parent_create, name='add_parent'),
     path('parents/<int:parent_id>/', parent_detail, name='parent_detail'),
 
-    path('subjects/<int:pk>/subject_detail/', SubjectViewSet.as_view({'get': 'subject_detail'}), name='subject-detail'),
-    path('subjects/subject_list/', SubjectViewSet.as_view({'get': 'subject_list'}), name='subject-list'),
-    path('subjects/<int:pk>/subject_detail/', SubjectViewSet.as_view({'get': 'subject_detail'}), name='subject-detail'),
+    path('subjects/', views_subject.subject_list, name='subject_list'),
+    path('subjects/create/', views_subject.subject_create, name='subject_create'),
+    path('subjects/<int:subject_id>/update/', views_subject.subject_update, name='subject_update'),
+    path('subjects/<int:subject_id>/toggle/', views_subject.subject_toggle_status, name='subject_toggle_status'),
 ]

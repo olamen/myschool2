@@ -110,9 +110,9 @@ class Teacher(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=100)  # Nom du sujet
-    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # La classe à laquelle appartient le sujet
-    coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet (ex: 1.0, 2.0)
-
+    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # Classe associée
+    coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet
+    is_active = models.BooleanField(default=True)  # Statut actif ou inactif
     def __str__(self):
         return f"{self.name} (Coefficient: {self.coefficient})"
 
