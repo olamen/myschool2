@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-<div class="main-content">
-    <div class="breadcrumb-wrap mb-20">
         {% if messages %}
 <div class="alert-messages">
     {% for message in messages %}
@@ -36,7 +34,5 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
-</div>
 </div>
 {% endblock %}
