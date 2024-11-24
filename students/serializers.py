@@ -1,6 +1,6 @@
 # students/serializers.py
 from rest_framework import serializers
-from .models import AppConfig, Student, Subject, Teacher, Class, SessionYearModel, Attendance, Homework, Composition
+from .models import AppConfig, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Homework, Composition
 
 class StudentSerializer(serializers.ModelSerializer):
     final_fee = serializers.SerializerMethodField()
@@ -19,7 +19,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 class ClassSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Class
+        model = Classe
         fields = '__all__'
 
 class SessionYearSerializer(serializers.ModelSerializer):
