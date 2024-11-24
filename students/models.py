@@ -11,7 +11,7 @@ class SessionYearModel(models.Model):
         return f"{self.session_start_year} to {self.session_end_year}"
  
 
-class Class(models.Model):
+class Classe(models.Model):
     name = models.CharField(max_length=100, unique=True)
     monthly_salary_fee = models.PositiveIntegerField(null=False)
     is_active = models.BooleanField(default=False) 
@@ -34,7 +34,7 @@ class Student(models.Model):
     )
     mobile = models.CharField(max_length=40)
     enrollment_date = models.DateField(auto_now_add=True)
-    student_class = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='students')
+    student_class = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='students')
     has_discount = models.BooleanField(default=False)  # Indicates if the student has a discount
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')  # Add gender with default 'Garçon'
     photo = models.ImageField(upload_to='student_photos/', blank=True, null=True)  # Optional photo field

@@ -32,7 +32,7 @@ APPEND_SLASH = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG","False").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(" ")
 
 AUTH_USER_MODEL = 'Auth.CustomUser'
 
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounting',
     'Auth',
+    'notes',
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
 INSTALLED_APPS += ['whitenoise.runserver_nostatic']
@@ -97,7 +98,7 @@ WSGI_APPLICATION = 'school_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-database_url = os.environ.get("DATABASE_URL")
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')  # Default to SQLite if not set
 
 DATABASES = {
     'default': {

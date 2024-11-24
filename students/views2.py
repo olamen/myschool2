@@ -12,94 +12,11 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from django.conf import settings
 import os
-from .models import Student, Class
+from .models import Student, Classe
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from arabic_reshaper import reshape
 from bidi.algorithm import get_display
-
-# class ListStudentPDFView(View):
-#     def get(self, request, *args, **kwargs):
-#         # Define the HTTP response with PDF header
-#         response = HttpResponse(content_type='application/pdf')
-#         response['Content-Disposition'] = 'attachment; filename="liste_etudiants.pdf"'
-        
-#         # Create a PDF document with reduced top margin
-#         doc = SimpleDocTemplate(response, pagesize=A4, topMargin=0.5 * inch, bottomMargin=0.5 * inch)
-#         elements = []
-        
-#         # Define styles for the document
-#         styles = getSampleStyleSheet()
-#         title_style = styles['Heading1']
-#         normal_style = styles['Normal']
-        
-#         # Path to the logo image
-#         logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo1.png')  # Adjust the path as needed
-        
-#         # Prepare the school information text on the left side
-#         school_info = [
-#             Paragraph("Nom de l'école: École Exemple", title_style),
-#             Paragraph("Adresse de l'école: 123 Rue de l'École, Ville, Pays", normal_style),
-#             Paragraph("Téléphone: +123456789 | Email: ecole@example.com", normal_style),
-#         ]
-        
-#         # Add logo image on the right side if it exists
-#         if os.path.exists(logo_path):
-#             logo = Image(logo_path, width=1.5 * inch, height=1.5 * inch)
-#         else:
-#             logo = Paragraph("مدرسة احيال المستقبل", normal_style)  # Empty paragraph if logo is missing
-        
-#         # Create a table with school info on the left and logo on the right
-#         header_table = Table([[school_info, logo, school_info]], colWidths=[7.0 * inch, 1.0 * inch])
-#         header_table.setStyle(TableStyle([
-#             ('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Align contents to the top
-#         ]))
-        
-#         elements.append(header_table)
-#         elements.append(Spacer(1, 10))  # Add space before the main table
-        
-#         # Table header for student information in French
-#         data = [["Prénom", "Nom", "NNI", "Téléphone", "Date d'inscriptions", "Classe"]]
-        
-#         # Fetch students and populate the data list
-#         students = Student.objects.all()
-#         for student in students:
-#             data.append([
-#                 student.first_name,
-#                 student.last_name,
-#                 student.nni,
-#                 student.mobile,
-#                 student.enrollment_date.strftime('%Y-%m-%d'),
-#                 student.student_class.name
-#             ])
-        
-#         # Create table with data
-#         table = Table(data)
-#         table.setStyle(TableStyle([
-#             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-#             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-#             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-#             ('GRID', (0, 0), (-1, -1), 1, colors.black),
-#         ]))
-        
-#         elements.append(table)
-        
-#         # Build PDF with header and table, with page numbering callback
-#         doc.build(elements, onLaterPages=self.add_page_number)
-        
-#         return response
-
-#     def add_page_number(self, canvas, doc):
-#         """Add page number to the bottom of each page."""
-#         page_num = canvas.getPageNumber()
-#         text = f"Page {page_num}"
-#         canvas.setFont("Helvetica", 9)
-#         canvas.drawRightString(A4[0] - inch, 0.75 * inch, text)  # Positioned 0.75 inch from the bottom right
-
-
 
 
 class ListStudentPDFView(View):
@@ -266,8 +183,8 @@ class BulkUploadStudentsView(View):
 
             # Find the Class instance
             try:
-                student_class = Class.objects.get(name=class_name)
-            except Class.DoesNotExist:
+                student_class = Classe.objects.get(name=class_name)
+            except Classe.DoesNotExist:
                 messages.error(request, f"Class '{class_name}' does not exist.")
                 return redirect('bulk_upload_students')
 

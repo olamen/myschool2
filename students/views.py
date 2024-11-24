@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
-from .models import AppConfig, Homework, Student, Subject, Teacher, Class, SessionYearModel, Attendance, Composition
+from .models import AppConfig, Homework, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer, CompositionSerializer, HomeworkSerializer, StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
 
 
@@ -50,10 +50,10 @@ def indexview(request):
 
     # Logic for the Super Admin view
     total_students = Student.objects.count()
-    clsses = Class.objects.count()
+    clsses = Classe.objects.count()
 
     # Get the count of students per class
-    class_counts = Class.objects.annotate(student_count=Count('students'))
+    class_counts = Classe.objects.annotate(student_count=Count('students'))
 
     context = {
         'total_students': total_students,
@@ -86,10 +86,10 @@ class IndexViewSet(viewsets.ModelViewSet):
 
         # Get total count of students
         total_students = Student.objects.count()
-        clsses = Class.objects.count()
+        clsses = Classe.objects.count()
 
         # Get the count of students per class
-        class_counts = Class.objects.annotate(student_count=Count('students'))
+        class_counts = Classe.objects.annotate(student_count=Count('students'))
 
         context = {
             'total_students': total_students,
@@ -149,8 +149,8 @@ class StudentViewSet(viewsets.ModelViewSet):
 
             # Vérifie si la classe existe
             try:
-                student_class = Class.objects.get(id=student_class_id)
-            except Class.DoesNotExist:
+                student_class = Classe.objects.get(id=student_class_id)
+            except Classe.DoesNotExist:
                 return Response({"error": "Classe introuvable"}, status=404)
             
             # Créer un nouvel étudiant
@@ -169,7 +169,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             return redirect('students_list')  # Rediriger vers la liste des étudiants
 
         # Afficher le formulaire si la requête est GET
-        classes = Class.objects.all()
+        classes = Classe.objects.all()
         return render(request, 'dash/add_student.html', {'classes': classes})
 
 
@@ -178,7 +178,7 @@ class TeacherViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherSerializer
 
 class ClassViewSet(viewsets.ModelViewSet):
-    queryset = Class.objects.all()
+    queryset = Classe.objects.all()
     serializer_class = ClassSerializer
 
 class SessionYearViewSet(viewsets.ModelViewSet):
@@ -215,10 +215,10 @@ class SubjectViewSet(viewsets.ModelViewSet):
         # Vérifie si l'étudiant et la classe existent
         try:
             student = Student.objects.get(id=student_id)
-            student_class = Class.objects.get(id=class_id)
+            student_class = Classe.objects.get(id=class_id)
         except Student.DoesNotExist:
             return Response({"error": "Student not found"}, status=404)
-        except Class.DoesNotExist:
+        except Classe.DoesNotExist:
             return Response({"error": "Class not found"}, status=404)
         
         # Crée un enregistrement de présence

@@ -15,6 +15,7 @@ urlpatterns = [
     #path('', TemplateView.as_view(template_name='index.html')),
     path('accounting/', include('accounting.urls')),
     path('auth/', include('Auth.urls')),
+    path("notes/", include("notes.urls")),
     path('403/', views.forbidden_view, name='403'),  # Optional
     
 

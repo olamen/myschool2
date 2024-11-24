@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin de Notes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid black; }
+        th, td { padding: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Bulletin de Notes</h1>
+    <p><strong>Nom:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+    <p><strong>Classe:</strong> {{ student.student_class.name }}</p>
+    <p><strong>Examen:</strong> {{ exam.name }} - {{ exam.school_year }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Coefficient</th>
+                <th>Note</th>
+                <th>Note Pondérée</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+            <tr>
+                <td>{{ grade.subject.name }}</td>
+                <td>{{ grade.coefficient }}</td>
+                <td>{{ grade.score }}</td>
+                <td>{{ grade.get_weighted_score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Score Total:</strong> {{ total_score }}</p>
+    <p><strong>Moyenne:</strong> {{ average_score }}</p>
+</body>
+</html>
