@@ -6,6 +6,19 @@ from .decorators import role_required
 
 
 def user_login(request):
+    if request.user.is_authenticated:
+        # Redirect based on role if already logged in
+        if request.user.role == 'Super Admin':
+            return redirect('index')
+        elif request.user.role == 'Admins':
+            return redirect('dashs')
+        elif request.user.role == 'Adminf':
+            return redirect('dashf')
+        elif request.user.role == 'Professor':
+            return redirect('professor_dashboard')
+        else:  # Parent/Student
+            return redirect('parent_student_dashboard')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
