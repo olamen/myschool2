@@ -9,7 +9,7 @@ from .views_class import class_archive, class_archived_list, class_list, class_c
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, IndexViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet
+from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, IndexViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -23,8 +23,8 @@ router.register(r'homeworks', HomeworkViewSet)
 router.register(r'compositions', CompositionViewSet)
 
 urlpatterns = [
-    #path('', include(router.urls)),
-    path('', IndexViewSet.as_view({'get': 'index'}), name='index'),
+    path('', indexview, name='index'),
+    #path('', IndexViewSet.as_view({'get': 'index'}), name='index'),
     path('students/student_list/', StudentViewSet.as_view({'get': 'student_list'}), name='students_list'),
     path('students/add/', StudentViewSet.as_view({'get': 'add_student', 'post': 'add_student'}), name='add_student'),
     path('students/student/<int:pk>/', StudentViewSet.as_view({'get': 'student_detail'}), name='student_detail'),

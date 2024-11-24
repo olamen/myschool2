@@ -24,6 +24,29 @@ def forbidden_view(request, exception=None):
     """
     return HttpResponseForbidden(render(request, '403.html'))
 
+@login_required
+def indexview(self, request):
+        """
+        Render a dashboard view for students and classes.
+        """
+
+        # Restrict access to Super Admin
+        HasRolePermission.allowed_roles = ['Super Admin']
+
+        # Get total count of students
+        total_students = Student.objects.count()
+        clsses = Class.objects.count()
+
+        # Get the count of students per class
+        class_counts = Class.objects.annotate(student_count=Count('students'))
+
+        context = {
+            'total_students': total_students,
+            'class_counts': class_counts,
+            'clsses_counts': clsses,
+        }
+        return render(request, 'index.html', context)
+
 class HasRolePermission(BasePermission):
     """
     Custom permission to grant access based on user roles.
@@ -55,6 +78,7 @@ class IndexViewSet(viewsets.ModelViewSet):
 
         # Get total count of students
         total_students = Student.objects.count()
+        clsses = Class.objects.count()
 
         # Get the count of students per class
         class_counts = Class.objects.annotate(student_count=Count('students'))
@@ -62,6 +86,7 @@ class IndexViewSet(viewsets.ModelViewSet):
         context = {
             'total_students': total_students,
             'class_counts': class_counts,
+            'clsses_counts': clsses,
         }
         return render(request, 'index.html', context)
         
