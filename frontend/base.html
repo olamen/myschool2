@@ -107,8 +107,10 @@
                             <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
                                 title="Icons" tabindex="0"><i class="bi bi-egg-fill"></i> <span>Les Notes</span></a>
                             <ul class="sub-menu">
+                                <li><a href="{% url 'add_exam' %}">Ajouter un Examen</a></li>
                                 <li><a href=" {% url 'exam_list' %} " class="sub-menu-item">Notes </a></li>
-                                <li><a href="font_awesome.html" class="sub-menu-item">Fontawesome</a></li>
+                                <li><a href="{% url 'add_exam' %}">Ajouter un Examen</a></li>
+                                <li><a href="{% url 'dd_homework' %}">Ajouter un Devoir</a></li>
                             </ul>
                         </li>
                         <li class="sidebar-item"><a href="chart.html" class="sidebar-link" data-bs-toggle="tooltip"

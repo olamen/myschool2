@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<h2>Liste des Devoirs</h2>
+<a href="{% url 'students:add_homework' %}" class="btn btn-primary">Ajouter un Devoir</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Élève</th>
+            <th>Matière</th>
+            <th>Date d'échéance</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for homework in homeworks %}
+        <tr>
+            <td>{{ homework.name }}</td>
+            <td>{{ homework.student }}</td>
+            <td>{{ homework.subject }}</td>
+            <td>{{ homework.due_date }}</td>
+            <td>
+                <a href="{% url 'students:edit_homework' homework.pk %}" class="btn btn-warning">Modifier</a>
+                <a href="{% url 'students:delete_homework' homework.pk %}" class="btn btn-danger">Supprimer</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<h2>Ajouter un Devoir</h2>
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="name">Nom:</label>
+        <input type="text" name="name" id="name" required>
+    </div>
+    <div>
+        <label for="student">Élève:</label>
+        <select name="student" id="student">
+            {% for student in students %}
+            <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="subject">Matière:</label>
+        <select name="subject" id="subject">
+            {% for subject in subjects %}
+            <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="due_date">Date d'échéance:</label>
+        <input type="date" name="due_date" id="due_date" required>
+    </div>
+    <div>
+        <label for="description">Description:</label>
+        <textarea name="description" id="description"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Ajouter</button>
+</form>
+{% endblock %}
