@@ -13,7 +13,6 @@ admin.site.register(Classe)
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
     search_fields = ('name','class_enrolled')
-    filter_horizontal = ('name','class_enrolled') 
     ordering = ('class_enrolled',)
 
 @admin.register(Parent)
