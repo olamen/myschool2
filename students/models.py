@@ -11,10 +11,14 @@ class SessionYearModel(models.Model):
         return f"{self.session_start_year} to {self.session_end_year}"
  
 
+class Grade(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
 class Classe(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='grade', default=1)
     monthly_salary_fee = models.PositiveIntegerField(null=False)
-    is_active = models.BooleanField(default=False) 
+    is_active = models.BooleanField(default=False)
 
 
     def __str__(self):
