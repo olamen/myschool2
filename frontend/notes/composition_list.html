@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1>Liste des Compositions</h1>
+    <a href="{% url 'composition_create' %}" class="btn btn-primary mb-3">Créer une Composition</a>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Étudiant</th>
+                <th>Matière</th>
+                <th>Date de l'Examen</th>
+                <th>Score</th>
+                <th>Remarques</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for composition in compositions %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ composition.student.first_name }} {{ composition.student.last_name }}</td>
+                <td>{{ composition.subject.name }}</td>
+                <td>{{ composition.exam_date }}</td>
+                <td>
+                    {% if composition.score %}
+                        {{ composition.score }}/20
+                    {% else %}
+                        Non noté
+                    {% endif %}
+                </td>
+                <td>{{ composition.remarks|default:"Aucune remarque" }}</td>
+                <td>
+                    <a href="{% url 'composition_update' composition.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                    <a href="{% url 'composition_delete' composition.id %}" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette composition ?')">Supprimer</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">Aucune composition trouvée.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
