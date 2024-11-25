@@ -145,7 +145,7 @@ class AppConfig(models.Model):
 class Homework(models.Model):
     name = models.CharField(max_length=100,default="Devoir")
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='homeworks')  # L'étudiant
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='homeworks')  # La matière
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='homeworkssub')  # La matière
     due_date = models.DateField()  # Date d'échéance
     description = models.TextField()  # Description du devoir
     submission_date = models.DateField(null=True, blank=True)  # Date de soumission du devoir

@@ -20,13 +20,21 @@
             <td>{{ subject.name }}</td>
             <td>{{ subject.class_enrolled.name }}</td>
             <td>{{ subject.coefficient }}</td>
-            <td>{{ "Actif" if subject.is_active else "Inactif" }}</td>
             <td>
-                <a href="{% url 'subject_update' subject.id %}"
-                    class="btn btn-warning">Modifier</a>
-                <a href="{% url 'subject_toggle_status' subject.id %}"
-                    class="btn btn-secondary">
-                    {{ "Désactiver" if subject.is_active else "Activer" }}
+                {% if subject.is_active %}
+                    Actif
+                {% else %}
+                    Inactif
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'subject_update' subject.id %}" class="btn btn-warning">Modifier</a>
+                <a href="{% url 'subject_toggle_status' subject.id %}" class="btn btn-secondary">
+                    {% if subject.is_active %}
+                        Désactiver
+                    {% else %}
+                        Activer
+                    {% endif %}
                 </a>
             </td>
         </tr>
