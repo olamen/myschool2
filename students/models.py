@@ -1,6 +1,8 @@
 # students/models.py
 from django.db import models
 from django.core.validators import MinLengthValidator, MinValueValidator
+from django.core.exceptions import ValidationError
+
 
 
 class SessionYearModel(models.Model):
@@ -163,6 +165,11 @@ class Homework(models.Model):
     submission_date = models.DateField(null=True, blank=True)  # Date de soumission du devoir
     submitted = models.BooleanField(default=False)  # Statut de soumission
     score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score du devoir, null si pas encore noté
+    
+    def clean(self):
+        if self.score and (self.score < 0 or self.score > 20):
+            raise ValidationError("Le resultat doit etre entre 0 et 20.")
+
 
     def get_weighted_score(self):
         """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
@@ -182,6 +189,11 @@ class Composition(models.Model):
         exam_date = models.DateField()  # La date de l'examen
         score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score de l'examen, peut être null si non évalué
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
+
+        def clean(self):
+            if self.score and (self.score < 0 or self.score > 20):
+                raise ValidationError("Le resultat doit etre entre 0 et 20.")
+            
         def get_weighted_score(self):
             """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
             if self.score is not None:
