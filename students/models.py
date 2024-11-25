@@ -75,6 +75,17 @@ class Parent(models.Model):
         """Get a comma-separated list of children names."""
         return ", ".join([f"{child.first_name} {child.last_name}" for child in self.children.all()])
 
+
+
+
+class Subject(models.Model):
+    name = models.CharField(max_length=100)  # Nom du sujet
+    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # Classe associée
+    coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet
+    is_active = models.BooleanField(default=True)  # Statut actif ou inactif
+    def __str__(self):
+        return f"{self.name} (Coefficient: {self.coefficient})"
+    
 class Teacher(models.Model):
     SALARY_TYPE_CHOICES = [
         ('hourly', 'Hourly'),
@@ -82,7 +93,13 @@ class Teacher(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-    subject = models.CharField(max_length=50)
+    subject = models.ForeignKey(
+        Subject, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='teachers'
+    )  # Relationship with Subject model
     enrollment_date = models.DateField()
     salary = models.PositiveIntegerField(null=False)
     salary_type = models.CharField(
@@ -106,15 +123,6 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100)  # Nom du sujet
-    class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # Classe associée
-    coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet
-    is_active = models.BooleanField(default=True)  # Statut actif ou inactif
-    def __str__(self):
-        return f"{self.name} (Coefficient: {self.coefficient})"
 
 
 class Attendance(models.Model):
