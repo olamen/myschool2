@@ -14,7 +14,7 @@ class NoteStudent(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="notes")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
-    sessionyear = models.ForeignKey(SessionYearModel, on_delete=models.SET_NULL)
+    sessionyear = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="notes")
     coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
     score = models.DecimalField(max_digits=5, decimal_places=2)
