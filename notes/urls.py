@@ -3,7 +3,6 @@ from .views import *
 
 urlpatterns = [
     path("exams/", exam_list, name="exam_list"),
-    path("report_card/<int:student_id>/<int:exam_id>/", name="report_card_pdf"),
     # Homework URLs
     path('homeworks/', homework_list, name='homework_list'),
     path('homeworks/add/', add_homework, name='add_homework'),
