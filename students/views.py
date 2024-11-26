@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import action
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django.contrib import messages
 from django.utils import timezone
@@ -35,18 +34,18 @@ class HasRolePermission(BasePermission):
         return request.user.is_authenticated and request.user.role in self.allowed_roles
 
 #grade
-
+@login_required
 def add_grade(request):
     if request.method == 'POST':
         name = request.POST['name']
         Grade.objects.create(name=name)
         return redirect('grades_list')
     return render(request, 'students/grade_form.html', {'grade': None})
-
+@login_required
 def grades_list(request):
     grades = Grade.objects.all()
     return render(request, 'students/grades_list.html', {'grades': grades})
-
+@login_required
 def update_grade(request, grade_id):
     grade = get_object_or_404(Grade, id=grade_id)
     if request.method == 'POST':

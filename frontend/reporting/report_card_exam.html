@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Card</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Report Card</h1>
+    <p><strong>Student Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+    <p><strong>Exam:</strong> {{ exam.name }}</p>
+    <p><strong>Session:</strong> {{ session_year.session_start_year }} - {{ session_year.session_end_year }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Weighted Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+            <tr>
+                <td>{{ grade.subject.name }}</td>
+                <td>{{ grade.score }}</td>
+                <td>{{ grade.get_weighted_score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total Score:</strong> {{ total_score }}</p>
+    <p><strong>Average Score:</strong> {{ average_score }}</p>
+</body>
+</html>
