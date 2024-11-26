@@ -26,6 +26,14 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='SessionYearModel',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('session_start_year', models.DateField()),
+                ('session_end_year', models.DateField()),
+            ],
+        ),
+        migrations.CreateModel(
             name='Class',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
