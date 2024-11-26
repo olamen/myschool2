@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}
+{% block body %}
 <h1>{% if grade %}Modifier Grade{% else %}Ajouter un Grade{% endif %}</h1>
 <form method="post">
     {% csrf_token %}
