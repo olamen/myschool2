@@ -10,7 +10,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-    
+    ('students', '0001_initial'),  # Ensure students app migrations are applied first
+    migrations.swappable_dependency(settings.AUTH_USER_MODEL),  # Ensure user model is ready
             ]
 
     operations = [
