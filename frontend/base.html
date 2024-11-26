@@ -88,6 +88,16 @@
                                 <li><a href="{% url 'class_archived_list' %}" class="sub-menu-item">Archives des
                                         classes</a></li>
                             </ul>
+                            <li class="sidebar-item has-sub">
+                                        <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Components" tabindex="0"><i class="bi bi-stack"></i> <span>Gestion des
+                                            Grades</span></a>
+                                    <ul class="sub-menu">
+                                        <li><a href=" {% url 'add_grade' %} " class="sub-menu-item">Ajouter une Grade</a>
+                                        </li>
+                                        <li><a href="{% url 'grades_list' %}" class="sub-menu-item">Liste des Grades</a></li>
+                                    </ul>
+                            </li>
                         </li>
                         <li class="sidebar-item has-sub">
                             <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"

@@ -9,7 +9,7 @@ from .views_class import class_archive, class_archived_list, class_list, class_c
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview,update_student, get_classes
+from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview,update_student, get_classes, grades_list, add_grade, update_grade
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -34,7 +34,10 @@ urlpatterns = [
     path('students/<int:student_id>/update/', update_student, name='update_student'),  # Update student
 
 
-
+    path('grades/', grades_list, name='grades_list'),
+    path('grades/add/', add_grade, name='add_grade'),
+    path('grades/<int:grade_id>/update/', update_grade, name='update_grade'),
+    
     path('classes/', class_list, name='class_list'),
     path('classes/create/', class_create, name='class_create'),
     path('classes/update/<int:class_id>/', class_update, name='class_update'),

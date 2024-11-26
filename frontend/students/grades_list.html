@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h1>Liste des Grades</h1>
+<a href="{% url 'add_grade' %}" class="btn btn-primary mb-3">Ajouter un Grade</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for grade in grades %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ grade.name }}</td>
+            <td>
+                <a href="{% url 'update_grade' grade.id %}" class="btn btn-warning btn-sm">Modifier</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

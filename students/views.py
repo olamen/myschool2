@@ -34,10 +34,33 @@ class HasRolePermission(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in self.allowed_roles
 
+#grade
+
+def add_grade(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        Grade.objects.create(name=name)
+        return redirect('grades_list')
+    return render(request, 'grade_form.html', {'grade': None})
+
+def grades_list(request):
+    grades = Grade.objects.all()
+    return render(request, 'grades_list.html', {'grades': grades})
+
+def update_grade(request, grade_id):
+    grade = get_object_or_404(Grade, id=grade_id)
+    if request.method == 'POST':
+        grade.name = request.POST['name']
+        grade.save()
+        return redirect('grades_list')
+    return render(request, 'grade_form.html', {'grade': grade})
+
 @login_required
 def get_classes(request, grade_id):
     classes = Classe.objects.filter(grade_id=grade_id, is_active=True).values('id', 'name')
     return JsonResponse({'classes': list(classes)})
+
+#end Grade
 
 @login_required
 def update_student(request, student_id):

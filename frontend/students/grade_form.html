@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if grade %}Modifier Grade{% else %}Ajouter un Grade{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-4">
+        <label for="name" class="form-label">Nom</label>
+        <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-control"
+            value="{{ grade.name|default:'' }}"
+            required
+        >
+    </div>
+    <button type="submit" class="btn btn-primary">
+        {% if grade %}Mettre à jour{% else %}Enregistrer{% endif %}
+    </button>
+</form>
+{% endblock %}
