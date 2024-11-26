@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Grade, ReportCard, Exam
-from students.models import Student, Subject
+from models import  ReportCard, Exam
+from students.models import Student, Subject, Grade
 from django.template.loader import get_template
 from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 from django.shortcuts import render, redirect, get_object_or_404
