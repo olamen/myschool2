@@ -39,6 +39,9 @@ AUTH_USER_MODEL = 'Auth.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
+    'Auth',
+    'notes',
+    'reporting',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,9 +52,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'accounting',
-    'Auth',
-    'notes',
-    'reporting',
+    
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
 INSTALLED_APPS += ['whitenoise.runserver_nostatic']
