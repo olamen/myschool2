@@ -40,7 +40,9 @@ AUTH_USER_MODEL = 'Auth.CustomUser'
 
 INSTALLED_APPS = [
     'Auth',
+    'students',
     'notes',
+    'accounting',
     'reporting',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,10 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'students',
+    
     'corsheaders',
     'rest_framework',
-    'accounting',
+    
     
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
