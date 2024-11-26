@@ -120,7 +120,9 @@
                     <td>{{ student.student_class}}</td>
                     <td>{{ student.gender}}</td>
                     <td>{{ student.enrollment_date}}</td>
-                    <td><span class="badge bg-danger">Pending</span></td>
+                    <td>
+                      <a href="{% url 'update_student' student.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
                   </tr>
                   {% endfor %}
                 </tbody>

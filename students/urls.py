@@ -9,7 +9,7 @@ from .views_class import class_archive, class_archived_list, class_list, class_c
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview
+from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview,update_student, get_classes
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -31,6 +31,8 @@ urlpatterns = [
     path('students/download_template/', GenerateExcelTemplateView.as_view(), name='generate_excel_template'),
     path('students/bulk_upload/', BulkUploadStudentsView.as_view(), name='bulk_upload_students'),
     path('export/students_pdf/', ListStudentPDFView.as_view(), name='students_pdf'),
+    path('students/<int:student_id>/update/', update_student, name='update_student'),  # Update student
+
 
 
     path('classes/', class_list, name='class_list'),
@@ -38,7 +40,7 @@ urlpatterns = [
     path('classes/update/<int:class_id>/', class_update, name='class_update'),
     path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
     path('classes/archived/', class_archived_list, name='class_archived_list'),
-    path('get-classes/<int:grade_id>/', get_classes, name='get_classes'),
+    path('get-classes/<int:grade_id>/',get_classes, name='get_classes'),
 
 
 
