@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'accounting',
     'Auth',
     'notes',
+    'reporting',
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
 INSTALLED_APPS += ['whitenoise.runserver_nostatic']

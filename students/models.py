@@ -204,3 +204,4 @@ class Composition(models.Model):
 
         def __str__(self):
             return f"Composition for {self.student.first_name} {self.student.last_name} in {self.subject.name} on {self.exam_date}"
+        
