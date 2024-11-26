@@ -1,5 +1,5 @@
 # students/views.py
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,10 +11,11 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from django.contrib import messages
 from django.utils import timezone
 from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
-from .models import AppConfig, Homework, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
+from .models import AppConfig, Grade, Homework, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer, CompositionSerializer, HomeworkSerializer, StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
 
 
@@ -32,6 +33,49 @@ class HasRolePermission(BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in self.allowed_roles
+
+@login_required
+def get_classes(request, grade_id):
+    classes = Classe.objects.filter(grade_id=grade_id, is_active=True).values('id', 'name')
+    return JsonResponse({'classes': list(classes)})
+
+@login_required
+def update_student(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    grades = Grade.objects.all()  # Fetch all grades
+    classes = Classe.objects.filter(grade=student.student_class.grade)  # Fetch classes under the student's grade
+
+    if request.method == 'POST':
+        student.first_name = request.POST.get('first_name', student.first_name)
+        student.last_name = request.POST.get('last_name', student.last_name)
+        student.nni = request.POST.get('nni', student.nni)
+        student.mobile = request.POST.get('mobile', student.mobile)
+        student.enrollment_date = request.POST.get('enrollment_date', student.enrollment_date)
+        student.gender = request.POST.get('gender', student.gender)
+        student.has_discount = 'has_discount' in request.POST
+
+        grade_id = request.POST.get('grade')
+        class_id = request.POST.get('student_class')
+
+        if grade_id:
+            selected_grade = get_object_or_404(Grade, id=grade_id)
+            classes = Classe.objects.filter(grade=selected_grade)
+            if class_id:
+                student.student_class = get_object_or_404(Classe, id=class_id)
+
+        if 'photo' in request.FILES:
+            student.photo = request.FILES['photo']
+
+        student.save()
+        messages.success(request, "Student updated successfully!")
+        return redirect('students_list')  # Redirect to a student list or desired page
+    context = {
+        'student': student,
+        'grades': grades,
+        'classes': classes,
+    }
+
+    return render(request, 'students/update_student.html', context)
 
 @login_required
 def indexview(request):

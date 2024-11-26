@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+{% load static %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="form-area">
+            <div class="form-row">
+                <div class="form-panel">
+                    <div class="logo mb-5">
+                        <a href=" {% url "index" %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+                        <p class="text-center mt-20"><span class="d-block fw-bold mb-10 fs-6">Modifier un Élève</span> Formulaire de Modification d'un Élève</p>                        
+                    </div>
+                    <form class="mb-6" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <h2>Modifier Student</h2>
+                        <div class="mb-4">
+                            <label for="photo">Photo de l'élève :</label>
+                            <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                            {% if student.photo %}
+                            <img src="{{ student.photo.url }}" alt="Current Photo" style="max-height: 100px;">
+                            {% endif %}
+                        </div>
+                    
+                        <div class="mb-4">
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   value="{{ student.first_name }}" placeholder="Prénom" required>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   value="{{ student.last_name }}" placeholder="Nom" required>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <input type="text" class="form-control" id="nni" name="nni" 
+                                   value="{{ student.nni }}" placeholder="NNI" required>
+                        </div>
+                    
+                        <!-- Grade Dropdown -->
+                        <div class="mb-4">
+                            <label for="grade">Grade :</label>
+                            <select id="grade" name="grade" class="form-select" required onchange="updateClasses()">
+                                {% for grade in grades %}
+                                <option value="{{ grade.id }}" {% if student.student_class.grade.id == grade.id %}selected{% endif %}>
+                                    {{ grade.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <!-- Classe Dropdown -->
+                        <div class="mb-4">
+                            <label for="student_class">Classe :</label>
+                            <select id="student_class" name="student_class" class="form-select" required>
+                                {% for class in classes %}
+                                <option value="{{ class.id }}" {% if student.student_class.id == class.id %}selected{% endif %}>
+                                    {{ class.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <label for="gender">Genre :</label>
+                            <select id="gender" name="gender" class="form-select" required>
+                                <option value="M" {% if student.gender == 'M' %}selected{% endif %}>Garçon</option>
+                                <option value="F" {% if student.gender == 'F' %}selected{% endif %}>Fille</option>
+                            </select>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <input type="text" class="form-control" id="mobile" name="mobile" 
+                                   value="{{ student.mobile }}" placeholder="Téléphone" required>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <input type="date" class="form-control" id="enrollment_date" name="enrollment_date" 
+                                   value="{{ student.enrollment_date|date:'Y-m-d' }}" required>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <label for="has_discount">Réduction :</label>
+                            <input type="checkbox" id="has_discount" name="has_discount" 
+                                   {% if student.has_discount %}checked{% endif %}>
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary">Update Student</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+<script>
+    document.getElementById('grade').addEventListener('change', function() {
+        const gradeId = this.value;
+        const classDropdown = document.getElementById('student_class');
+
+        // Clear previous options
+        classDropdown.innerHTML = '<option value="" disabled selected>Choisir une classe</option>';
+
+        // Fetch classes for the selected grade
+        fetch(`/get-classes/${gradeId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.id;
+                    option.textContent = cls.name;
+                    classDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching classes:', error));
+    });
+</script>
+</html>

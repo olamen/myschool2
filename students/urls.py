@@ -38,6 +38,8 @@ urlpatterns = [
     path('classes/update/<int:class_id>/', class_update, name='class_update'),
     path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
     path('classes/archived/', class_archived_list, name='class_archived_list'),
+    path('get-classes/<int:grade_id>/', get_classes, name='get_classes'),
+
 
 
     path('teachers/', views_teacher.teacher_list, name='teacher_list'),
