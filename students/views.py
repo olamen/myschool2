@@ -41,11 +41,11 @@ def add_grade(request):
         name = request.POST['name']
         Grade.objects.create(name=name)
         return redirect('grades_list')
-    return render(request, 'grade_form.html', {'grade': None})
+    return render(request, 'students/grade_form.html', {'grade': None})
 
 def grades_list(request):
     grades = Grade.objects.all()
-    return render(request, 'grades_list.html', {'grades': grades})
+    return render(request, 'students/grades_list.html', {'grades': grades})
 
 def update_grade(request, grade_id):
     grade = get_object_or_404(Grade, id=grade_id)
@@ -53,7 +53,7 @@ def update_grade(request, grade_id):
         grade.name = request.POST['name']
         grade.save()
         return redirect('grades_list')
-    return render(request, 'grade_form.html', {'grade': grade})
+    return render(request, 'students/grade_form.html', {'grade': grade})
 
 @login_required
 def get_classes(request, grade_id):
