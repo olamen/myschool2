@@ -236,7 +236,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
         # Afficher le formulaire si la requête est GET
         classes = Classe.objects.all()
-        return render(request, 'dash/add_student.html', {'classes': classes})
+        return render(request, 'students/add_student.html', {'classes': classes})
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
