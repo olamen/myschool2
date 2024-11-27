@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig
+from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig, SessionYearModel
 
 # Register your models here.
 class HomeworkAdmin(admin.ModelAdmin):
@@ -12,6 +12,8 @@ admin.site.register(Classe)
 admin.site.register(Grade)
 admin.site.register(Composition)
 admin.site.register(AppConfig)
+admin.site.register(SessionYearModel)
+
 
 
 @admin.register(Subject)
