@@ -1,7 +1,6 @@
-from django.apps import AppConfig
 from django.contrib import admin
 
-from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher
+from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig
 
 # Register your models here.
 class HomeworkAdmin(admin.ModelAdmin):
