@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.utils import timezone
 from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
-from .models import AppConfig, Grade, Homework, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
+from .models import AppConfig, Grade, Devoir, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer, CompositionSerializer, HomeworkSerializer, StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
 
 
@@ -312,7 +312,7 @@ class AppConfigViewSet(viewsets.ModelViewSet):
 
 # Vue pour gérer les devoirs
 class HomeworkViewSet(viewsets.ModelViewSet):
-    queryset = Homework.objects.all()
+    queryset = Devoir.objects.all()
     serializer_class = HomeworkSerializer
 
     @action(detail=True, methods=['patch'])

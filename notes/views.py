@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import  NoteStudent, Exam
+from .models import  NoteComposition, Exam
 from students.models import Student, Subject, Grade
 from django.template.loader import get_template
 from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 from django.shortcuts import render, redirect, get_object_or_404
-from students.models import Homework, Composition, Student, Subject
+from students.models import Devoir, Composition, Student, Subject
 from django.http import HttpResponse
 
 def exam_list(request):
@@ -17,7 +17,7 @@ def exam_list(request):
 # Homework CRUD
 def homework_list(request):
     """List all homework."""
-    homeworks = Homework.objects.all()
+    homeworks = Devoir.objects.all()
     return render(request, 'notes/homework_list.html', {'homeworks': homeworks})
 
 def add_homework(request):
@@ -28,7 +28,7 @@ def add_homework(request):
         subject_id = request.POST.get('subject')
         due_date = request.POST.get('due_date')
         description = request.POST.get('description')
-        Homework.objects.create(
+        Devoir.objects.create(
             name=name,
             student_id=student_id,
             subject_id=subject_id,
@@ -42,7 +42,7 @@ def add_homework(request):
 
 def edit_homework(request, pk):
     """Edit homework."""
-    homework = get_object_or_404(Homework, pk=pk)
+    homework = get_object_or_404(Devoir, pk=pk)
     if request.method == 'POST':
         homework.name = request.POST.get('name', 'Devoir')
         homework.student_id = request.POST.get('student')
@@ -57,7 +57,7 @@ def edit_homework(request, pk):
 
 def delete_homework(request, pk):
     """Delete homework."""
-    homework = get_object_or_404(Homework, pk=pk)
+    homework = get_object_or_404(Devoir, pk=pk)
     homework.delete()
     return redirect('notes:homework_list')
 

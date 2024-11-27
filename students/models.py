@@ -158,7 +158,7 @@ class AppConfig(models.Model):
         return f"Configuration for {self.school_name}"
     
  #devoir   
-class Homework(models.Model):
+class Devoir(models.Model):
     name = models.CharField(max_length=100,default="Devoir")
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='homeworks')  # L'étudiant
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='homeworkssub')  # La matière
@@ -186,24 +186,11 @@ class Homework(models.Model):
     
 class Composition(models.Model):
         name = models.CharField(max_length=100,default="Composition")
-        student = models.ForeignKey('Student', on_delete=models.CASCADE, related_name='compositions')  # L'étudiant
-        subject = models.ForeignKey('Subject', on_delete=models.CASCADE, related_name='compositions')  # La matière
         exam_date = models.DateField()  # La date de l'examen
-        score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score de l'examen, peut être null si non évalué
+        coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
-
-        def clean(self):
-            if self.score and (self.score < 0 or self.score > 20):
-                raise ValidationError("Le resultat doit etre entre 0 et 20.")
-            
-        def get_weighted_score(self):
-            """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
-            if self.score is not None:
-            # Assure-toi que le score est sur 20
-                score_on_20 = (self.score / 20) * self.subject.coefficient
-            return score_on_20  # Score pondéré basé sur le coefficient
-            return None  # Si aucun score, retourne None
-
         def __str__(self):
-            return f"Composition for {self.student.first_name} {self.student.last_name} in {self.subject.name} on {self.exam_date}"
+            return self.name
+
+        
         

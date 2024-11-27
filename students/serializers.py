@@ -1,6 +1,6 @@
 # students/serializers.py
 from rest_framework import serializers
-from .models import AppConfig, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Homework, Composition
+from .models import AppConfig, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Devoir, Composition
 
 class StudentSerializer(serializers.ModelSerializer):
     final_fee = serializers.SerializerMethodField()
@@ -46,7 +46,7 @@ class HomeworkSerializer(serializers.ModelSerializer):
     weighted_score = serializers.FloatField(source='get_weighted_score', read_only=True)  # Calcul du score pondéré
 
     class Meta:
-        model = Homework
+        model = Devoir
         fields = ['student', 'subject', 'due_date', 'description', 'submission_date', 'submitted', 'score', 'weighted_score']
 class CompositionSerializer(serializers.ModelSerializer):
     class Meta:
