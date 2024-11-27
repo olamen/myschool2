@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from .models import  ReportCard, Composition
 from students.models import SessionYearModel, Student, Subject, Grade
@@ -13,28 +13,30 @@ def exam_list(request):
 
 @login_required
 def report_card_pdf(request, student_id, exam_id):
-    student = Student.objects.get(id=student_id)
-    exam = Composition.objects.get(id=exam_id)
-    grades = Grade.objects.filter(student=student, exam=exam)
+    # Fetch the student and exam
+    student = get_object_or_404(Student, id=student_id)
+    exam = get_object_or_404(Composition, id=exam_id)
 
-    # Include session year
-    session_year = SessionYearModel.objects.filter(
-        session_start_year__lte=exam.exam_date, 
-        session_end_year__gte=exam.exam_date
-    ).first()
+    # Fetch the grade of the student's class
+    student_grade = student.student_class.grade
 
-    total_score = sum(grade.get_weighted_score() for grade in grades)
-    average_score = total_score / grades.count() if grades else 0
+    # Filter compositions (or grades) for this student and this exam
+    compositions = Composition.objects.filter(student=student, subject__class_enrolled=student.student_class)
+
+    # Calculate total and average scores
+    total_score = sum(comp.get_weighted_score() for comp in compositions)
+    average_score = total_score / compositions.count() if compositions.exists() else 0
 
     context = {
         "student": student,
         "exam": exam,
-        "grades": grades,
-        "session_year": session_year,
+        "compositions": compositions,
+        "grade": student_grade,
         "total_score": total_score,
         "average_score": round(average_score, 2),
     }
 
+    # Render HTML to PDF
     template = get_template("reporting/report_card_exam.html")
     html = template.render(context)
 
