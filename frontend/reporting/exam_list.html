@@ -27,12 +27,12 @@
                 <td>{{ exam.class.name }}</td>
                 <td>
                   <a
-                    href="{% url 'notes:exam_detail' exam.id %}"
+                    href="{% url 'exam_detail' exam.id %}"
                     class="btn btn-primary btn-sm"
                     >Voir</a
                   >
                   <a
-                    href="{% url 'notes:edit_exam' exam.id %}"
+                    href="{% url 'edit_exam' exam.id %}"
                     class="btn btn-warning btn-sm"
                     >Modifier</a
                   >
