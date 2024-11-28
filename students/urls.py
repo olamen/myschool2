@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from students import views_subject, views_teacher
 
 from .views_class import class_archive, class_archived_list, class_list, class_create, class_update 
-
+from .views_composition import exam_detail, edit_exam
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
@@ -63,4 +63,7 @@ urlpatterns = [
     path('subjects/create/', views_subject.subject_create, name='subject_create'),
     path('subjects/<int:subject_id>/update/', views_subject.subject_update, name='subject_update'),
     path('subjects/<int:subject_id>/toggle/', views_subject.subject_toggle_status, name='subject_toggle_status'),
+
+    path("exams/<int:exam_id>/", exam_detail, name="exam_detail"),
+    path("exams/<int:exam_id>/edit/", edit_exam, name="edit_exam"),
 ]

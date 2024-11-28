@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container mt-5">
+  <h1>Détails de la Composition</h1>
+  <hr />
+  <ul class="list-group">
+    <li class="list-group-item">
+      <strong>Nom:</strong> {{ composition.name }}
+    </li>
+    <li class="list-group-item">
+      <strong>Étudiant:</strong> {{ composition.student.first_name }} {{ composition.student.last_name }}
+    </li>
+    <li class="list-group-item">
+      <strong>Matière:</strong> {{ composition.subject.name }}
+    </li>
+    <li class="list-group-item">
+      <strong>Date:</strong> {{ composition.exam_date|date:"d/m/Y" }}
+    </li>
+    <li class="list-group-item">
+      <strong>Score:</strong> {{ composition.score|default:"Non noté" }}
+    </li>
+  </ul>
+  <div class="mt-4">
+    <a href="{% url 'edit_composition' composition.id %}" class="btn btn-warning">
+      <i class="bi bi-pencil-square"></i> Modifier
+    </a>
+    <a href="{% url 'composition_list' %}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Retour à la liste
+    </a>
+  </div>
+</div>
+{% endblock %}

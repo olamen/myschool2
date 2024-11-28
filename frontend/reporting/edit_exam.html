@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container mt-5">
+  <h1>Modifier la {{ composition.name }} </h1>
+  <hr />
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Nom:</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ composition.name }}" required>
+    </div>
+    <div class="mb-3">
+      <label for="exam_date" class="form-label">Date de l'Examen:</label>
+      <input type="date" class="form-control" id="exam_date" name="exam_date" value="{{ composition.exam_date }}" required>
+    </div>
+    <div class="mb-3">
+      <label for="score" class="form-label">Score:</label>
+      <input type="number" class="form-control" id="score" name="score" step="0.01" value="{{ composition.score }}">
+    </div>
+    <button type="submit" class="btn btn-primary">
+      <i class="bi bi-save"></i> Enregistrer
+    </button>
+    <a href="{% url 'composition_list' %}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Annuler
+    </a>
+  </form>
+</div>
+{% endblock %}

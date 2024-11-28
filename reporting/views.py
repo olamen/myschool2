@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from .models import  ReportCard, Composition
 from students.models import SessionYearModel, Student, Subject, Grade
@@ -7,10 +7,14 @@ from django.contrib.auth.decorators import login_required
 
 from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 
+@login_required
 def exam_list(request):
     exams = Composition.objects.all()
     return render(request, "reporting/exam_list.html", {"exams": exams})
 
+
+    
+    return render(request, "reporting/edit_exam.html", {"exam": exam})
 @login_required
 def report_card_pdf(request, student_id, exam_id):
     # Fetch the student and exam

@@ -1,52 +1,56 @@
-{% extends "base.html" %} {% load static %} {% block body %}
-<div class="main-content">
-  <div class="breadcrumb-wrap mb-20">
-    <div class="container mt-5">
-      <h1 class="text-center">Liste des Examens</h1>
-      <hr />
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Liste des Compositions</h1>
+  <hr />
 
-      <div class="row mt-4">
-        {% if exams %}
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nom de l'examen</th>
-                <th>Date de l'examen</th>
-                <th>Classe</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for exam in exams %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ exam.name }}</td>
-                <td>{{ exam.exam_date|date:"d/m/Y" }}</td>
-                <td>{{ exam.class.name }}</td>
-                <td>
-                  <a
-                    href="{% url 'exam_detail' exam.id %}"
-                    class="btn btn-primary btn-sm"
-                    >Voir</a
-                  >
-                  <a
-                    href="{% url 'edit_exam' exam.id %}"
-                    class="btn btn-warning btn-sm"
-                    >Modifier</a
-                  >
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        {% else %}
-        <p class="text-center">Aucun examen trouvé.</p>
-        {% endif %}
-      </div>
+  <div class="row">
+    {% if compositions %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Nom de la Composition</th>
+            <th>Étudiant</th>
+            <th>Matière</th>
+            <th>Date de l'Examen</th>
+            <th>Score</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for composition in compositions %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ composition.name }}</td>
+            <td>{{ composition.student.first_name }} {{ composition.student.last_name }}</td>
+            <td>{{ composition.subject.name }}</td>
+            <td>{{ composition.exam_date|date:"d/m/Y" }}</td>
+            <td>
+              {{ composition.score|default:"Non noté" }}
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'composition_detail' composition.id %}" class="btn btn-primary btn-sm">
+                  <i class="bi bi-eye"></i> Voir
+                </a>
+                <a href="{% url 'edit_composition' composition.id %}" class="btn btn-warning btn-sm">
+                  <i class="bi bi-pencil-square"></i> Modifier
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+      <i class="bi bi-info-circle"></i> Aucune composition trouvée.
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
