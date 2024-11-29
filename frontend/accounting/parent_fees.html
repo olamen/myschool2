@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "base.html" %} {% load static %}
+<html lang="en">
+<head>
+    <title>Parent Fees</title>
+</head>
+
+    {% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">Parent Fee Details</h1>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Parent: {{ fee_details.parent_name }}</h4>
+                <h5>Class: {{ fee_details.class_name }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Child Name</th>
+                            <th>Fee</th>
+                            <th>Discount Applied</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for child in fee_details.children %}
+                        <tr>
+                            <td>{{ child.name }}</td>
+                            <td>{{ child.fee }}</td>
+                            <td>{{ child.discount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h4 class="mt-3">Total Fees: {{ fee_details.total_fees }}</h4>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+</html>

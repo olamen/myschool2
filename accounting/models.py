@@ -2,7 +2,7 @@ from datetime import date
 import uuid
 from django.db import models
 from Auth.models import CustomUser
-from students.models import Parent, Student
+from students.models import Classe, Parent, Student
 
 class Expense(models.Model):
     """
@@ -30,27 +30,25 @@ class Fee(models.Model):
     def __str__(self):
         return f"Fee for {self.student.first_name} {self.student.last_name} - {'Paid' if self.paid else 'Unpaid'}"
 
-
 class ParentAccount(models.Model):
-    """
-    Model to manage fees for a parent with multiple children.
-    """
-    parent_name = models.CharField(max_length=255)
-    contact_number = models.CharField(max_length=15)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-    students = models.ManyToManyField(Student, related_name='parent_accounts')
+    parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name='accounts')  # Link to Parent model
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='parent_accounts')  # Link to Classe model
+    user = models.ForeignKey('Auth.CustomUser', on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
 
     def get_total_fees(self):
         """
-        Calculate the total fees for all students under this parent.
+        Calculate the total fees for all students in the parent's class.
         """
-        total_fees = sum(student.fees.filter(paid=False).aggregate(models.Sum('amount_due'))['amount_due__sum'] or 0
-                         for student in self.students.all())
+        total_fees = 0
+        for child in self.parent.children.all():
+            if child.student_class == self.classe:
+                discount = 0.2 if child.has_discount else 0
+                fee = child.student_class.monthly_salary_fee
+                total_fees += fee - (fee * discount)
         return total_fees
 
     def __str__(self):
-        return self.parent_name
-
+        return f"ParentAccount for {self.parent.first_name} {self.parent.last_name} in {self.classe.name}"
 
 class Payment(models.Model):
     """

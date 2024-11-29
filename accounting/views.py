@@ -3,6 +3,50 @@ from rest_framework import viewsets
 from .models import Expense, Fee, ParentAccount, Payment
 from .serializers import ExpenseSerializer, FeeSerializer, ParentAccountSerializer, PaymentSerializer
 
+
+
+def calculate_parent_fees(parent_id, classe_id):
+    try:
+        parent = Parent.objects.get(id=parent_id)
+        classe = Classe.objects.get(id=classe_id)
+
+        total_fees = 0
+        children_details = []
+
+        for child in parent.children.filter(student_class=classe):
+            discount = 0.2 if child.has_discount else 0
+            fee = child.student_class.monthly_salary_fee
+            final_fee = fee - (fee * discount)
+            total_fees += final_fee
+
+            children_details.append({
+                "name": f"{child.first_name} {child.last_name}",
+                "fee": final_fee,
+                "discount": "Yes" if discount > 0 else "No"
+            })
+
+        return {
+            "parent_name": f"{parent.first_name} {parent.last_name}",
+            "class_name": classe.name,
+            "children": children_details,
+            "total_fees": total_fees
+        }
+    except Parent.DoesNotExist:
+        raise ValueError("Parent not found.")
+    except Classe.DoesNotExist:
+        raise ValueError("Class not found.")
+
+def parent_fees_view(request, parent_id, classe_id):
+    parent = get_object_or_404(Parent, id=parent_id)
+    classe = get_object_or_404(Classe, id=classe_id)
+
+    fee_details = calculate_parent_fees(parent_id, classe_id)
+
+    return render(request, "accounting/parent_fees.html", {
+        "fee_details": fee_details
+    })
+# older
+
 class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
@@ -28,7 +72,7 @@ def expense_list(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import MonthPayment
-from students.models import Student
+from students.models import Classe, Parent, Student
 from datetime import date
 
 def student_payment_view(request, student_id):
