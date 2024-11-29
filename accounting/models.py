@@ -1,4 +1,5 @@
 from datetime import date
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -36,17 +37,16 @@ class CashRegister(models.Model):
     """
     Modèle pour gérer l'état de la caisse.
     """
-    initial_balance = models.DecimalField(_("Solde initial"), max_digits=10, decimal_places=2, default=0.0)
-    opening_balance = models.DecimalField(_("Solde d'ouverture"), max_digits=10, decimal_places=2, null=True, blank=True)
-    closing_balance = models.DecimalField(_("Solde de fermeture"), max_digits=10, decimal_places=2, null=True, blank=True)
-    current_balance = models.DecimalField(_("Solde actuel"), max_digits=10, decimal_places=2, default=0.0)
-    date = models.DateField(_("Date"), #auto_now_add=True 
-                            default=now)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="cash_registers")
-    is_open = models.BooleanField(_("Caisse ouverte"), default=False)  # État de la caisse (ouverte ou fermée)
+    initial_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Default added
+    closed_balance = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    is_open = models.BooleanField(default=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Caisse {self.date} - {'Ouverte' if self.is_open else 'Fermée'}"
+        return f"Caisse du {self.date} - {self.user}"
 
     def open_register(self, opening_balance):
         """

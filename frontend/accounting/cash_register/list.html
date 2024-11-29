@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Liste des Caisses</h1>
+    <a href="{% url 'cash_register_open' %}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus-circle"></i> Ouvrir une nouvelle caisse
+    </a>
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Utilisateur</th>
+                <th>Solde Initial</th>
+                <th>Solde Actuel</th>
+                <th>Solde Fermé</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cash in cash_registers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ cash.date }}</td>
+                <td>{{ cash.user.username }}</td>
+                <td>{{ cash.initial_balance }}</td>
+                <td>{{ cash.current_balance }}</td>
+                <td>{{ cash.closed_balance|default:"-" }}</td>
+                <td>
+                    {% if cash.is_open %}
+                    <span class="badge bg-success">Ouverte</span>
+                    {% else %}
+                    <span class="badge bg-danger">Fermée</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if cash.is_open %}
+                    <a href="{% url 'cash_register_close' cash.id %}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-box-arrow-down"></i> Fermer
+                    </a>
+                    {% else %}
+                    <a href="{% url 'cash_register_details' cash.id %}" class="btn btn-info btn-sm">
+                        <i class="bi bi-eye"></i> Détails
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">Aucune caisse trouvée.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

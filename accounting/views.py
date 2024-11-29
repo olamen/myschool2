@@ -85,17 +85,17 @@ def open_cash_register(request):
     if request.method == "POST":
         form = CashRegisterForm(request.POST)
         if form.is_valid():
-            # Vérifier si une caisse est déjà ouverte
-            if CashRegister.objects.filter(is_open=True).exists():
-                messages.error(request, "Une caisse est déjà ouverte.")
-                return redirect("indexaccounting")
             cash_register = form.save(commit=False)
             cash_register.user = request.user
-            cash_register.open_register(form.cleaned_data["opening_balance"])
-            messages.success(request, "Caisse ouverte avec succès.")
-            return redirect("indexaccounting")
+            cash_register.current_balance = cash_register.initial_balance  # Fix: Set current_balance
+            cash_register.save()
+            messages.success(request, "La caisse a été ouverte avec succès.")
+            return redirect("cash_register_list")
+        else:
+            messages.error(request, "Erreur lors de l'ouverture de la caisse.")
     else:
         form = CashRegisterForm()
+
     return render(request, "accounting/cash_register/open.html", {"form": form})
 
 
@@ -118,9 +118,23 @@ def cash_register_status(request):
         cash_register = CashRegister.objects.get(is_open=True)
     except CashRegister.DoesNotExist:
         cash_register = None
-    return render(request, "cash_register/status.html", {"cash_register": cash_register})
+    return render(request, "accounting/cash_register/status.html", {"cash_register": cash_register})
 
+@login_required
+def cash_register_list(request):
+    cash_registers = CashRegister.objects.all().order_by("-date")  # Liste des caisses triées par date décroissante
+    return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
+@login_required
+def cash_register_details(request, pk):
+    cash_register = get_object_or_404(CashRegister, pk=pk)
+    transactions = Transaction.objects.filter(cash_register=cash_register).order_by("-date")
+
+    context = {
+        "cash_register": cash_register,
+        "transactions": transactions,
+    }
+    return render(request, "cash_register/details.html", context)
 # Vue pour enregistrer une transaction
 @login_required
 def create_transaction(request):

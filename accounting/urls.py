@@ -14,6 +14,8 @@ urlpatterns = [
         # URLs pour la caisse
     path('cash-register/open/',open_cash_register, name='open_cash_register'),
     path('cash-register/close/',close_cash_register, name='close_cash_register'),
+    path("cash-register/list/", cash_register_list, name="cash_register_list"),
+    path("cash-register/details/<int:pk>/", cash_register_details, name="cash_register_details"),
     path('cash-register/status/',cash_register_status, name='cash_register_status'),
 
     # URLs pour les transactions
