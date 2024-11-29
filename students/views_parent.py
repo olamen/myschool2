@@ -7,6 +7,11 @@ def parent_list(request):
     parents = Parent.objects.all()
     return render(request, 'students/parent_list.html', {'parents': parents})
 
+def parent_list_card(request):
+    """View to display a list of all parents."""
+    parents = Parent.objects.all()
+    return render(request, 'students/parent_list_card.html', {'parents': parents})
+
 def parent_create(request):
     """View to create a new parent and link students."""
     if request.method == 'POST':

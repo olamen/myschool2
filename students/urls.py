@@ -56,6 +56,8 @@ urlpatterns = [
 
 
     path('parents/', parent_list, name='parent_list'),
+    path('parentscard/', parent_list, name='parent_list_card'),
+
     path('parents/add/', parent_create, name='add_parent'),
     path('parents/<int:parent_id>/', parent_detail, name='parent_detail'),
 

@@ -61,12 +61,13 @@
                                 title="Components" tabindex="0"><i class="bi bi-stack"></i> <span>Les
                                     étudiants</span></a>
                             <ul class="sub-menu">
+                                <li><a href=" {% url 'add_student' %} " class="sub-menu-item">Ajouter un étudiant</a>
                                 <li><a href=" {% url 'students_list' %} " class="sub-menu-item">Listes des étudiants</a>
                                 </li>
-                                <li><a href=" {% url 'add_student' %} " class="sub-menu-item">Ajouter un étudiant</a>
                                 </li>
                                 <li><a href=" {% url 'add_parent' %} " class="sub-menu-item">Ajouter un Parent</a></li>
                                 <li><a href=" {% url 'parent_list' %} " class="sub-menu-item">List des Parents</a></li>
+                                <li><a href=" {% url 'parent_list_card' %} " class="sub-menu-item">List des Parents Card</a></li>
                             </ul>
                         </li>
                         <li class="sidebar-item has-sub">
