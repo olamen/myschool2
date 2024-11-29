@@ -31,8 +31,8 @@ class Fee(models.Model):
         return f"Fee for {self.student.first_name} {self.student.last_name} - {'Paid' if self.paid else 'Unpaid'}"
 
 class ParentAccount(models.Model):
-    parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name='accounts')  # Link to Parent model
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='parent_accounts')  # Link to Classe model
+    parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name='accounts',default=1)  # Link to Parent model
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='parent_accounts', default=1)  # Link to Classe model
     user = models.ForeignKey('Auth.CustomUser', on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
 
     def get_total_fees(self):
