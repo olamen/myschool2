@@ -20,10 +20,10 @@
   </div>
   {% endif %}
   <h1 class="mb-4">Détails du Parent</h1>
-  <div class="card mb-4">
+  <div class="col-md-4 photodetail">
     <img
       src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}"
-      class="card-img-top"
+      class="card-img-top img-fluid rounded-start"
       alt="Photo du Parent"
     />
     <div class="card-body">
