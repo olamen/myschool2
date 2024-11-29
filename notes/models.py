@@ -34,8 +34,8 @@ class NoteComposition(models.Model):
         composition = models.ForeignKey(Composition, on_delete=models.CASCADE, related_name='notecomposition')
         grade= models.ForeignKey(Grade,on_delete=models.CASCADE)
         classe = models.ForeignKey(Classe,on_delete=models.CASCADE)
-        student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='notecompositions')  # L'étudiant
-        subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='notecompositions')  # La matière
+        student = models.ForeignKey('Student', on_delete=models.CASCADE, related_name='notecompositions')  # L'étudiant
+        subject = models.ForeignKey('Subject', on_delete=models.CASCADE, related_name='notecompositions')  # La matière
         sessionyear = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
         score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score de l'examen, peut être null si non évalué
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)

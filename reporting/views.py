@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
+
+from notes.models import NoteComposition
 from .models import  ReportCard
-from students.models import Student, Composition, Grade
+from students.models import Student, Composition
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 
@@ -9,7 +11,7 @@ from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 
 @login_required
 def exam_list(request):
-    exams = Composition.objects.select_related('student', 'subject').all()
+    exams = NoteComposition.objects.select_related('student', 'subject').all()
     return render(request, "reporting/exam_list.html", {"exams": exams})
 
 
