@@ -11,7 +11,7 @@ from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 
 @login_required
 def exam_list(request):
-    exams = NoteComposition.objects.select_related('student', 'subject').all()
+    exams = NoteComposition.objects.select_related('student', 'subject','composition').all()
     return render(request, "reporting/exam_list.html", {"exams": exams})
 
 
