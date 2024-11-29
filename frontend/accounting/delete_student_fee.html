@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Supprimer le Frais</h1>
+    <hr />
+    <p>Êtes-vous sûr de vouloir supprimer ce frais pour <strong>{{ fee.student.first_name }} {{ fee.student.last_name }}</strong> ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{% url 'student_fee_list' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

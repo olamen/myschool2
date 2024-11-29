@@ -1,8 +1,15 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets
-from .models import Expense, Fee, ParentAccount, Payment
-from .serializers import ExpenseSerializer, FeeSerializer, ParentAccountSerializer, PaymentSerializer
 
+from students.models import Classe, Parent
+from .models import  Fee
+from accounting import models
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import CashRegister, Transaction, StudentFee
+from .forms import CashRegisterForm, TransactionForm, StudentFeeForm
 
 
 def calculate_parent_fees(parent_id, classe_id):
@@ -45,136 +52,128 @@ def parent_fees_view(request, parent_id, classe_id):
     return render(request, "accounting/parent_fees.html", {
         "fee_details": fee_details
     })
+
+
 # older
+# Vue du tableau de bord
+@login_required
+def index(request):
+    # Statistiques fictives (à remplacer par vos données réelles)
+    monthly_payments = Payment.objects.filter(status="Paid").aggregate(total=models.Sum("amount_paid"))["total"] or 0
+    total_expenses = Expense.objects.aggregate(total=models.Sum("amount"))["total"] or 0
+    cash_register = CashRegister.objects.filter(is_open=True).first()
+    transactions = Transaction.objects.filter(cash_register=cash_register).order_by("-date") if cash_register else []
 
-class ExpenseViewSet(viewsets.ModelViewSet):
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
-
-class FeeViewSet(viewsets.ModelViewSet):
-    queryset = Fee.objects.all()
-    serializer_class = FeeSerializer
-
-class ParentAccountViewSet(viewsets.ModelViewSet):
-    queryset = ParentAccount.objects.all()
-    serializer_class = ParentAccountSerializer
-
-class PaymentViewSet(viewsets.ModelViewSet):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
+    context = {
+        "cash_register": cash_register,
+        "transactions": transactions,
+        "monthly_payments": monthly_payments,
+        "total_expenses": total_expenses,
+    }
+    return render(request,'accounting/dash.html',context)
 
 
 def expense_list(request):
     expenses = Expense.objects.all()
     return render(request, 'accounting/expense_list.html', {'expenses': expenses})
 
-# accounting/views.py
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import MonthPayment
-from students.models import Classe, Parent, Student
-from datetime import date
 
-def student_payment_view(request, student_id):
-    student = Student.objects.get(id=student_id)
-    current_year = date.today().year
 
-    # Fetch pending payments for the student (excluding "Paid" or "Skipped")
-    pending_payments = MonthPayment.objects.filter(
-        student=student,
-        status='Pending',
-        year=current_year
-    )
-
-    # Handle form submission
-    if request.method == 'POST':
-        selected_months = request.POST.getlist('months')  # List of selected months (as strings)
-        total_to_pay = 0
-        payments_to_update = []
-
-        for month_str in selected_months:
-            month = int(month_str)
-            payment = pending_payments.filter(month=month).first()
-
-            if payment:
-                total_to_pay += payment.amount
-                payments_to_update.append(payment)
-
-        # Process payment and mark months as paid
-        for payment in payments_to_update:
-            payment.status = 'Paid'
-            payment.payment_date = date.today()
-            payment.save()
-
-        messages.success(request, f"Payment of {total_to_pay} processed successfully!")
-        return redirect('student_payment', student_id=student.id)
-
-    context = {
-        'student': student,
-        'pending_payments': pending_payments,
-    }
-    return render(request, 'accounting/student_payment.html', context)
-
-# accounting/views.py
-import json
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils.timezone import now
-from .models import MonthPayment, Transaction
-from students.models import Student
-import uuid
-
-@method_decorator(login_required, name='dispatch')
-def student_payment_view(request, student_id):
-    student = Student.objects.get(id=student_id)
-    current_year = now().year
-
-    # Fetch pending payments for the student (excluding "Paid" or "Skipped")
-    pending_payments = MonthPayment.objects.filter(
-        student=student,
-        status='Pending',
-        year=current_year
-    )
-
-    if request.method == 'POST':
-        selected_months = request.POST.getlist('months')  # List of selected months (as strings)
-        total_to_pay = 0
-        months_paid = []
-
-        for month_str in selected_months:
-            month = int(month_str)
-            payment = pending_payments.filter(month=month).first()
-
-            if payment:
-                total_to_pay += payment.amount
-                months_paid.append(payment.get_month_display())
-                payment.status = 'Paid'
-                payment.payment_date = now()
-                payment.save()
-
-        # Create a transaction record
-        receipt_number = f"REC-{uuid.uuid4().hex[:8].upper()}"
-        Transaction.objects.create(
-            student=student,
-            user=request.user,  # Current logged-in user
-            total_amount=total_to_pay,
-            months_paid=json.dumps(months_paid),
-            receipt_number=receipt_number
-        )
-
-        messages.success(request, f"Payment of {total_to_pay} processed successfully!")
-        return redirect('student_payment', student_id=student.id)
-
-    context = {
-        'student': student,
-        'pending_payments': pending_payments,
-    }
-    return render(request, 'accounting/student_payment.html', context)
-
+# Vue pour ouvrir la caisse
 @login_required
-def print_receipt_view(request, transaction_id):
-    transaction = get_object_or_404(Transaction, id=transaction_id)
+def open_cash_register(request):
+    if request.method == "POST":
+        form = CashRegisterForm(request.POST)
+        if form.is_valid():
+            # Vérifier si une caisse est déjà ouverte
+            if CashRegister.objects.filter(is_open=True).exists():
+                messages.error(request, "Une caisse est déjà ouverte.")
+                return redirect("dashboard")
+            cash_register = form.save(commit=False)
+            cash_register.user = request.user
+            cash_register.open_register(form.cleaned_data["opening_balance"])
+            messages.success(request, "Caisse ouverte avec succès.")
+            return redirect("dashboard")
+    else:
+        form = CashRegisterForm()
+    return render(request, "cash_register/open.html", {"form": form})
 
-    return render(request, 'accounting/print_receipt.html', {'transaction': transaction})
+
+# Vue pour fermer la caisse
+@login_required
+def close_cash_register(request, register_id):
+    cash_register = get_object_or_404(CashRegister, id=register_id, is_open=True)
+    if request.method == "POST":
+        closing_balance = float(request.POST.get("closing_balance", cash_register.current_balance))
+        cash_register.close_register(closing_balance)
+        messages.success(request, "Caisse fermée avec succès.")
+        return redirect("dashboard")
+    return render(request, "cash_register/close.html", {"cash_register": cash_register})
+
+
+# Vue pour afficher l'état de la caisse
+@login_required
+def cash_register_status(request):
+    try:
+        cash_register = CashRegister.objects.get(is_open=True)
+    except CashRegister.DoesNotExist:
+        cash_register = None
+    return render(request, "cash_register/status.html", {"cash_register": cash_register})
+
+
+# Vue pour enregistrer une transaction
+@login_required
+def create_transaction(request):
+    try:
+        cash_register = CashRegister.objects.get(is_open=True)
+    except CashRegister.DoesNotExist:
+        messages.error(request, "Vous devez ouvrir une caisse avant de créer une transaction.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.user = request.user
+            transaction.cash_register = cash_register
+            transaction.save()
+            messages.success(request, "Transaction enregistrée avec succès.")
+            return redirect("cash_register_status")
+    else:
+        form = TransactionForm()
+    return render(request, "transactions/create.html", {"form": form})
+
+
+# Vue pour afficher l'historique des transactions
+@login_required
+def transaction_history(request):
+    transactions = Transaction.objects.select_related("cash_register").order_by("-date")
+    return render(request, "transactions/history.html", {"transactions": transactions})
+
+
+# Vue pour gérer les paiements des frais étudiants
+@login_required
+def manage_student_fees(request):
+    try:
+        cash_register = CashRegister.objects.get(is_open=True)
+    except CashRegister.DoesNotExist:
+        messages.error(request, "Vous devez ouvrir une caisse avant de gérer les frais.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = StudentFeeForm(request.POST)
+        if form.is_valid():
+            fee = form.save(commit=False)
+            fee.cash_register = cash_register
+            if fee.is_paid:
+                fee.payment_date = form.cleaned_data.get("payment_date")
+            fee.save()
+            messages.success(request, "Frais étudiant mis à jour avec succès.")
+            return redirect("manage_student_fees")
+    else:
+        form = StudentFeeForm()
+    student_fees = StudentFee.objects.select_related("student").order_by("due_date")
+    return render(request, "fees/manage.html", {"form": form, "student_fees": student_fees})
+
+
+

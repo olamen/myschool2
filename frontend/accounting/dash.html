@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de Bord</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.min.js"></script>
+</head>
+<body>
+  <div class="container mt-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+      <h1 class="display-4">Tableau de Bord</h1>
+      <p class="text-muted">Bienvenue dans la gestion de votre école</p>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="row text-center">
+      <!-- Caisse -->
+      <div class="col-md-4">
+        <div class="card bg-primary text-white mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Solde Actuel de la Caisse</h5>
+            <p class="card-text fs-3"><span id="currentCash">0</span> MRU</p>
+          </div>
+          <a href="/cash-register" class="card-footer text-white text-decoration-none">
+            Gérer la Caisse <i class="bi bi-arrow-right-circle"></i>
+          </a>
+        </div>
+      </div>
+      <!-- Paiements -->
+      <div class="col-md-4">
+        <div class="card bg-success text-white mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Paiements Mensuels</h5>
+            <p class="card-text fs-3" id="monthlyPayments">0 MRU</p>
+          </div>
+          <a href="/monthly-payments" class="card-footer text-white text-decoration-none">
+            Voir les Paiements <i class="bi bi-arrow-right-circle"></i>
+          </a>
+        </div>
+      </div>
+      <!-- Dépenses -->
+      <div class="col-md-4">
+        <div class="card bg-danger text-white mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Dépenses Totales</h5>
+            <p class="card-text fs-3" id="totalExpenses">0 MRU</p>
+          </div>
+          <a href="/expenses" class="card-footer text-white text-decoration-none">
+            Gérer les Dépenses <i class="bi bi-arrow-right-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons for Actions -->
+    <div class="row mb-5">
+      <div class="col text-center">
+        <a href="/students" class="btn btn-primary btn-lg mx-2">Gérer les Étudiants</a>
+        <a href="/parents" class="btn btn-secondary btn-lg mx-2">Gérer les Parents</a>
+        <a href="/transactions" class="btn btn-success btn-lg mx-2">Historique des Transactions</a>
+        <a href="/reports" class="btn btn-info btn-lg mx-2">Générer des Rapports</a>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="card">
+      <div class="card-header">
+        <h5>Statistiques Financières</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="financialChart" style="height: 300px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dynamically update card values (simulate fetching from API)
+    document.addEventListener("DOMContentLoaded", function () {
+      const currentCash = 25000; // Example value for current cash
+      const monthlyPayments = 15000; // Example value for monthly payments
+      const totalExpenses = 10000; // Example value for total expenses
+
+      document.getElementById("currentCash").textContent = currentCash.toLocaleString();
+      document.getElementById("monthlyPayments").textContent = monthlyPayments.toLocaleString();
+      document.getElementById("totalExpenses").textContent = totalExpenses.toLocaleString();
+
+      // Chart Data
+      const ctx = document.getElementById("financialChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          datasets: [
+            {
+              label: "Revenus",
+              data: [12000, 15000, 18000, 20000, 22000, 24000],
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 1,
+            },
+            {
+              label: "Dépenses",
+              data: [8000, 10000, 12000, 14000, 16000, 18000],
+              backgroundColor: "rgba(255, 99, 132, 0.6)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return context.dataset.label + ": " + context.raw.toLocaleString() + " MRU";
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    });
+  </script>
+</body>
+</html>

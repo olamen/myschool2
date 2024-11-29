@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Liste des Frais des Étudiants</h1>
+    <hr />
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p><strong>Total des Frais Dus :</strong> {{ total_due }} €</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Total des Frais Payés :</strong> {{ total_paid }} €</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Étudiant</th>
+                    <th>Montant</th>
+                    <th>Date d'Échéance</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in fees %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ fee.student.first_name }} {{ fee.student.last_name }}</td>
+                    <td>{{ fee.amount_due }}</td>
+                    <td>{{ fee.due_date|date:"d/m/Y" }}</td>
+                    <td>{{ "Payé" if fee.paid else "Non Payé" }}</td>
+                    <td>
+                        <a href="{% url 'edit_student_fee' fee.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{% url 'delete_student_fee' fee.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais</a>
+</div>
+{% endblock %}

@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum, Count
-from accounting.models import Payment, Transaction
+from accounting.models import  Transaction
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import action
 from django.contrib.auth import authenticate, login

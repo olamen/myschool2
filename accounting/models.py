@@ -1,125 +1,145 @@
 from datetime import date
-import uuid
 from django.db import models
-from Auth.models import CustomUser
-from students.models import Classe, Parent, Student
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+from students.models import Student, Teacher  # Modèles existants
+from django.utils.timezone import now
 
-class Expense(models.Model):
-    """
-    Model for tracking school expenses (e.g., utilities, maintenance, salaries).
-    """
-    name = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
-    description = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
 
-    def __str__(self):
-        return f"{self.name} - {self.amount}"
-
+CustomUser = get_user_model()
 
 class Fee(models.Model):
     """
-    Model for tracking school fees (monthly, yearly) assigned to a student or parent1.
+    Modèle pour suivre les frais scolaires assignés à un étudiant.
     """
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='fees')
-    amount_due = models.DecimalField(max_digits=10, decimal_places=2)
-    due_date = models.DateField()
-    paid = models.BooleanField(default=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-    def __str__(self):
-        return f"Fee for {self.student.first_name} {self.student.last_name} - {'Paid' if self.paid else 'Unpaid'}"
-
-class ParentAccount(models.Model):
-    parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name='accounts',default=1)  # Link to Parent model
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='parent_accounts', default=1)  # Link to Classe model
-    user = models.ForeignKey('Auth.CustomUser', on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-
-    def get_total_fees(self):
-        """
-        Calculate the total fees for all students in the parent's class.
-        """
-        total_fees = 0
-        for child in self.parent.children.all():
-            if child.student_class == self.classe:
-                discount = 0.2 if child.has_discount else 0
-                fee = child.student_class.monthly_salary_fee
-                total_fees += fee - (fee * discount)
-        return total_fees
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='feesstudent')  # Étudiant concerné
+    amount_due = models.DecimalField(max_digits=10, decimal_places=2)  # Montant dû
+    due_date = models.DateField()  # Date d'échéance du paiement
+    paid = models.BooleanField(default=False)  # Indique si le frais a été payé
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # Utilisateur ayant enregistré ou modifié ce frais
 
     def __str__(self):
-        return f"ParentAccount for {self.parent.first_name} {self.parent.last_name} in {self.classe.name}"
-
-class Payment(models.Model):
-    """
-    Model for recording payments made by a student or a parent.
-    """
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='individual_payments', null=True, blank=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-    parent_account = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
-    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateField()
-    method = models.CharField(max_length=50, choices=[('Cash', 'Cash'), ('Bank', 'Bank Transfer')], default='Cash')
-
-    def __str__(self):
-        if self.student:
-            return f"Payment by {self.student.first_name} {self.student.last_name} - {self.amount_paid}"
-        elif self.parent_account:
-            return f"Payment by {self.parent_account.parent_name} - {self.amount_paid}"
-        else:
-            return f"Payment of {self.amount_paid}"
-        
-MONTH_CHOICES = [
-    (1, "January"),
-    (2, "February"),
-    (3, "March"),
-    (4, "April"),
-    (5, "May"),
-    (6, "June"),
-    (7, "July"),
-    (8, "August"),
-    (9, "September"),
-    (10, "October"),
-    (11, "November"),
-    (12, "December"),
-]
-
-class MonthPayment(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='monthly_payments')
-    month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)  # Month (e.g., 1 for January)
-    year = models.PositiveIntegerField(default=date.today().year)  # Year for the payment
-    amount = models.DecimalField(max_digits=8, decimal_places=2)  # Amount for the month
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('Paid', 'Paid'),
-            ('Pending', 'Pending'),
-            ('Skipped', 'Skipped'),
-        ],
-        default='Pending'
-    )
-    payment_date = models.DateField(null=True, blank=True)
+        return f"Frais pour {self.student.first_name} {self.student.last_name} - {'Payé' if self.paid else 'Non Payé'}"
 
     class Meta:
-        unique_together = ('student', 'month', 'year')  # Ensure no duplicate months for the same student
+        ordering = ['-due_date']  # Trie par date d'échéance décroissante
+        verbose_name = "Frais étudiant"
+        verbose_name_plural = "Frais étudiants"
+
+    def is_due(self):
+        """
+        Vérifie si le paiement est en retard.
+        """
+        return not self.paid and self.due_date < date.today()
+    
+class CashRegister(models.Model):
+    """
+    Modèle pour gérer l'état de la caisse.
+    """
+    initial_balance = models.DecimalField(_("Solde initial"), max_digits=10, decimal_places=2, default=0.0)
+    opening_balance = models.DecimalField(_("Solde d'ouverture"), max_digits=10, decimal_places=2, null=True, blank=True)
+    closing_balance = models.DecimalField(_("Solde de fermeture"), max_digits=10, decimal_places=2, null=True, blank=True)
+    current_balance = models.DecimalField(_("Solde actuel"), max_digits=10, decimal_places=2, default=0.0)
+    date = models.DateField(_("Date"), #auto_now_add=True 
+                            default=now)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="cash_registers")
+    is_open = models.BooleanField(_("Caisse ouverte"), default=False)  # État de la caisse (ouverte ou fermée)
 
     def __str__(self):
-        return f"{self.student.first_name} {self.student.last_name} - {MONTH_CHOICES[self.month - 1][1]} {self.year}"
-    
+        return f"Caisse {self.date} - {'Ouverte' if self.is_open else 'Fermée'}"
+
+    def open_register(self, opening_balance):
+        """
+        Ouvrir la caisse avec un solde d'ouverture.
+        """
+        if self.is_open:
+            raise ValueError("La caisse est déjà ouverte.")
+        self.opening_balance = opening_balance
+        self.current_balance = opening_balance  # Initialise le solde actuel avec le solde d'ouverture
+        self.is_open = True
+        self.save()
+
+    def close_register(self, closing_balance):
+        """
+        Fermer la caisse et enregistrer le solde de fermeture.
+        """
+        if not self.is_open:
+            raise ValueError("La caisse est déjà fermée.")
+        self.closing_balance = closing_balance
+        self.is_open = False
+        self.save()
+
+    def update_current_balance(self, amount, transaction_type):
+        """
+        Mettre à jour le solde actuel de la caisse.
+        """
+        if not self.is_open:
+            raise ValueError("Impossible de mettre à jour le solde : la caisse est fermée.")
+        if transaction_type == "income":
+            self.current_balance += amount
+        elif transaction_type == "expense":
+            self.current_balance -= amount
+        else:
+            raise ValueError("Type de transaction invalide.")
+        self.save()
+
 
 class Transaction(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="transactions")
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # User who processed the payment
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateTimeField(auto_now_add=True)
-    months_paid = models.TextField()  # Store the months paid in JSON format or comma-separated
-    receipt_number = models.CharField(max_length=20, unique=True, blank=True)
+    """
+    Modèle pour les transactions enregistrées dans la caisse.
+    """
+    TRANSACTION_TYPES = [
+        ("income", "Revenu"),
+        ("expense", "Dépense"),
+    ]
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    transaction_type = models.CharField(_("Type de transaction"), max_length=10, choices=TRANSACTION_TYPES,default='income')
+    description = models.TextField(_("Description"), default='description')
+    date = models.DateTimeField(_("Date"), #auto_now_add=True
+                                default=now)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,default=1 , related_name="transactions")
+    cash_register = models.ForeignKey(CashRegister, on_delete=models.CASCADE, default=1, related_name="transactions")
 
     def save(self, *args, **kwargs):
-        if not self.receipt_number:
-            self.receipt_number = str(uuid.uuid4().hex[:20]).upper()  # Generate unique receipt number
-        super(Transaction, self).save(*args, **kwargs)
+        # Vérifier si la caisse est ouverte avant d'autoriser la transaction
+        if not self.cash_register.is_open:
+            raise ValueError("Impossible d'enregistrer une transaction : la caisse est fermée.")
+        super().save(*args, **kwargs)
+        # Mettre à jour le solde actuel de la caisse
+        self.cash_register.update_current_balance(self.amount, self.transaction_type)
 
     def __str__(self):
-        return f"Transaction for {self.student.first_name} {self.student.last_name} - {self.total_amount} on {self.payment_date}"
+        return f"{self.transaction_type} - {self.amount} - {self.user.username}"
+
+
+class StudentFee(models.Model):
+    """
+    Paiements pour les frais scolaires des élèves.
+    """
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="fees")
+    amount = models.DecimalField(_("Montant"), max_digits=10, decimal_places=2)
+    due_date = models.DateField(_("Date limite"))
+    is_paid = models.BooleanField(_("Payé"), default=False)
+    payment_date = models.DateField(_("Date de paiement"), null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="transactionsstudentuser")
+    cash_register = models.ForeignKey(CashRegister, on_delete=models.CASCADE, related_name="student_fees")
+
+    def save(self, *args, **kwargs):
+        """
+        Enregistre le paiement et crée une transaction.
+        """
+        if self.is_paid and self.payment_date:
+            # Crée une transaction pour ce paiement
+            transaction = Transaction(
+                amount=self.amount,
+                transaction_type="income",
+                description=f"Paiement des frais pour {self.student.first_name} {self.student.last_name}",
+                user=self.cash_register.user,
+                cash_register=self.cash_register,
+            )
+            transaction.save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Frais pour {self.student.first_name} {self.student.last_name} - {'Payé' if self.is_paid else 'Non payé'}"

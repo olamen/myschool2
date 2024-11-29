@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Modifier le Frais</h1>
+    <hr />
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Mettre à Jour</button>
+    </form>
+    <a href="{% url 'student_fee_list' %}" class="btn btn-secondary mt-3">Retour à la Liste</a>
+</div>
+{% endblock %}

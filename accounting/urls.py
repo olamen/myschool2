@@ -1,19 +1,35 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ExpenseViewSet, FeeViewSet, ParentAccountViewSet, PaymentViewSet, expense_list, parent_fees_view, print_receipt_view, student_payment_view
+from .views import  *
+from .views_transaction import *
+from .views_student_fee import *
 
-router = DefaultRouter()
-router.register('expenses', ExpenseViewSet)
-router.register('fees', FeeViewSet)
-router.register('parent-accounts', ParentAccountViewSet)
-router.register('payments', PaymentViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('dashboard/',index,name='indexaccounting'),
     path('expense_list/', expense_list, name='expense_list'),
-    path('student/<int:student_id>/payment/', student_payment_view, name='student_payment'),
-    path('transaction/<int:transaction_id>/print/', print_receipt_view, name='print_receipt'),
+
     path('parent-fees/<int:parent_id>/<int:classe_id>/', parent_fees_view, name='parent_fees_view'),
+
+
+        # URLs pour la caisse
+    path('cash-register/open/',open_cash_register, name='open_cash_register'),
+    path('cash-register/close/',close_cash_register, name='close_cash_register'),
+    path('cash-register/status/',cash_register_status, name='cash_register_status'),
+
+    # URLs pour les transactions
+    path('transactions/',transaction_list, name='transaction_list'),
+    path('transactions/add/',add_transaction, name='add_transaction'),
+    path('transactions/<int:pk>/details/',transaction_details, name='transaction_details'),
+
+    # URLs pour les frais étudiants
+    path('student-fees/',student_fee_list, name='student_fee_list'),
+    path('student-fees/add/',add_student_fee, name='add_student_fee'),
+    path('student-fees/<int:pk>/edit/',edit_student_fee, name='edit_student_fee'),
+    path('student-fees/<int:pk>/delete/',delete_student_fee, name='delete_student_fee'),
+
+    
+
+
 
 
 
