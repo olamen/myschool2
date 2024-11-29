@@ -11,18 +11,18 @@
         <h1 class="text-center">Report Card</h1>
 
         <div class="card mt-4">
-            <div class="card-header">
+            <div class="card-header bg-primary text-white">
                 <h4>Student Details</h4>
             </div>
             <div class="card-body">
-                <p><strong>Name:</strong> {{ composition.student.first_name }} {{ composition.student.last_name }}</p>
+                <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
                 <p><strong>Class:</strong> {{ grade.name }}</p>
                 <p><strong>Exam:</strong> {{ exam.name }}</p>
             </div>
         </div>
 
         <table class="table table-striped mt-4">
-            <thead>
+            <thead class="table-dark">
                 <tr>
                     <th>Subject</th>
                     <th>Score</th>
@@ -42,39 +42,16 @@
             </tbody>
         </table>
 
-        <div class="mt-4">
-            <h5>Total Score: <span id="totalScore">{{ total_score }}</span></h5>
-            <h5>Average Score: <span id="averageScore">{{ average_score }}</span></h5>
+        <div class="mt-4 text-end">
+            <h5><strong>Total Score:</strong> {{ total_score }}</h5>
+            <h5><strong>Average Score:</strong> {{ average_score }}</h5>
         </div>
 
-        <button class="btn btn-primary mt-3" onclick="generatePDF()">Download PDF</button>
-        <button class="btn btn-secondary mt-3" onclick="window.print()">Print Report</button>
+        <div class="text-center mt-4">
+            <a href="{% url 'report_card_pdf' student.id exam.id %}" class="btn btn-primary">Download PDF</a>
+            <button class="btn btn-secondary" onclick="window.print()">Print Report</button>
+        </div>
     </div>
-
-    <script>
-        function calculateScores() {
-            const compositions = {{ compositions|safe }}; // Fetch compositions as JSON
-            let totalScore = 0;
-
-            compositions.forEach(comp => {
-                const score = comp.score ? parseFloat(comp.score) : 0;
-                const coefficient = comp.subject.coefficient ? parseFloat(comp.subject.coefficient) : 1;
-                totalScore += (score / 20) * coefficient;
-            });
-
-            const averageScore = compositions.length > 0 ? (totalScore / compositions.length).toFixed(2) : 0;
-
-            document.getElementById('totalScore').innerText = totalScore.toFixed(2);
-            document.getElementById('averageScore').innerText = averageScore;
-        }
-
-        function generatePDF() {
-            alert('The PDF will be generated on the server and downloaded!');
-        }
-
-        // Run score calculation on page load
-        document.addEventListener('DOMContentLoaded', calculateScores);
-    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
