@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
-from .models import  ReportCard, Composition
-from students.models import SessionYearModel, Student, Subject, Grade
+from .models import  ReportCard
+from students.models import Student, Composition, Grade
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 
@@ -13,39 +13,31 @@ def exam_list(request):
     return render(request, "reporting/exam_list.html", {"exams": exams})
 
 
-    
-    return render(request, "reporting/edit_exam.html", {"exam": exam})
-@login_required
 def report_card_pdf(request, student_id, exam_id):
-    # Fetch the student and exam
+    # Retrieve the student and the exam (composition)
     student = get_object_or_404(Student, id=student_id)
     exam = get_object_or_404(Composition, id=exam_id)
 
-    # Fetch the grade of the student's class
-    student_grade = student.student_class.grade
+    # Retrieve the corresponding report card
+    report_card = get_object_or_404(ReportCard, student=student, exam=exam)
 
-    # Filter compositions (or grades) for this student and this exam
-    compositions = Composition.objects.filter(student=student, subject__class_enrolled=student.student_class)
-
-    # Calculate total and average scores
-    total_score = sum(comp.get_weighted_score() for comp in compositions)
-    average_score = total_score / compositions.count() if compositions.exists() else 0
+    # Retrieve the session year
+    session_year = report_card.sessionyear
 
     context = {
         "student": student,
         "exam": exam,
-        "compositions": compositions,
-        "grade": student_grade,
-        "total_score": total_score,
-        "average_score": round(average_score, 2),
+        "report_card": report_card,
+        "session_year": session_year,
     }
 
-    # Render HTML to PDF
+    # Render the report card template
     template = get_template("reporting/report_card_exam.html")
     html = template.render(context)
 
+    # Generate the PDF response
     response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = f"attachment; filename=report_{student.first_name}_{student.last_name}_{student_id}_{exam.name}.pdf"
+    response["Content-Disposition"] = f"attachment; filename=report_{student.first_name}_{student.last_name}_{exam.name}.pdf"
 
     pisa_status = pisa.CreatePDF(html, dest=response)
     if pisa_status.err:

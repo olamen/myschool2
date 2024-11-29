@@ -3,7 +3,7 @@ from students.models import Composition, SessionYearModel, Student
 
 
 class ReportCard(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="Reporting_student")
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="Reporting__student")
     exam = models.ForeignKey(Composition, on_delete=models.CASCADE, related_name="reportcart_student")
     sessionyear = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
     total_score = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
