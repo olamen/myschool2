@@ -6,7 +6,7 @@
   <hr />
 
   <div class="row">
-    {% if compositions %}
+    {% if exams %}
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
         <thead class="table-primary">
@@ -21,7 +21,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for composition in compositions %}
+          {% for composition in exams %}
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ composition.name }}</td>
