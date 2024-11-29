@@ -88,15 +88,15 @@ def open_cash_register(request):
             # Vérifier si une caisse est déjà ouverte
             if CashRegister.objects.filter(is_open=True).exists():
                 messages.error(request, "Une caisse est déjà ouverte.")
-                return redirect("dashboard")
+                return redirect("indexaccounting")
             cash_register = form.save(commit=False)
             cash_register.user = request.user
             cash_register.open_register(form.cleaned_data["opening_balance"])
             messages.success(request, "Caisse ouverte avec succès.")
-            return redirect("dashboard")
+            return redirect("indexaccounting")
     else:
         form = CashRegisterForm()
-    return render(request, "cash_register/open.html", {"form": form})
+    return render(request, "accounting/cash_register/open.html", {"form": form})
 
 
 # Vue pour fermer la caisse
@@ -107,8 +107,8 @@ def close_cash_register(request, register_id):
         closing_balance = float(request.POST.get("closing_balance", cash_register.current_balance))
         cash_register.close_register(closing_balance)
         messages.success(request, "Caisse fermée avec succès.")
-        return redirect("dashboard")
-    return render(request, "cash_register/close.html", {"cash_register": cash_register})
+        return redirect("indexaccounting")
+    return render(request, "accounting/cash_register/close.html", {"cash_register": cash_register})
 
 
 # Vue pour afficher l'état de la caisse
