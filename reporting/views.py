@@ -9,7 +9,7 @@ from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 
 @login_required
 def exam_list(request):
-    exams = Composition.objects.all()
+    exams = Composition.objects.select_related('student', 'subject').all()
     return render(request, "reporting/exam_list.html", {"exams": exams})
 
 

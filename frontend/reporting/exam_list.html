@@ -2,7 +2,7 @@
 {% load static %}
 {% block body %}
 <div class="container mt-5">
-  <h1 class="text-center mb-4">Liste des Compositions</h1>
+  <h1 class="text-center mb-4">Liste des examents</h1>
   <hr />
 
   <div class="row">
@@ -21,22 +21,22 @@
           </tr>
         </thead>
         <tbody>
-          {% for composition in exams %}
+          {% for exam in exams %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ composition.name }}</td>
-            <td>{{ composition.student.first_name }} {{ composition.student.last_name }}</td>
-            <td>{{ composition.subject.name }}</td>
-            <td>{{ composition.exam_date|date:"d/m/Y" }}</td>
+            <td>{{ exam.name }}</td>
+            <td>{{ exam.student.first_name }} {{ exam.student.last_name }}</td>
+            <td>{{ exam.subject.name }}</td>
+            <td>{{ exam.exam_date|date:"d/m/Y" }}</td>
             <td>
-              {{ composition.score|default:"Non noté" }}
+              {{ exam.score|default:"Non noté" }}
             </td>
             <td>
               <div class="d-flex gap-2">
-                <a href="{% url 'exam_detail' composition.id %}" class="btn btn-primary btn-sm">
+                <a href="{% url 'exam_detail' exam.id %}" class="btn btn-primary btn-sm">
                   <i class="bi bi-eye"></i> Voir
                 </a>
-                <a href="{% url 'edit_exam' composition.id %}" class="btn btn-warning btn-sm">
+                <a href="{% url 'edit_exam' exam.id %}" class="btn btn-warning btn-sm">
                   <i class="bi bi-pencil-square"></i> Modifier
                 </a>
               </div>
