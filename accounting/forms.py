@@ -27,9 +27,9 @@ class TransactionForm(forms.ModelForm):
     """
     class Meta:
         model = Transaction
-        fields = ['type', 'amount', 'description']
+        fields = ['transaction_type', 'amount', 'description']
         widgets = {
-            'type': forms.Select(attrs={
+            'transaction_type': forms.Select(attrs={
                 'class': 'form-select',
             }),
             'amount': forms.NumberInput(attrs={
@@ -44,7 +44,7 @@ class TransactionForm(forms.ModelForm):
             }),
         }
         labels = {
-            'type': 'Type de transaction',
+            'transaction_type': 'Type de transaction',
             'amount': 'Montant',
             'description': 'Description',
         }

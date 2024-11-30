@@ -93,7 +93,7 @@ class Transaction(models.Model):
         related_name="transactions"
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    type = models.CharField(
+    transaction_type = models.CharField(
         max_length=20,
         choices=[
             ('Credit', 'Credite'),  # Entrée d'argent
