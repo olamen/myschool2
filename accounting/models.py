@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from students.models import Student, Teacher  # Modèles existants
+from students.models import Parent, Student, Teacher  # Modèles existants
 from django.utils.timezone import now
 
 
@@ -195,3 +195,83 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.get_category_display()} - {self.amount} ({self.date})"
+    
+class Payment(models.Model):
+    """
+    Modèle pour enregistrer les paiements effectués par un étudiant ou un parent.
+    """
+    PAYMENT_METHOD_CHOICES = [
+        ('cash', _('Espèces')),
+        ('bank', _('Virement bancaire')),
+        ('check', _('Chèque')),
+        ('other', _('Autre')),
+    ]
+
+    cash_register = models.ForeignKey(
+        CashRegister, 
+        on_delete=models.CASCADE, 
+        related_name="payments",
+        verbose_name=_("Caisse")
+    )
+    student = models.ForeignKey(
+        Student, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name="payments",
+        verbose_name=_("Étudiant")
+    )
+    parent = models.ForeignKey(
+        Parent, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name="payments",
+        verbose_name=_("Parent")
+    )
+    user = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        verbose_name=_("Utilisateur")
+    )
+    amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        verbose_name=_("Montant")
+    )
+    method = models.CharField(
+        max_length=20, 
+        choices=PAYMENT_METHOD_CHOICES,
+        default='cash',
+        verbose_name=_("Méthode de paiement")
+    )
+    date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Date")
+    )
+    receipt_number = models.CharField(
+        max_length=20, 
+        unique=True, 
+        verbose_name=_("Numéro de reçu"),
+        blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        """
+        Méthode personnalisée pour mettre à jour le solde de la caisse.
+        """
+        if not self.receipt_number:
+            self.receipt_number = f"PAY-{self.id or 'NEW'}-{self.date.strftime('%Y%m%d%H%M%S')}"
+        if not self.pk:  # Paiement nouveau
+            self.cash_register.current_balance += self.amount
+            self.cash_register.save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        if self.student:
+            return f"Paiement de {self.student.first_name} {self.student.last_name} - {self.amount}"
+        elif self.parent:
+            return f"Paiement de {self.parent.first_name} {self.parent.last_name} - {self.amount}"
+        return f"Paiement de {self.amount}"
