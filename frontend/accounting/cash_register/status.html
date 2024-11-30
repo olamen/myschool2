@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">État du Registre de Caisse</h1>
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4>Informations de la Caisse</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>Solde Actuel :</h5>
+                    <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} €</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>Statut :</h5>
+                    <p class="fs-4">
+                        {% if cash_register.is_open %}
+                        <span class="badge bg-success">Ouvert</span>
+                        {% else %}
+                        <span class="badge bg-danger">Fermé</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>Solde d'Ouverture :</h5>
+                    <p class="fs-5">{{ cash_register.opening_balance|floatformat:2 }} €</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>Date d'Ouverture :</h5>
+                    <p class="fs-5">{{ cash_register.date_opened|date:"d/m/Y H:i" }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>Solde de Fermeture :</h5>
+                    <p class="fs-5">
+                        {% if cash_register.closing_balance %}
+                        {{ cash_register.closing_balance|floatformat:2 }} €
+                        {% else %}
+                        <span class="text-muted">Non disponible</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>Date de Fermeture :</h5>
+                    <p class="fs-5">
+                        {% if cash_register.date_closed %}
+                        {{ cash_register.date_closed|date:"d/m/Y H:i" }}
+                        {% else %}
+                        <span class="text-muted">Non disponible</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'cash_register_list' %}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}
