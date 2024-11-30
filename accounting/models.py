@@ -143,3 +143,55 @@ class StudentFee(models.Model):
 
     def __str__(self):
         return f"Frais pour {self.student.first_name} {self.student.last_name} - {'Payé' if self.is_paid else 'Non payé'}"
+    
+
+User = get_user_model()
+
+class Expense(models.Model):
+    """
+    Modèle pour les dépenses associées à une caisse.
+    """
+    CATEGORY_CHOICES = [
+        ('maintenance', _('Maintenance')),
+        ('utilities', _('Services publics')),
+        ('salary', _('Salaire')),
+        ('supplies', _('Fournitures')),
+        ('other', _('Autre')),
+    ]
+
+    cash_register = models.ForeignKey(
+        CashRegister, 
+        on_delete=models.CASCADE, 
+        related_name="expenses",
+        verbose_name=_("Caisse")
+    )
+    user = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        verbose_name=_("Utilisateur")
+    )
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES,
+        default='other',
+        verbose_name=_("Catégorie")
+    )
+    description = models.TextField(
+        verbose_name=_("Description"),
+        blank=True, 
+        null=True
+    )
+    amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        verbose_name=_("Montant")
+    )
+    date = models.DateField(
+        auto_now_add=True,
+        verbose_name=_("Date")
+    )
+
+    def __str__(self):
+        return f"{self.get_category_display()} - {self.amount} ({self.date})"
