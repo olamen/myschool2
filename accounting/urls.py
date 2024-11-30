@@ -23,6 +23,10 @@ urlpatterns = [
     path('transactions/add/',add_transaction, name='add_transaction'),
     path('transactions/<int:pk>/details/',transaction_details, name='transaction_details'),
 
+    path('add-payment/', add_payment, name='add_payment'),
+    path('get-students/<int:parent_id>/', get_students_by_parent, name='get_students_by_parent'),
+    path('payments/ajax/', payment_list_ajax, name='payment_list_ajax'),
+
     # URLs pour les frais étudiants
     path('student-fees/',student_fee_list, name='student_fee_list'),
     path('student-fees/add/',add_student_fee, name='add_student_fee'),

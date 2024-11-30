@@ -1,9 +1,11 @@
 from datetime import date
 from django.conf import settings
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from students.models import Parent, Student, Teacher  # Modèles existants
+from students.models import Classe, Parent, Student, Teacher  # Modèles existants
 from django.utils.timezone import now
 
 
@@ -85,32 +87,42 @@ class CashRegister(models.Model):
 
 
 class Transaction(models.Model):
-    """
-    Modèle pour les transactions enregistrées dans la caisse.
-    """
-    TRANSACTION_TYPES = [
-        ("income", "Revenu"),
-        ("expense", "Dépense"),
-    ]
-
-    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    transaction_type = models.CharField(_("Type de transaction"), max_length=10, choices=TRANSACTION_TYPES,default='income')
-    description = models.TextField(_("Description"), default='description')
-    date = models.DateTimeField(_("Date"), #auto_now_add=True
-                                default=now)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,default=1 , related_name="transactions")
-    cash_register = models.ForeignKey(CashRegister, on_delete=models.CASCADE, default=1, related_name="transactions")
-
-    def save(self, *args, **kwargs):
-        # Vérifier si la caisse est ouverte avant d'autoriser la transaction
-        if not self.cash_register.is_open:
-            raise ValueError("Impossible d'enregistrer une transaction : la caisse est fermée.")
-        super().save(*args, **kwargs)
-        # Mettre à jour le solde actuel de la caisse
-        self.cash_register.update_current_balance(self.amount, self.transaction_type)
+    cash_register = models.ForeignKey(
+        CashRegister, 
+        on_delete=models.CASCADE, 
+        related_name="transactions"
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.CharField(
+        max_length=20,
+        choices=[
+            ('Credit', 'Credit'),  # Entrée d'argent
+            ('Debit', 'Debit')    # Sortie d'argent
+        ],
+        default='Credit'
+    )
+    description = models.TextField(blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name="transactions"
+    )
 
     def __str__(self):
-        return f"{self.transaction_type} - {self.amount} - {self.user.username}"
+        return f"{self.type} - {self.amount} on {self.date}"
+
+# Signal pour mettre à jour la caisse après une transaction
+@receiver(post_save, sender=Transaction)
+def update_cash_register(sender, instance, **kwargs):
+    """
+    Met à jour le solde actuel de la caisse après chaque transaction.
+    """
+    if instance.type == 'Credit':
+        instance.cash_register.current_balance += instance.amount
+    elif instance.type == 'Debit':
+        instance.cash_register.current_balance -= instance.amount
+    instance.cash_register.save()
 
 
 class StudentFee(models.Model):
@@ -208,70 +220,88 @@ class Payment(models.Model):
     ]
 
     cash_register = models.ForeignKey(
-        CashRegister, 
-        on_delete=models.CASCADE, 
+        CashRegister,
+        on_delete=models.CASCADE,
         related_name="payments",
         verbose_name=_("Caisse")
     )
     student = models.ForeignKey(
-        Student, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        Student,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         related_name="payments",
         verbose_name=_("Étudiant")
     )
     parent = models.ForeignKey(
-        Parent, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        Parent,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         related_name="payments",
         verbose_name=_("Parent")
     )
+    classe = models.ForeignKey(
+        Classe,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="class_payments",
+        verbose_name=_("Classe")
+    )
     user = models.ForeignKey(
-        CustomUser, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         verbose_name=_("Utilisateur")
     )
     amount = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
+        max_digits=10,
+        decimal_places=2,
         verbose_name=_("Montant")
     )
     method = models.CharField(
-        max_length=20, 
+        max_length=20,
         choices=PAYMENT_METHOD_CHOICES,
         default='cash',
         verbose_name=_("Méthode de paiement")
     )
     date = models.DateTimeField(
-        auto_now_add=True,
+        default=now,
         verbose_name=_("Date")
     )
     receipt_number = models.CharField(
-        max_length=20, 
-        unique=True, 
+        max_length=20,
+        unique=True,
         verbose_name=_("Numéro de reçu"),
         blank=True
+    )
+    notes = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Notes")
     )
 
     def save(self, *args, **kwargs):
         """
-        Méthode personnalisée pour mettre à jour le solde de la caisse.
+        Méthode personnalisée pour mettre à jour le solde de la caisse et générer un numéro de reçu.
         """
+        is_new_payment = not self.pk  # Vérifie si c'est une nouvelle instance
         if not self.receipt_number:
-            self.receipt_number = f"PAY-{self.id or 'NEW'}-{self.date.strftime('%Y%m%d%H%M%S')}"
-        if not self.pk:  # Paiement nouveau
+            self.receipt_number = f"PAY-{now().strftime('%Y%m%d%H%M%S')}"
+        super().save(*args, **kwargs)  # Sauvegarde l'instance
+
+        # Mettre à jour la caisse uniquement si c'est un nouveau paiement
+        if is_new_payment:
             self.cash_register.current_balance += self.amount
             self.cash_register.save()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.student:
-            return f"Paiement de {self.student.first_name} {self.student.last_name} - {self.amount}"
+            return f"Paiement de {self.student.first_name} {self.student.last_name} - {self.amount} MRU"
         elif self.parent:
-            return f"Paiement de {self.parent.first_name} {self.parent.last_name} - {self.amount}"
-        return f"Paiement de {self.amount}"
+            return f"Paiement de {self.parent.first_name} {self.parent.last_name} - {self.amount} MRU"
+        elif self.classe:
+            return f"Paiement pour la classe {self.classe.name} - {self.amount} MRU"
+        return f"Paiement de {self.amount} MRU"

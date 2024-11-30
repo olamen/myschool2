@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Liste des Paiements</h2>
+  <table class="table table-bordered table-hover">
+    <thead class="table-primary">
+      <tr>
+        <th>#</th>
+        <th>Étudiant</th>
+        <th>Parent</th>
+        <th>Montant</th>
+        <th>Méthode</th>
+        <th>Date</th>
+        <th>Caisse</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="payment-list">
+      <!-- AJAX will populate this table -->
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Fetch and populate payment list
+    function fetchPayments() {
+        $.ajax({
+            url: "{% url 'payment_list_ajax' %}",
+            method: "GET",
+            success: function(data) {
+                const paymentList = $("#payment-list");
+                paymentList.empty();
+                data.forEach((payment, index) => {
+                    paymentList.append(`
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${payment.student}</td>
+                            <td>${payment.parent}</td>
+                            <td>${payment.amount}</td>
+                            <td>${payment.method}</td>
+                            <td>${payment.date}</td>
+                            <td>${payment.cash_register}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewPayment(${payment.id})">Voir</button>
+                                <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id})">Supprimer</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function() {
+                alert("Erreur lors du chargement des paiements.");
+            }
+        });
+    }
+
+    // View payment details
+    function viewPayment(id) {
+        alert("View Payment ID: " + id);
+        // Redirect to a detailed payment page or open a modal
+    }
+
+    // Delete a payment
+    function deletePayment(id) {
+        if (confirm("Voulez-vous vraiment supprimer ce paiement?")) {
+            $.ajax({
+                url: `/accounting/payments/delete/${id}/`,
+                method: "DELETE",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                success: function() {
+                    alert("Paiement supprimé avec succès.");
+                    fetchPayments();
+                },
+                error: function() {
+                    alert("Erreur lors de la suppression du paiement.");
+                }
+            });
+        }
+    }
+
+    // Fetch payments on page load
+    fetchPayments();
+});
+</script>
+{% endblock %}

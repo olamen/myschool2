@@ -1,6 +1,6 @@
 from django import forms
-from .models import CashRegister, Fee, Transaction, StudentFee
-from students.models import Student
+from .models import CashRegister, Fee, Payment, Transaction, StudentFee
+from students.models import Classe, Parent, Student
 
 class CashRegisterForm(forms.ModelForm):
     """
@@ -27,9 +27,9 @@ class TransactionForm(forms.ModelForm):
     """
     class Meta:
         model = Transaction
-        fields = ['transaction_type', 'amount', 'description']
+        fields = ['type', 'amount', 'description']
         widgets = {
-            'transaction_type': forms.Select(attrs={
+            'type': forms.Select(attrs={
                 'class': 'form-select',
             }),
             'amount': forms.NumberInput(attrs={
@@ -44,7 +44,7 @@ class TransactionForm(forms.ModelForm):
             }),
         }
         labels = {
-            'transaction_type': 'Type de transaction',
+            'type': 'Type de transaction',
             'amount': 'Montant',
             'description': 'Description',
         }
@@ -102,3 +102,44 @@ class FeeForm(forms.ModelForm):
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class PaymentForm(forms.ModelForm):
+    """
+    Formulaire pour les paiements effectués par un étudiant, un parent, ou une classe.
+    """
+
+    class Meta:
+        model = Payment
+        fields = [
+            'cash_register',
+            'student',
+            'parent',
+            'classe',
+            'amount',
+            'method',
+            'notes',
+        ]
+        widgets = {
+            'cash_register': forms.Select(attrs={'class': 'form-control'}),
+            'student': forms.Select(attrs={'class': 'form-control'}),
+            'parent': forms.Select(attrs={'class': 'form-control'}),
+            'classe': forms.Select(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Montant'}),
+            'method': forms.Select(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Notes (facultatif)'}),
+        }
+        labels = {
+            'cash_register': 'Caisse',
+            'student': 'Étudiant',
+            'parent': 'Parent',
+            'classe': 'Classe',
+            'amount': 'Montant',
+            'method': 'Méthode de paiement',
+            'notes': 'Notes',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['student'].queryset = Student.objects.all().order_by('first_name', 'last_name')
+        self.fields['parent'].queryset = Parent.objects.all().order_by('first_name', 'last_name')
+        self.fields['classe'].queryset = Classe.objects.filter(is_active=True).order_by('name')
