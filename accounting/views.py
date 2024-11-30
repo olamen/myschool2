@@ -3,7 +3,7 @@ from rest_framework import viewsets
 
 from Auth.models import CustomUser
 from students.models import Classe, Parent
-from .models import  Expense, Fee
+from .models import  Expense, Fee, Payment
 from accounting import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
