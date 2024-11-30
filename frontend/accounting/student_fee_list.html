@@ -30,7 +30,11 @@
                     <td>{{ fee.student.first_name }} {{ fee.student.last_name }}</td>
                     <td>{{ fee.amount_due }}</td>
                     <td>{{ fee.due_date|date:"d/m/Y" }}</td>
-                    <td>{{ "Payé" if fee.paid else "Non Payé" }}</td>
+                    <td>{% if fee.paid %}
+                        Payé
+                    {% else %}
+                        Non Payé
+                    {% endif %}</td>
                     <td>
                         <a href="{% url 'edit_student_fee' fee.id %}" class="btn btn-warning btn-sm">Modifier</a>
                         <a href="{% url 'delete_student_fee' fee.id %}" class="btn btn-danger btn-sm">Supprimer</a>
