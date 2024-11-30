@@ -97,3 +97,17 @@ def payment_list_ajax(request):
         ]
         return JsonResponse(payment_data, safe=False)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+def get_student_details(request, student_id):
+    """
+    Fetch student details including class and fee information.
+    """
+    try:
+        student = Student.objects.select_related('student_class').get(id=student_id)
+        response_data = {
+            "class_name": student.student_class.name,
+            "monthly_fee": student.get_final_fee(),
+        }
+        return JsonResponse(response_data, safe=False)
+    except Student.DoesNotExist:
+        return JsonResponse({"error": "Étudiant introuvable."}, status=404)

@@ -27,12 +27,12 @@
         
         <div class="mb-3">
           <label for="classe">Classe</label>
-          {{ form.classe }}
+          <input type="text" id="classe" class="form-control" readonly>
         </div>
         
         <div class="mb-3">
           <label for="amount">Montant</label>
-          {{ form.amount }}
+          <input type="text" id="amount" class="form-control" readonly>
         </div>
         
         <div class="mb-3">
@@ -54,7 +54,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Handle parent change
+    // Handle parent change to fetch students
     $("#id_parent").change(function() {
         const parentId = $(this).val();
         const studentSelect = $("#student");
@@ -78,6 +78,29 @@ $(document).ready(function() {
             });
         } else {
             studentSelect.html('<option value="">Sélectionnez un parent d\'abord</option>');
+        }
+    });
+
+    // Handle student change to fetch class and fee details
+    $("#student").change(function() {
+        const studentId = $(this).val();
+        if (studentId) {
+            $.ajax({
+                url: "{% url 'get_student_details' 0 %}".replace('0', studentId),
+                method: "GET",
+                success: function(data) {
+                    $("#classe").val(data.class_name);
+                    $("#amount").val(data.monthly_fee);
+                },
+                error: function() {
+                    alert("Erreur lors du chargement des détails de l'étudiant.");
+                    $("#classe").val("");
+                    $("#amount").val("");
+                }
+            });
+        } else {
+            $("#classe").val("");
+            $("#amount").val("");
         }
     });
 });
