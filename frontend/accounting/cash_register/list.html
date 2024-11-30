@@ -37,7 +37,7 @@
                 </td>
                 <td>
                     {% if cash.is_open %}
-                    <a href="{% url 'close_cash_register' %}" class="btn btn-warning btn-sm">
+                    <a href="{% url 'close_cash_register' cash_register.id %}" class="btn btn-warning btn-sm">
                         <i class="bi bi-box-arrow-down"></i> Fermer
                     </a>
                     {% else %}
