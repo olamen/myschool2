@@ -8,16 +8,16 @@ class CashRegisterForm(forms.ModelForm):
     """
     class Meta:
         model = CashRegister
-        fields = ['opening_balance']
+        fields = ['initial_balance']
         widgets = {
-            'opening_balance': forms.NumberInput(attrs={
+            'initial_balance': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Solde d\'ouverture',
                 'min': '0'
             }),
         }
         labels = {
-            'opening_balance': 'Solde d\'ouverture',
+            'initial_balance': 'Solde d\'ouverture',
         }
 
 
