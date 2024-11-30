@@ -26,7 +26,7 @@ def add_student_fee(request):
         if form.is_valid():
             fee = form.save()
             messages.success(request, f"Frais ajouté pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
-            return redirect('accounting:student_fee_list')
+            return redirect('student_fee_list')
     else:
         form = FeeForm()
 
@@ -41,7 +41,7 @@ def edit_student_fee(request, pk):
         if form.is_valid():
             fee = form.save()
             messages.success(request, f"Frais mis à jour pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
-            return redirect('accounting:student_fee_list')
+            return redirect('student_fee_list')
     else:
         form = FeeForm(instance=fee)
 
@@ -54,6 +54,6 @@ def delete_student_fee(request, pk):
     if request.method == 'POST':
         fee.delete()
         messages.success(request, f"Frais supprimé pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
-        return redirect('accounting:student_fee_list')
+        return redirect('student_fee_list')
 
     return render(request, 'accounting/delete_student_fee.html', {'fee': fee})
