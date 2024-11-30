@@ -96,8 +96,8 @@ class Transaction(models.Model):
     type = models.CharField(
         max_length=20,
         choices=[
-            ('Credit', 'Credit'),  # Entrée d'argent
-            ('Debit', 'Debit')    # Sortie d'argent
+            ('Credit', 'Credite'),  # Entrée d'argent
+            ('Debit', 'Debite')    # Sortie d'argent
         ],
         default='Credit'
     )
