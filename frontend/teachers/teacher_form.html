@@ -1,55 +1,77 @@
 {% extends "base.html" %} {% load static %}
-<html lang="fr">
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Teacher List</h1>
+    <a href="{% url 'teacher_create' %}" class="btn btn-primary mb-3">Add Teacher</a>
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>NNI</th>
+                <th>Subject</th>
+                <th>Enrollment Date</th>
+                <th>Salary</th>
+                <th>Type</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.nni }}</td>
+                <td><td>
+                    {% for subject in teacher.subjects.all %}
+                        <span class="badge bg-info">{{ subject.name }}</span>
+                    {% empty %}
+                        <span class="text-muted">No subjects assigned</span>
+                    {% endfor %}
+                </td></td>
+                <td>{{ teacher.enrollment_date }}</td>
+                <td>{{ teacher.salary }}</td>
+                <td>{{ teacher.get_salary_type_display }}</td>
+                <td>{{ teacher.is_active|yesno:"Yes,No" }}</td>
+                <td>
+                    <a href="{% url 'teacher_update' teacher.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'teacher_delete' teacher.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No teachers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+<script>
+$(document).ready(function() {
+    $('#id_nni').on('input', function() {
+        const nni = $(this).val();
+        const feedback = $('#nni-feedback');
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>List des etudients</title>
-
-    <link rel="shortcut icon" href="favicon.png" />
-</head>
-
-<body>
-    {% block body %}
-    <!-- main sidebar -->
-    <div class="main-content">
-            <div class="d-md-flex d-block justify-content-between align-items-center">
-                <div class="left">
-                    <div class="container">
-                        <div class="container">
-                            <h1>{% if teacher %}Modifier l'enseignant{% else %}Ajouter un enseignant{% endif %}</h1>
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="name">Nom</label>
-                                    <input type="text" name="name" id="name" class="form-control" value="{{ teacher.name|default_if_none:'' }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="subject">Matière</label>
-                                    <input type="text" name="subject" id="subject" class="form-control" value="{{ teacher.subject|default_if_none:'' }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="salary">Salaire</label>
-                                    <input type="number" name="salary" id="salary" class="form-control" value="{{ teacher.salary|default_if_none:'' }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="salary_type">Type de salaire</label>
-                                    <select name="salary_type" id="salary_type" class="form-control">
-                                        <option value="monthly" {% if teacher.salary_type == "monthly" %}selected{% endif %}>Mensuel</option>
-                                        <option value="hourly" {% if teacher.salary_type == "hourly" %}selected{% endif %}>Horaire</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="enrollment_date">Date d'embauche</label>
-                                    <input type="date" name="enrollment_date" id="enrollment_date" class="form-control" value="{{ teacher.enrollment_date|default_if_none:'' }}" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Enregistrer</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endblock %}
-</body>
+        if (nni.length === 10) {
+            $.ajax({
+                url: "{% url 'check_nni' %}",
+                data: { nni: nni },
+                success: function(data) {
+                    if (data.exists) {
+                        feedback.text('NNI already exists!').css('color', 'red');
+                    } else {
+                        feedback.text('NNI is available.').css('color', 'green');
+                    }
+                },
+                error: function() {
+                    feedback.text('Error checking NNI.').css('color', 'red');
+                }
+            });
+        } else {
+            feedback.text('NNI must be 10 digits.').css('color', 'orange');
+        }
+    });
+});
+</script>

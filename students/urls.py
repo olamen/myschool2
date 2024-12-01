@@ -50,9 +50,10 @@ urlpatterns = [
     path('teachers/', views_teacher.teacher_list, name='teacher_list'),
     path('teachers/create/', views_teacher.teacher_create, name='teacher_create'),
     path('teachers/<int:pk>/update/', views_teacher.teacher_update, name='teacher_update'),
-    path('teachers/<int:pk>/archive/', views_teacher.teacher_archive, name='teacher_archive'),
-    path('teachers/archived/', views_teacher.teacher_archived_list, name='teacher_archived_list'),
-    path('teachers/<int:pk>/restore/', views_teacher.teacher_restore, name='teacher_restore'),
+    #path('teachers/<int:pk>/archive/', views_teacher.teacher_archive, name='teacher_archive'),
+    #path('teachers/archived/', views_teacher.teacher_archived_list, name='teacher_archived_list'),
+    path("teachers/<int:pk>/delete/", views_teacher.teacher_delete, name="teacher_delete"),
+    #path('teachers/<int:pk>/restore/', views_teacher.teacher_restore, name='teacher_restore'),
 
 
     path('parents/', parent_list, name='parent_list'),
@@ -68,4 +69,7 @@ urlpatterns = [
 
     path("exams/<int:exam_id>/", exam_detail, name="exam_detail"),
     path("exams/<int:exam_id>/edit/", edit_exam, name="edit_exam"),
+
+
+    path('check-nni/', views_teacher.check_nni_existence, name='check_nni'),
 ]

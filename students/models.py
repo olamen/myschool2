@@ -2,6 +2,7 @@
 from django.db import models
 from django.core.validators import MinLengthValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
 
 
@@ -58,10 +59,20 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
 class Parent(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    nni = models.CharField(
+        max_length=10,
+        unique=True,
+        validators=[
+            MinLengthValidator(10),
+            RegexValidator(r'^\d{10}$', 'NNI must be exactly 10 digits.')
+        ],
+        verbose_name="NNI"
+    )  # Unique 10-digit NNI
     phone_number = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
     children = models.ManyToManyField('Student', related_name='parents')  # Link to multiple students
@@ -101,36 +112,41 @@ class Teacher(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-    subject = models.ForeignKey(
-        Subject, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='teachers'
-    )  # Relationship with Subject model
+    nni = models.CharField(
+        max_length=10,
+        unique=True,
+        validators=[
+            MinLengthValidator(10),
+            RegexValidator(r'^\d{10}$', 'NNI must be exactly 10 digits.')
+        ],
+        verbose_name="NNI"
+    )  # Unique 10-digit NNI
+    subjects = models.ManyToManyField(
+        'Subject',
+        related_name='teachers',
+        blank=True,
+        verbose_name="Subjects"
+    )
     enrollment_date = models.DateField()
     salary = models.PositiveIntegerField(null=False)
     salary_type = models.CharField(
         max_length=10,
         choices=SALARY_TYPE_CHOICES,
         default='monthly'
-    )  # Field to specify salary type
+    )
     is_active = models.BooleanField(default=False)
 
     def calculate_monthly_salary(self, hours_worked=0):
-        """
-        Calculate the monthly salary based on the salary type.
-        For hourly salary, hours_worked must be provided.
-        """
         if self.salary_type == 'hourly':
             if hours_worked <= 0:
                 raise ValueError("Hours worked must be greater than 0 for hourly salary.")
             return self.salary * hours_worked
-        # If salary type is monthly, return the base salary
         return self.salary
 
     def __str__(self):
         return self.name
+
+
 
 
 class Attendance(models.Model):
