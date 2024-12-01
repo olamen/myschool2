@@ -6,7 +6,7 @@ from students.forms import TeacherForm
 from .models import Teacher
 
 def teacher_list(request):
-    teachers = Teacher.objects.filter(is_active=False)
+    teachers = Teacher.objects.all(is_active=False)
     return render(request, "teachers/teacher_list.html", {"teachers": teachers})
 
 def teacher_create(request):

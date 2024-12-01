@@ -23,13 +23,13 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ teacher.name }}</td>
                 <td>{{ teacher.nni }}</td>
-                <td><td>
+                <td>
                     {% for subject in teacher.subjects.all %}
                         <span class="badge bg-info">{{ subject.name }}</span>
                     {% empty %}
                         <span class="text-muted">No subjects assigned</span>
                     {% endfor %}
-                </td></td>
+                </td>
                 <td>{{ teacher.enrollment_date }}</td>
                 <td>{{ teacher.salary }}</td>
                 <td>{{ teacher.get_salary_type_display }}</td>
