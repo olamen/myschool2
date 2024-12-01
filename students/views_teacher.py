@@ -47,3 +47,26 @@ def check_nni_existence(request):
         exists = Teacher.objects.filter(nni=nni).exists()
         return JsonResponse({'exists': exists})
     return JsonResponse({'exists': False})
+
+def teacher_archive(request, pk):
+    """View to archive a teacher instead of deleting."""
+    teacher = get_object_or_404(Teacher, pk=pk)
+    teacher.is_active = False
+    teacher.save()
+    messages.success(request, f"L'enseignant {teacher.name} a été archivé avec succès !")
+    return redirect('teacher_list')
+
+
+def teacher_archived_list(request):
+    """View to display a list of archived teachers."""
+    teachers = Teacher.objects.filter(is_active=False)
+    return render(request, 'teachers/teacher_archived_list.html', {'teachers': teachers})
+
+
+def teacher_restore(request, pk):
+    """View to restore an archived teacher."""
+    teacher = get_object_or_404(Teacher, pk=pk)
+    teacher.is_active = True
+    teacher.save()
+    messages.success(request, f"L'enseignant {teacher.name} a été restauré avec succès !")
+    return redirect('teacher_archived_list')
