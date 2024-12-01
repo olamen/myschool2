@@ -57,6 +57,16 @@ def get_student_fee_amount(request, student_id):
     return JsonResponse({'amount_due': amount_due})
 
 
+def edit_student_fee(request, fee_id):
+    fee = get_object_or_404(Fee, id=fee_id)
+    if request.method == 'POST':
+        form = FeeForm(request.POST, instance=fee)
+        if form.is_valid():
+            form.save()
+            return redirect('student_fee_list')
+    else:
+        form = FeeForm(instance=fee)
+    return render(request, 'accounting/edit_student_fee.html', {'form': form})
 
 
 def get_students_by_parent(request, parent_id):
