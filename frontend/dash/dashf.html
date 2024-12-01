@@ -1,2 +1,7 @@
-<h1>Admin finance Dashboard</h1>
-<p>Welcome to the Adminf dashboard, {{ request.user.username }}!</p>
+{% extends "basef.html" %} {% load static %}
+
+{% block body %}
+        <h1>Admin finance Dashboard</h1>
+        <p>Welcome to the Adminf dashboard, {{ request.user.first_name}} {{ request.user.last_name}}!</p>
+
+{% endblock body %}
