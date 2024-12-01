@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+<heaad>
+    <title>
+        État du Registre de Caisse
+    </title>
+</heaad>
 {% block body %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">État du Registre de Caisse</h1>
@@ -12,7 +17,7 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <h5>Solde Actuel :</h5>
-                    <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} €</p>
+                    <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} MRU</p>
                 </div>
                 <div class="col-md-6 mb-3">
                     <h5>Statut :</h5>
@@ -31,20 +36,20 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <h5>Solde d'Ouverture :</h5>
-                    <p class="fs-5">{{ cash_register.opening_balance|floatformat:2 }} €</p>
+                    <p class="fs-5">{{ cash_register.initial_balance|floatformat:2 }} MRU</p>
                 </div>
                 <div class="col-md-6 mb-3">
                     <h5>Date d'Ouverture :</h5>
-                    <p class="fs-5">{{ cash_register.date_opened|date:"d/m/Y H:i" }}</p>
+                    <p class="fs-5">{{ cash_register.date|date:"d/m/Y H:i" }}</p>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <h5>Solde de Fermeture :</h5>
+                    <h5>Le Caissier :</h5>
                     <p class="fs-5">
-                        {% if cash_register.closing_balance %}
-                        {{ cash_register.closing_balance|floatformat:2 }} MRU
+                        {% if cash_register.user %}
+                        <p class="fs-5">{{ cash_register.user }}</p>
                         {% else %}
                         <span class="text-muted">Non disponible</span>
                         {% endif %}
