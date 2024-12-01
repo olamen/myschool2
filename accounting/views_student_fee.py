@@ -11,7 +11,7 @@ from .forms import FeeForm, PaymentForm
 # Liste des frais des étudiants
 @login_required
 def student_fee_list(request):
-    fees = Fee.objects.filter(archived=True).order_by('-due_date')
+    fees = Fee.objects.filter(archived=False).order_by('-due_date')
     total_due = fees.filter(paid=False).aggregate(Sum('amount_due'))['amount_due__sum'] or 0
     total_paid = fees.filter(paid=True).aggregate(Sum('amount_due'))['amount_due__sum'] or 0
 
