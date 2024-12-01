@@ -1,3 +1,4 @@
+import calendar
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -62,6 +63,8 @@ def get_student_fee_amount(request, student_id):
 @login_required
 def edit_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
+    student = fee.student
+    month_name = calendar.month_name[fee.due_date.month]  # Get the full month name
     if request.method == 'POST':
         form = FeeForm(request.POST, instance=fee)
         if form.is_valid():
@@ -69,7 +72,12 @@ def edit_student_fee(request, fee_id):
             return redirect('student_fee_list')
     else:
         form = FeeForm(instance=fee)
-    return render(request, 'accounting/edit_student_fee.html', {'form': form})
+        context = {
+        "form": form,
+        "student": student,
+        "month_name": month_name.capitalize(),
+        }
+    return render(request, 'accounting/edit_student_fee.html', context)
 @login_required
 def delete_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
