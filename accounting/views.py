@@ -115,10 +115,10 @@ def close_cash_register(request, register_id):
 # Vue pour afficher l'état de la caisse
 @login_required
 def cash_register_status(request):
-    try:
-        cash_register = CashRegister.objects.get(is_open=True)
-    except CashRegister.DoesNotExist:
-        cash_register = None
+    cash_register = CashRegister.objects.filter(is_open=True).last()  # Get the latest open register
+    if not cash_register:
+        messages.error(request, "Aucune caisse ouverte actuellement.")
+        return redirect("indexaccounting")
     return render(request, "accounting/cash_register/status.html", {"cash_register": cash_register})
 
 @login_required

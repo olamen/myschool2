@@ -70,6 +70,12 @@ class CashRegister(models.Model):
         self.closing_balance = closing_balance
         self.is_open = False
         self.save()
+        
+    def save(self, *args, **kwargs):
+        if self.is_open:
+            # Close other open cash registers
+            CashRegister.objects.filter(is_open=True).update(is_open=False)
+        super().save(*args, **kwargs)
 
     def update_current_balance(self, amount, transaction_type):
         """
