@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
 from students.models import Student
@@ -7,6 +8,7 @@ from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
 
 # Liste des frais des étudiants
+@login_required
 def student_fee_list(request):
     fees = Fee.objects.all().order_by('-due_date')
     total_due = fees.filter(paid=False).aggregate(Sum('amount_due'))['amount_due__sum'] or 0
@@ -21,6 +23,7 @@ def student_fee_list(request):
 
 
 # Ajouter un frais pour un étudiant
+@login_required
 def add_student_fee(request):
     # Retrieve the current open cash register for the logged-in user
     try:
@@ -47,7 +50,7 @@ def add_student_fee(request):
 
     return render(request, 'accounting/add_student_fee.html', {'form': form, 'cash_register': cash_register})
 
-
+@login_required
 def get_student_fee_amount(request, student_id):
     """
     AJAX endpoint to retrieve the fee amount for the selected student.
@@ -56,7 +59,7 @@ def get_student_fee_amount(request, student_id):
     amount_due = student.get_final_fee()  # Assuming this method calculates the fee for the student
     return JsonResponse({'amount_due': amount_due})
 
-
+@login_required
 def edit_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
     if request.method == 'POST':
@@ -67,15 +70,20 @@ def edit_student_fee(request, fee_id):
     else:
         form = FeeForm(instance=fee)
     return render(request, 'accounting/edit_student_fee.html', {'form': form})
-
-
+@login_required
+def delete_student_fee(request, fee_id):
+    fee = get_object_or_404(Fee, id=fee_id)
+    fee.delete()
+    messages.success(request, "Le frais de l'étudiant a été supprimé avec succès.")
+    return redirect('student_fee_list')
+@login_required
 def get_students_by_parent(request, parent_id):
     """
     Fetch students for a specific parent via AJAX.
     """
     students = Student.objects.filter(parents__id=parent_id).values('id', 'first_name', 'last_name')
     return JsonResponse(list(students), safe=False)
-
+@login_required
 def add_payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
@@ -86,7 +94,7 @@ def add_payment(request):
     else:
         form = PaymentForm()
     return render(request, 'accounting/add_payment.html', {'form': form})
-
+@login_required
 def payment_list_ajax(request):
     """
     Returns a JSON response containing the list of payments.
@@ -107,7 +115,7 @@ def payment_list_ajax(request):
         ]
         return JsonResponse(payment_data, safe=False)
     return JsonResponse({"error": "Invalid request method."}, status=400)
-
+@login_required
 def get_student_details(request, student_id):
     """
     Fetch student details including class and fee information.
