@@ -36,15 +36,15 @@
                     {% endif %}
                 </td>
                 <td>
-                            {% if cash_register.is_open %}
-                            {% if cash_register.id %}
-                                <a href="{% url 'close_cash_register' cash_register.id %}" class="btn btn-warning btn-sm">Fermer la caisse</a>
-                            {% else %}
-                                <span class="text-muted">ID non valide</span>
-                            {% endif %}
-                            {% else %}
-                                <span class="text-muted">Déjà fermée</span>
-                            {% endif %}
+                    {% if cash_register.is_open %}
+                        {% if cash_register.id %}
+                            <a href="{% url 'close_cash_register' cash_register.id %}" class="btn btn-warning btn-sm">Fermer la caisse</a>
+                        {% else %}
+                            <span class="text-muted">ID non valide</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">Déjà fermée</span>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}
