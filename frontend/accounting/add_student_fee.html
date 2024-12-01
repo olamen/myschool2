@@ -3,11 +3,72 @@
 <div class="container mt-5">
     <h1 class="text-center">Ajouter un Frais</h1>
     <hr />
-    <form method="post">
+    <form id="add-fee-form" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="mb-3">
+            {{ form.student.label_tag }}
+            {{ form.student }}
+        </div>
+        <div class="mb-3">
+            <label for="amount_due">Montant dû</label>
+            <input type="number" id="amount_due" name="amount_due" class="form-control" value="" placeholder="Montant" />
+        </div>
+        <div class="mb-3">
+            {{ form.due_date.label_tag }}
+            {{ form.due_date }}
+        </div>
+        <div class="form-check mb-3">
+            {{ form.paid }}
+            {{ form.paid.label_tag }}
+        </div>
         <button type="submit" class="btn btn-success">Enregistrer</button>
     </form>
     <a href="{% url 'student_fee_list' %}" class="btn btn-secondary mt-3">Retour à la Liste</a>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Update the amount_due field when a student is selected
+    $('#id_student').change(function() {
+        const studentId = $(this).val();
+        const amountField = $('#amount_due');
+
+        if (studentId) {
+            $.ajax({
+                url: "{% url 'get_student_fee_amount' 0 %}".replace('0', studentId),
+                method: "GET",
+                success: function(data) {
+                    amountField.val(data.amount_due);  // Pre-fill the amount
+                },
+                error: function() {
+                    alert("Erreur lors du chargement des frais de l'étudiant.");
+                }
+            });
+        } else {
+            amountField.val('');  // Clear the field if no student is selected
+        }
+    });
+
+    // Handle form submission via AJAX
+    $('#add-fee-form').submit(function(event) {
+        event.preventDefault();  // Prevent default form submission
+
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: "{% url 'add_student_fee' %}",
+            method: "POST",
+            data: formData,
+            success: function(response) {
+                alert("Frais ajouté avec succès!");
+                window.location.href = "{% url 'student_fee_list' %}";
+            },
+            error: function() {
+                alert("Erreur lors de l'enregistrement des frais.");
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

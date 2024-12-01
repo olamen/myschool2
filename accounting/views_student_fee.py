@@ -22,42 +22,42 @@ def student_fee_list(request):
 
 # Ajouter un frais pour un étudiant
 def add_student_fee(request):
+    # Retrieve the current open cash register for the logged-in user
+    try:
+        cash_register = CashRegister.objects.get(user=request.user, is_open=True)
+    except CashRegister.DoesNotExist:
+        messages.error(request, "Aucune caisse ouverte pour cet utilisateur.")
+        return redirect("cash_register_status")  # Redirect to cash register status page
+
     if request.method == 'POST':
         form = FeeForm(request.POST)
         if form.is_valid():
             fee = form.save()
-            messages.success(request, f"Frais ajouté pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
+
+            # Update the cash register's balance
+            if fee.paid:
+                cash_register.update_current_balance(fee.amount_due, transaction_type="income")
+
+            messages.success(
+                request, f"Frais ajouté pour l'étudiant {fee.student.first_name} {fee.student.last_name}."
+            )
             return redirect('student_fee_list')
     else:
         form = FeeForm()
 
-    return render(request, 'accounting/add_student_fee.html', {'form': form})
+    return render(request, 'accounting/add_student_fee.html', {'form': form, 'cash_register': cash_register})
 
 
-# Modifier un frais d'étudiant
-def edit_student_fee(request, pk):
-    fee = get_object_or_404(Fee, pk=pk)
-    if request.method == 'POST':
-        form = FeeForm(request.POST, instance=fee)
-        if form.is_valid():
-            fee = form.save()
-            messages.success(request, f"Frais mis à jour pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
-            return redirect('student_fee_list')
-    else:
-        form = FeeForm(instance=fee)
-
-    return render(request, 'accounting/edit_student_fee.html', {'form': form, 'fee': fee})
+def get_student_fee_amount(request, student_id):
+    """
+    AJAX endpoint to retrieve the fee amount for the selected student.
+    """
+    student = get_object_or_404(Student, id=student_id)
+    amount_due = student.get_final_fee()  # Assuming this method calculates the fee for the student
+    return JsonResponse({'amount_due': amount_due})
 
 
-# Supprimer un frais d'étudiant
-def delete_student_fee(request, pk):
-    fee = get_object_or_404(Fee, pk=pk)
-    if request.method == 'POST':
-        fee.delete()
-        messages.success(request, f"Frais supprimé pour l'étudiant {fee.student.first_name} {fee.student.last_name}.")
-        return redirect('student_fee_list')
 
-    return render(request, 'accounting/delete_student_fee.html', {'fee': fee})
 
 def get_students_by_parent(request, parent_id):
     """

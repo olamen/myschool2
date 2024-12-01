@@ -102,6 +102,12 @@ class FeeForm(forms.ModelForm):
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
+        labels = {
+            'student': 'Étudiant',
+            'amount_due': 'Montant dû',
+            'due_date': 'Date d\'échéance',
+            'paid': 'Payé',
+        }
 
 class PaymentForm(forms.ModelForm):
     """

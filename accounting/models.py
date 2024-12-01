@@ -39,26 +39,50 @@ class CashRegister(models.Model):
     """
     Modèle pour gérer l'état de la caisse.
     """
-    initial_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    current_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Default added
-    closed_balance = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
-    date = models.DateField(auto_now_add=True)
-    is_open = models.BooleanField(default=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    initial_balance = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Solde initial")
+    )
+    current_balance = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Solde actuel")
+    )
+    closed_balance = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name=_("Solde de fermeture")
+    )
+    notes = models.TextField(null=True, blank=True, verbose_name=_("Notes"))
+    date = models.DateField(auto_now_add=True, verbose_name=_("Date"))
+    is_open = models.BooleanField(default=False, verbose_name=_("Ouvert"))
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="cash_register",
+        verbose_name=_("Utilisateur en cours"),
+    )
 
     def __str__(self):
-        return f"Caisse du {self.date} - {self.user}"
+        status = "Ouverte" if self.is_open else "Fermée"
+        return f"Caisse {status} - {self.date} ({self.user})"
 
-    def open_register(self, opening_balance):
+    def save(self, *args, **kwargs):
         """
-        Ouvrir la caisse avec un solde d'ouverture.
+        Override the save method to enforce single open register per user.
+        """
+        if self.is_open:
+            # Ensure no other cash register is open for the same user
+            CashRegister.objects.filter(is_open=True, user=self.user).update(is_open=False)
+        super().save(*args, **kwargs)
+
+    def open_register(self, opening_balance, user):
+        """
+        Ouvrir la caisse avec un solde d'ouverture pour un utilisateur.
         """
         if self.is_open:
             raise ValueError("La caisse est déjà ouverte.")
-        self.opening_balance = opening_balance
-        self.current_balance = opening_balance  # Initialise le solde actuel avec le solde d'ouverture
+        self.initial_balance = opening_balance
+        self.current_balance = opening_balance
         self.is_open = True
+        self.user = user
         self.save()
 
     def close_register(self, closing_balance):
@@ -67,22 +91,17 @@ class CashRegister(models.Model):
         """
         if not self.is_open:
             raise ValueError("La caisse est déjà fermée.")
-        self.closing_balance = closing_balance
+        self.closed_balance = closing_balance
         self.is_open = False
+        self.user = None  # Clear the user when the register is closed
         self.save()
-
-    def save(self, *args, **kwargs):
-        if self.is_open:
-            # Close other open cash registers
-            CashRegister.objects.filter(is_open=True).update(is_open=False)
-        super().save(*args, **kwargs)
 
     def update_current_balance(self, amount, transaction_type):
         """
-        Mettre à jour le solde actuel de la caisse.
+        Mettre à jour le solde actuel de la caisse en fonction du type de transaction.
         """
         if not self.is_open:
-            raise ValueError("Impossible de mettre à jour le solde : la caisse est fermée.")
+            raise ValueError("Impossible de mettre à jour le solde : la caisse est fermée.")
         if transaction_type == "income":
             self.current_balance += amount
         elif transaction_type == "expense":

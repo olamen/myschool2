@@ -84,31 +84,30 @@ def expense_list(request):
 @login_required
 def open_cash_register(request):
     if request.method == "POST":
-        form = CashRegisterForm(request.POST)
-        if form.is_valid():
-            cash_register = form.save(commit=False)
-            cash_register.user = request.user
-            cash_register.current_balance = cash_register.initial_balance  # Fix: Set current_balance
-            cash_register.save()
-            messages.success(request, "La caisse a été ouverte avec succès.")
-            return redirect("cash_register_list")
-        else:
-            messages.error(request, "Erreur lors de l'ouverture de la caisse.")
-    else:
-        form = CashRegisterForm()
-
-    return render(request, "accounting/cash_register/open.html", {"form": form})
+        opening_balance = float(request.POST.get("initial_balance", 0.0))
+        try:
+            CashRegister.objects.create(
+                initial_balance=opening_balance,
+                current_balance=opening_balance,
+                is_open=True,
+                user=request.user,
+            )
+            messages.success(request, "Caisse ouverte avec succès.")
+            return redirect("cash_register_status")
+        except ValueError as e:
+            messages.error(request, str(e))
+    return render(request, "accounting/cash_register/open.html")
 
 
 # Vue pour fermer la caisse
 @login_required
 def close_cash_register(request, register_id):
-    cash_register = get_object_or_404(CashRegister, id=register_id, is_open=True)
+    cash_register = CashRegister.objects.get(id=register_id, user=request.user, is_open=True)
     if request.method == "POST":
         closing_balance = float(request.POST.get("closing_balance", cash_register.current_balance))
         cash_register.close_register(closing_balance)
         messages.success(request, "Caisse fermée avec succès.")
-        return redirect("indexaccounting")
+        return redirect("cash_register_status")
     return render(request, "accounting/cash_register/close.html", {"cash_register": cash_register})
 
 
