@@ -108,6 +108,19 @@ class FeeForm(forms.ModelForm):
             'due_date': 'Date d\'échéance',
             'paid': 'Payé',
         }
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-control form-control-lg'}),
+            'amount_due': forms.NumberInput(attrs={'class': 'form-control form-control-lg'}),
+            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-lg'}),
+            'paid': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        def __init__(self, *args, **kwargs):
+            super(FeeForm, self).__init__(*args, **kwargs)
+            for field_name, field in self.fields.items():
+                if isinstance(field.widget, forms.CheckboxInput):
+                    field.widget.attrs['class'] = 'form-check-input'  # For checkboxes
+                else:
+                    field.widget.attrs['class'] = 'form-control form-control-lg'  # For other inputs
 
 class PaymentForm(forms.ModelForm):
     """
