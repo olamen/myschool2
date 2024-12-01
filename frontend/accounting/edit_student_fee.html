@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="container mt-5">
-    <h1 class="text-center">Modifier le Frais de {{ fee.student.first_name }} {{ fee.student.last_name }}</h1>
-    <h1 class="text-center">Mois de| {{ fee.due_date|date:"j F Y" }}</h1>
+    <h1 class="text-center">Modifier le Frais de {{ student.first_name }} {{ student.last_name }}</h1>
+    <h1 class="text-center">Mois de| {{ due_date }}</h1>
     <hr />
     <form method="post">
         {% csrf_token %}
