@@ -2,7 +2,7 @@
 {% block body %}
 <div class="container mt-5">
     <h1 class="text-center">Modifier le Frais de {{ student.first_name }} {{ student.last_name }}</h1>
-    <h1 class="text-center">Mois de| {{ due_date }}</h1>
+    <h1 class="text-center">Mois de| {{ month_name }}</h1>
     <hr />
     <form method="post">
         {% csrf_token %}
