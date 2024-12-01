@@ -98,6 +98,28 @@ def edit_student_fee(request, fee_id):
     })
 
 @login_required
+def archive_student_fee(request, fee_id):
+    """
+    Archive a student fee and update the associated CashRegister.
+    """
+    fee = get_object_or_404(Fee, id=fee_id)
+
+    # Retrieve the open cash register for the current user
+    cash_register = CashRegister.objects.filter(user=request.user, is_open=True).first()
+    if not cash_register:
+        messages.error(request, "Aucune caisse ouverte. Veuillez ouvrir une caisse pour continuer.")
+        return redirect("student_fee_list")
+
+    if fee.paid:
+        # Adjust the CashRegister balance by subtracting the archived fee amount
+        cash_register.update_current_balance(-fee.amount_due, "expense")
+
+    # Archive the fee (delete or set an archived flag)
+    fee.delete()  # You can also set `fee.is_archived = True` if using a soft-delete approach.
+
+    messages.success(request, "Le frais a été archivé avec succès et la caisse mise à jour.")
+    return redirect("student_fee_list")
+@login_required
 def delete_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
     fee.delete()

@@ -19,6 +19,7 @@ class Fee(models.Model):
     amount_due = models.DecimalField(max_digits=10, decimal_places=2)  # Montant dû
     due_date = models.DateField()  # Date d'échéance du paiement
     paid = models.BooleanField(default=False)  # Indique si le frais a été payé
+    archived = models.BooleanField(default=False)  # Add this field
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)  # Utilisateur ayant enregistré ou modifié ce frais
 
     def __str__(self):
