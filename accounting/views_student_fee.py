@@ -65,25 +65,45 @@ def edit_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
     student = fee.student
     month_name = calendar.month_name[fee.due_date.month]  # Get the full month name
-    if request.method == 'POST':
+
+    # Retrieve the current open cash register
+    cash_register = CashRegister.objects.filter(user=request.user, is_open=True).first()
+    if not cash_register:
+        messages.error(request, "Aucune caisse ouverte. Veuillez ouvrir une caisse pour continuer.")
+        return redirect("cash_register_list")
+
+    if request.method == "POST":
         form = FeeForm(request.POST, instance=fee)
         if form.is_valid():
-            form.save()
-            return redirect('student_fee_list')
+            old_amount = fee.amount_due
+            fee = form.save()
+
+            # Update cash register if the fee's payment status or amount changes
+            if fee.paid:
+                difference = fee.amount_due - old_amount
+                cash_register.update_current_balance(difference, "income")
+            else:
+                # Revert the previous amount if unpaid
+                cash_register.update_current_balance(-old_amount, "expense")
+
+            messages.success(request, "Le frais a été mis à jour avec succès.")
+            return redirect("student_fee_list")
     else:
         form = FeeForm(instance=fee)
-        context = {
+
+    return render(request, "accounting/edit_student_fee.html", {
         "form": form,
         "student": student,
         "month_name": month_name.capitalize(),
-        }
-    return render(request, 'accounting/edit_student_fee.html', context)
+    })
+
 @login_required
 def delete_student_fee(request, fee_id):
     fee = get_object_or_404(Fee, id=fee_id)
     fee.delete()
     messages.success(request, "Le frais de l'étudiant a été supprimé avec succès.")
     return redirect('student_fee_list')
+
 @login_required
 def get_students_by_parent(request, parent_id):
     """
@@ -91,6 +111,7 @@ def get_students_by_parent(request, parent_id):
     """
     students = Student.objects.filter(parents__id=parent_id).values('id', 'first_name', 'last_name')
     return JsonResponse(list(students), safe=False)
+
 @login_required
 def add_payment(request):
     if request.method == 'POST':
