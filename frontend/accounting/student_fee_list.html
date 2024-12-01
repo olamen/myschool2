@@ -35,14 +35,11 @@
                     <td>
                         <a href="{% url 'edit_student_fee' fee.id %}" class="btn btn-warning btn-sm">Modifier</a>
                         
-                            {% if fee.paid %}
-                                <a href="{% url 'archive_student_fee' fee.id %}" class="btn btn-danger btn-sm"
+                        <a href="{% url 'archive_student_fee' fee.id %}" class="btn btn-danger btn-sm"
                                     onclick="return confirm('Êtes-vous sûr de vouloir archiver ce frais ?');">
                                     Supprimer
                                 </a>
-                            {% else %}
-                                <span class="text-muted">Non payé</span>
-                            {% endif %}
+                        
                         
                     </td>
                 </tr>
