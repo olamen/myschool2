@@ -31,6 +31,7 @@ urlpatterns = [
     # URLs pour les frais étudiants
     path('student-fees/',student_fee_list, name='student_fee_list'),
     path('student-fees/add/',add_student_fee, name='add_student_fee'),
+    path('get-student-fee-amount/<int:student_id>/', get_student_fee_amount, name='get_student_fee_amount'),
     #path('student-fees/<int:pk>/edit/',edit_student_fee, name='edit_student_fee'),
     #path('student-fees/<int:pk>/delete/',delete_student_fee, name='delete_student_fee'),
 
