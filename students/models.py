@@ -142,6 +142,10 @@ class Teacher(models.Model):
                 raise ValueError("Hours worked must be greater than 0 for hourly salary.")
             return self.salary * hours_worked
         return self.salary
+    
+    def get_subjects(self):
+        """Returns a comma-separated string of subjects."""
+        return ", ".join([subject.name for subject in self.subjects.all()])
 
     def __str__(self):
         return self.name

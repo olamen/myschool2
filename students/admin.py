@@ -29,7 +29,10 @@ class ParentAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subject', 'salary', 'salary_type', 'is_active')
+    list_display = ('name', 'get_subjects', 'salary', 'salary_type', 'is_active', 'enrollment_date')
     list_filter = ('salary_type', 'is_active')
-    search_fields = ('name', 'subject')
-    ordering = ('name',)
+    search_fields = ('name', 'subjects__name')
+
+    def get_subjects(self, obj):
+        return obj.get_subjects()
+    get_subjects.short_description = "Subjects"
