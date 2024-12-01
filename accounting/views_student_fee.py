@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Sum
 from students.models import Student
-from .models import Fee, Payment
+from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
 
 # Liste des frais des étudiants
