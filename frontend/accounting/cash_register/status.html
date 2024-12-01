@@ -20,7 +20,7 @@
                     <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} MRU</p>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <h5>Statut :</h5>
+                    <span><h5>Statut :</h5></span>
                     <p class="fs-4">
                         {% if cash_register.is_open %}
                         <span class="badge bg-success">Ouvert</span>

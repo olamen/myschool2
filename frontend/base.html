@@ -40,6 +40,10 @@
 
 <body>
 
+{% block sidebar %}
+    
+
+    
     <!-- main sidebar -->
     <div class="fixed-sidebar sidebar-mini">
         <div class="logo">
@@ -164,8 +168,10 @@
         </div>
         <!-- sidebar menu -->
     </div>
+{% endblock sidebar %}
     <div class="main-content">
         <div class="breadcrumb-wrap mb-20">
+            
             {% block body %}
             {% if messages %}
             <div class="container mt-4">
