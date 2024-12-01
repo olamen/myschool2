@@ -70,7 +70,7 @@ class CashRegister(models.Model):
         self.closing_balance = closing_balance
         self.is_open = False
         self.save()
-        
+
     def save(self, *args, **kwargs):
         if self.is_open:
             # Close other open cash registers
@@ -163,7 +163,6 @@ class StudentFee(models.Model):
         return f"Frais pour {self.student.first_name} {self.student.last_name} - {'Payé' if self.is_paid else 'Non payé'}"
     
 
-User = get_user_model()
 
 class Expense(models.Model):
     """
