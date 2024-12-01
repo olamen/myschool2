@@ -115,6 +115,7 @@ class Teacher(models.Model):
     nni = models.CharField(
         max_length=10,
         unique=True,
+        null=True,
         validators=[
             MinLengthValidator(10),
             RegexValidator(r'^\d{10}$', 'NNI must be exactly 10 digits.')
