@@ -40,9 +40,8 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if cash.is_open %}
-                          ferm
-                            <!-- <a href="{% url 'close_cash_register' cash_register.id %}" class="btn btn-warning btn-sm">Fermer la caisse</a> -->
+                    {% if cash_register.is_open %}
+                            <a href="{% url 'close_cash_register' cash_register.id %}" class="btn btn-warning btn-sm">Fermer la caisse</a>
                     {% else %}
                         <span class="text-muted">Déjà fermée</span>
                     {% endif %}
