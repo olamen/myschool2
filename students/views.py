@@ -116,6 +116,7 @@ def indexview(request):
         return redirect('parent_student_dashboard')
 
     # Logic for the Super Admin view
+    students = Student.objects.all().order_by('-id')[:5]
     total_students = Student.objects.count()
     clsses = Classe.objects.count()
 
@@ -126,6 +127,7 @@ def indexview(request):
         'total_students': total_students,
         'class_counts': class_counts,
         'clsses_counts': clsses,
+        'student': students
     }
     return render(request, 'index.html', context)
 

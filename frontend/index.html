@@ -59,7 +59,7 @@
                 <div class="col-xl-6 col-lg-6">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Les frais des tudients</span>
+                            <span>Les frais des etudients</span>
                         </div>
                         <div class="panel-body">
                             <div id="student-fees-chart"></div>
@@ -81,68 +81,28 @@
                 <div class="col-xl-4 col-lg-4">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Recent Messages</span>
+                            <span>Recent Messages</span> 
                         </div>
                         <div class="panel-body">
+                            for
+                            
                             <div class="recent-message">
                                 <ul>
+                                    {% for student in students %}
                                     <li>
-                                        <a href="#" class="message-box">
+                                        <a href="{% url 'student_detail' student.id %}" class="message-box">
                                             <div class="part-img">
-                                                <img src=" {% static 'images/avatar-1.jpg' %} " alt="image">
+                                                <img src=" {{ student.photo.url }} " alt="{{ student.first_name }} {{ student.last_name }}">
                                             </div>
                                             <div class="part-txt">
-                                                <p>Steven Brown</p>
-                                                <span>@sbrown</span>
+                                                <p>{{ student.first_name }} {{ student.last_name }}</p>
+                                                <span>Classe :{{ student.student_class.name }}</span>
                                             </div>
                                         </a>
                                     </li>
+                                    {% endfor %}
                                     <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src=" {% static 'images/avatar-2.jpg' %} " alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Keith Mendoza</p>
-                                                <span>@kmendoza</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-3.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>John Page</p>
-                                                <span>@jpage</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-4.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Zachary Philips</p>
-                                                <span>@zphilips</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-5.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Daniel Wise</p>
-                                                <span>@dwise</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="part-btn">Start Conversation</a>
+                                        <a href="{% url 'students_list' %}" class="part-btn">Listes des étudiants</a>
                                     </li>
                                 </ul>
                             </div>
