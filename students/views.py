@@ -1,10 +1,11 @@
 # students/views.py
+from datetime import date
 from django.http import HttpResponseForbidden, JsonResponse
 from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum, Count
-from accounting.models import  Transaction
+from accounting.models import  Fee, Transaction
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import action
 from django.contrib.auth import authenticate, login
@@ -127,6 +128,23 @@ def indexview(request):
         'clsses_counts': clsses,
     }
     return render(request, 'index.html', context)
+
+def student_fees_by_month(request):
+    current_year = date.today().year
+    fees_by_month = (
+        Fee.objects.filter(due_date__year=current_year)
+        .values('due_date__month')
+        .annotate(total_amount=Sum('amount_due'))
+        .order_by('due_date__month')
+    )
+
+    # Create a list of 12 months with default value 0 for missing months
+    fees_data = [0] * 12
+    for fee in fees_by_month:
+        month_index = fee['due_date__month'] - 1  # Months are 1-indexed
+        fees_data[month_index] = float(fee['total_amount'])
+
+    return JsonResponse({"series": fees_data})
 
 
     

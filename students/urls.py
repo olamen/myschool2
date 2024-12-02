@@ -32,6 +32,7 @@ urlpatterns = [
     path('students/bulk_upload/', BulkUploadStudentsView.as_view(), name='bulk_upload_students'),
     path('export/students_pdf/', ListStudentPDFView.as_view(), name='students_pdf'),
     path('students/<int:student_id>/update/', update_student, name='update_student'),  # Update student
+    path('student-fees-by-month/', student_fees_by_month, name='student_fees_by_month'),
 
 
     path('grades/', grades_list, name='grades_list'),
