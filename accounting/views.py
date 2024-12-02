@@ -122,7 +122,7 @@ def cash_register_status(request):
 
 @login_required
 def cash_register_list(request):
-    cash_registers = CashRegister.objects.all().order_by("-date")  # Liste des caisses triées par date décroissante
+    cash_registers = CashRegister.objects.all().order_by("-id")  # Liste des caisses triées par date décroissante
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
 @login_required
