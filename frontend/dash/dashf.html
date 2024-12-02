@@ -3,5 +3,10 @@
 {% block body %}
         <h1>Admin finance Dashboard</h1>
         <p>Welcome to the Adminf dashboard, {{ request.user.first_name}} {{ request.user.last_name}}!</p>
-
+            <div class="panel-heading">
+                <span>Le Nombres d'Éleves Par Classe</span>
+                <div class="right">
+                    <a href="#" class="action-btn">Show All</a>
+                </div>
+            </div>
 {% endblock body %}
