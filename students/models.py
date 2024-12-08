@@ -35,7 +35,6 @@ class Student(models.Model):
     ]
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-   
     nni = models.CharField(
         max_length=10, 
         validators=[MinLengthValidator(10)]
