@@ -122,12 +122,12 @@ def cash_register_status(request):
 
 @login_required
 def cash_register_list(request):
-    cash_registers = CashRegister.objects.all().order_by("-id")  # Liste des caisses triées par date décroissante
+    cash_registers = CashRegister.objects.all().order_by("-id") 
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
 @login_required
 def cash_register_list_byuser(request):
-    cash_registers = CashRegister.objects.filter(user=request.user).order_by("-id")  # Liste des caisses de lutilisateur triées par date décroissante
+    cash_registers = CashRegister.objects.filter(user=request.user).order_by("-id") 
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
 @login_required

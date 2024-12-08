@@ -7,7 +7,7 @@ from .forms import TransactionForm
 
 # Liste des transactions
 def transaction_list(request):
-    transactions = Transaction.objects.all().order_by('-transaction_date')
+    transactions = Transaction.objects.all().order_by('-date')
     total_income = transactions.filter(type='income').aggregate(Sum('amount'))['amount__sum'] or 0
     total_expense = transactions.filter(type='expense').aggregate(Sum('amount'))['amount__sum'] or 0
     context = {
