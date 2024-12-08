@@ -43,6 +43,7 @@ def add_transaction(request):
 
             cash_register.save()
             transaction.cash_register = cash_register
+            transaction.user = request.user  # Set the user field
             transaction.save()
 
             messages.success(request, "Transaction ajoutée avec succès.")
