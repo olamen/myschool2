@@ -4,8 +4,11 @@ from django.db.models import Sum
 from django.utils.timezone import now
 from .models import Transaction, CashRegister
 from .forms import TransactionForm
+from django.contrib.auth.decorators import login_required
+
 
 # Liste des transactions
+@login_required
 def transaction_list(request):
     transactions = Transaction.objects.all().order_by('-date')
     total_income = transactions.filter(transaction_type='Credit').aggregate(Sum('amount'))['amount__sum'] or 0
@@ -18,7 +21,29 @@ def transaction_list(request):
     return render(request, 'accounting/transaction_list.html', context)
 
 
+@login_required
+def transaction_list_adminf(request):
+    # Ensure the user has the role 'Adminf'
+    if request.user.role != 'Adminf':
+        return render(request, "403.html")  # Render a '403 Forbidden' page or similar
+
+    # Filter transactions for the current user
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
+
+    # Calculate totals
+    total_income = transactions.filter(transaction_type='Credit').aggregate(Sum('amount'))['amount__sum'] or 0
+    total_expense = transactions.filter(transaction_type='Debit').aggregate(Sum('amount'))['amount__sum'] or 0
+
+    context = {
+        'transactions': transactions,
+        'total_income': total_income,
+        'total_expense': total_expense,
+    }
+    return render(request, 'accounting/transaction_list.html', context)
+
+
 # Ajouter une transaction
+@login_required
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
@@ -55,6 +80,7 @@ def add_transaction(request):
 
 
 # Détails d'une transaction
+@login_required
 def transaction_details(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     return render(request, 'accounting/transaction_details.html', {'transaction': transaction})

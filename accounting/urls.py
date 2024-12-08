@@ -21,6 +21,7 @@ urlpatterns = [
 
     # URLs pour les transactions
     path('transactions/',transaction_list, name='transaction_list'),
+    path('transactionslist/',transaction_list_adminf, name='transaction_list_adminf'),
     path('transactions/add/',add_transaction, name='add_transaction'),
     path('transactions/<int:pk>/details/',transaction_details, name='transaction_details'),
 
