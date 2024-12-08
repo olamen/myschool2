@@ -118,7 +118,7 @@ def indexview(request):
     # Logic for the Super Admin view
     total_students = Student.objects.count()
     clsses = Classe.objects.count()
-    transactions = Transaction.objects.all().order_by('-transaction_date')
+    transactions = Transaction.objects.all().order_by('-date')
 
 
     # Get the count of students per class
