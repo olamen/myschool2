@@ -59,7 +59,7 @@
                 <div class="col-xl-6 col-lg-6">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Profile Visit</span>
+                            <span>Les entres des eleves par Mois</span>
                         </div>
                         <div class="panel-body">
                             <div id="student-fees-chart"></div>
@@ -81,63 +81,34 @@
                 <div class="col-xl-4 col-lg-4">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Recent Messages</span>
+                            <span>Les etudient recent</span>
                         </div>
                         <div class="panel-body">
                             <div class="recent-message">
                                 <ul>
+                                    {% for student in students %}
                                     <li>
                                         <a href="#" class="message-box">
                                             <div class="part-img">
-                                                <img src=" {% static 'images/avatar-1.jpg' %} " alt="image">
+                                                {% if student.photo %}
+                                                <img
+                                                src="{{ student.photo.url }}"
+                                                class="img-fluid rounded-start zoom"
+                                                alt="Student Photo"
+                                                />
+                                                {% else %}
+                                                <img
+                                                src=" {% static 'images/child.png' %} "
+                                                class="img-fluid rounded-start zoom"
+                                                alt="Placeholder Photo"
+                                                />
+                                                {% endif %}
                                             </div>
                                             <div class="part-txt">
-                                                <p>Steven Brown</p>
-                                                <span>@sbrown</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src=" {% static 'images/avatar-2.jpg' %} " alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Keith Mendoza</p>
-                                                <span>@kmendoza</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-3.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>John Page</p>
-                                                <span>@jpage</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-4.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Zachary Philips</p>
-                                                <span>@zphilips</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="message-box">
-                                            <div class="part-img">
-                                                <img src="{% static 'images/avatar-5.jpg' %}" alt="image">
-                                            </div>
-                                            <div class="part-txt">
-                                                <p>Daniel Wise</p>
-                                                <span>@dwise</span>
+                                                <p><a href="{% url 'student_detail' student.id %}">
+                                                    {{ student.first_name }} {{ student.last_name }}</a
+                                                  ></p>
+                                                <span>@{{ student.student_class}}</span>
                                             </div>
                                         </a>
                                     </li>

@@ -117,6 +117,7 @@ def indexview(request):
 
     # Logic for the Super Admin view
     total_students = Student.objects.count()
+    students = Student.objects.all()
     clsses = Classe.objects.count()
     transactions = Transaction.objects.all().order_by('-date')
 
@@ -129,6 +130,7 @@ def indexview(request):
         'class_counts': class_counts,
         'clsses_counts': clsses,
         'transactions':     transactions,
+        'students' : students,
 
     }
     return render(request, 'index.html', context)
