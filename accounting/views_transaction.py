@@ -32,9 +32,9 @@ def add_transaction(request):
                 return redirect('accounting:transaction_list')
 
             # Mettre à jour le solde de la caisse
-            if transaction.type == 'income':
+            if transaction.transaction_type == 'income':
                 cash_register.current_balance += transaction.amount
-            elif transaction.type == 'expense':
+            elif transaction.transaction_type == 'expense':
                 if cash_register.current_balance >= transaction.amount:
                     cash_register.current_balance -= transaction.amount
                 else:
