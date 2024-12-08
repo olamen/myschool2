@@ -24,7 +24,8 @@ def add_transaction(request):
         form = TransactionForm(request.POST)
         if form.is_valid():
             transaction = form.save(commit=False)
-            cash_register = CashRegister.objects.filter(is_open=True).first()
+           # cash_register = CashRegister.objects.filter(is_open=True).first()
+            cash_register = CashRegister.objects.get(user=request.user, is_open=True)
 
             if not cash_register:
                 messages.error(request, "Impossible d'ajouter une transaction : la caisse est fermée.")

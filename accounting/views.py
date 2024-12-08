@@ -114,14 +114,18 @@ def close_cash_register(request, register_id):
 # Vue pour afficher l'état de la caisse
 @login_required
 def cash_register_status(request):
-    cash_register = CashRegister.objects.filter(is_open=True).last()  # Get the latest open register
+    cash_register = CashRegister.objects.get(user=request.user, is_open=True)
     if not cash_register:
-        messages.error(request, "Aucune caisse ouverte actuellement.")
+        messages.error(request, "Aucune caisse ouverte actuellement pour se compte.")
         return redirect("indexaccounting")
     return render(request, "accounting/cash_register/status.html", {"cash_register": cash_register})
 
 @login_required
 def cash_register_list(request):
+    cash_registers = CashRegister.objects.all().order_by("-id")  # Liste des caisses triées par date décroissante
+    return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
+@login_required
+def cash_register_list_byuser(request,pk):
     cash_registers = CashRegister.objects.all().order_by("-id")  # Liste des caisses triées par date décroissante
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
