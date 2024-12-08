@@ -144,9 +144,9 @@ def update_cash_register(sender, instance, **kwargs):
     """
     Met à jour le solde actuel de la caisse après chaque transaction.
     """
-    if instance.type == 'Credit':
+    if instance.transaction_type == 'Credit':
         instance.cash_register.current_balance += instance.amount
-    elif instance.type == 'Debit':
+    elif instance.transaction_type == 'Debit':
         instance.cash_register.current_balance -= instance.amount
     instance.cash_register.save()
 
