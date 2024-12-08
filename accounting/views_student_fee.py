@@ -125,7 +125,7 @@ def delete_student_fee(request, fee_id):
     fee.delete()
     messages.success(request, "Le frais de l'étudiant a été supprimé avec succès.")
     return redirect('student_fee_list')
-
+ 
 @login_required
 def get_students_by_parent(request, parent_id):
     """
