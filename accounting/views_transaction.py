@@ -46,7 +46,7 @@ def add_transaction(request):
             transaction.save()
 
             messages.success(request, "Transaction ajoutée avec succès.")
-            return redirect('accounting:transaction_list')
+            return redirect('transaction_list')
     else:
         form = TransactionForm()
 
