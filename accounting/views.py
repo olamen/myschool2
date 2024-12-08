@@ -126,8 +126,8 @@ def cash_register_list(request):
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
 @login_required
-def cash_register_list_byuser(request,user_id):
-    cash_registers = CashRegister.objects.filter(user__id=user_id).order_by("-id")  # Liste des caisses de lutilisateur triées par date décroissante
+def cash_register_list_byuser(request):
+    cash_registers = CashRegister.objects.filter(user=request.user).order_by("-id")  # Liste des caisses de lutilisateur triées par date décroissante
     return render(request, "accounting/cash_register/list.html", {"cash_registers": cash_registers})
 
 @login_required

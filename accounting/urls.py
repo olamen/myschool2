@@ -17,7 +17,7 @@ urlpatterns = [
     path("cash-register/list/", cash_register_list, name="cash_register_list"),
     path("cash-register/details/<int:pk>/", cash_register_details, name="cash_register_details"),
     path('cash-register/status/',cash_register_status, name='cash_register_status'),
-    path('cash-register/status/<int:user_id>/', cash_register_list_byuser, name='get_cash_register_status_by_user'),
+    path('cash-register/list_by_user/', cash_register_list_byuser, name='get_cash_register_status_by_user'),
 
     # URLs pour les transactions
     path('transactions/',transaction_list, name='transaction_list'),
