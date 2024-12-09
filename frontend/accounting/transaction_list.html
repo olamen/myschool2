@@ -12,7 +12,8 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped" id="myTable"
+        class="table table-light data-table table-hover text-nowrap">
             <thead>
                 <tr>
                     <th>#</th>
@@ -23,8 +24,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="myTable"
-            class="table table-light data-table table-hover text-nowrap">
+            <tbody >
                 {% for transaction in transactions %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
