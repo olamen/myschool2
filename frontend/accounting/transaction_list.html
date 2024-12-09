@@ -23,7 +23,8 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTable"
+            class="table table-light data-table table-hover text-nowrap">
                 {% for transaction in transactions %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
