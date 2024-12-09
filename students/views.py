@@ -208,11 +208,11 @@ class StudentViewSet(viewsets.ModelViewSet):
         # Retrieve siblings (students with the same parent accounts)
         siblings = Student.objects.filter(parents__in=student.parents.all()).exclude(pk=student.pk)
 
-        # Retrieve payment history from the accounting app
-        payments = Payment.objects.filter(student=student).order_by('-payment_date')
+        # Retrieve payment history from the accounting app 
+        payments = Fee.objects.filter(student=student).order_by('-due_date')
 
         # Retrieve transaction history
-        transactions = Transaction.objects.filter(student=student).order_by('-payment_date')
+        transactions = Transaction.objects.filter(student=student).order_by('-date')
 
         context = {
             'student': student,
