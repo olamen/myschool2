@@ -218,7 +218,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             'student': student,
             'siblings': siblings,
             'payments': payments,
-            'transactions': transactions,
+            #'transactions': transactions,
             'parents': student.parents.all(),  # Get all parents linked to the student
         }
         return render(request, 'students/student_detail.html', context)
