@@ -212,7 +212,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         payments = Fee.objects.filter(student=student).order_by('-due_date')
 
         # Retrieve transaction history
-        transactions = Transaction.objects.filter(student=student).order_by('-date')
+        #transactions = Transaction.objects.filter(student=student).order_by('-date')
 
         context = {
             'student': student,
