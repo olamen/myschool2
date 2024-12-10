@@ -62,7 +62,8 @@ class Parent(models.Model):
     last_name = models.CharField(max_length=100)
     nni = models.CharField(
         max_length=10, 
-        validators=[MinLengthValidator(10)]
+        validators=[MinLengthValidator(10)],
+        default="1234567890"
     )
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
