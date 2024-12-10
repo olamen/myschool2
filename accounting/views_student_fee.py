@@ -137,14 +137,32 @@ def get_students_by_parent(request, parent_id):
 @login_required
 def add_payment(request):
     if request.method == 'POST':
-        form = PaymentForm(request.POST)
+        form = PaymentForm(request.POST, user=request.user)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Paiement enregistré avec succès.')
+            payment = form.save(commit=False)
+            
+            # Retrieve the current open cash register for the user
+            try:
+                cash_register = CashRegister.objects.get(user=request.user, is_open=True)
+            except CashRegister.DoesNotExist:
+                messages.error(request, "Aucune caisse ouverte. Impossible d'enregistrer le paiement.")
+                return redirect('payment_list')  # Replace with the appropriate URL name
+            
+            # Update the cash register balance
+            cash_register.current_balance += payment.amount
+            cash_register.save()
+
+            # Assign the cash register to the payment and save it
+            payment.cash_register = cash_register
+            payment.save()
+
+            messages.success(request, 'Paiement enregistré avec succès et caisse mise à jour.')
             return redirect('payment_list')  # Replace with the appropriate URL name
     else:
-        form = PaymentForm()
+        form = PaymentForm(user=request.user)
+
     return render(request, 'accounting/add_payment.html', {'form': form})
+
 @login_required
 def payment_list_ajax(request):
     """

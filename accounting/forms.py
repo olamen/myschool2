@@ -130,7 +130,7 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = [
-            'cash_register',
+            'cash_register',  # This field will be displayed as read-only
             'student',
             'parent',
             'classe',
@@ -139,7 +139,7 @@ class PaymentForm(forms.ModelForm):
             'notes',
         ]
         widgets = {
-            'cash_register': forms.Select(attrs={'class': 'form-control'}),
+            'cash_register': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'student': forms.Select(attrs={'class': 'form-control'}),
             'parent': forms.Select(attrs={'class': 'form-control'}),
             'classe': forms.Select(attrs={'class': 'form-control'}),
@@ -157,8 +157,21 @@ class PaymentForm(forms.ModelForm):
             'notes': 'Notes',
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
+        """
+        Pass the logged-in user to dynamically set the cash_register field value.
+        """
         super().__init__(*args, **kwargs)
+
+        # Set queryset for student, parent, and classe fields
         self.fields['student'].queryset = Student.objects.all().order_by('first_name', 'last_name')
         self.fields['parent'].queryset = Parent.objects.all().order_by('first_name', 'last_name')
         self.fields['classe'].queryset = Classe.objects.filter(is_active=True).order_by('name')
+
+        # Dynamically populate the cash_register field
+        if user:
+            try:
+                cash_register = CashRegister.objects.get(user=user, is_open=True)
+                self.fields['cash_register'].initial = f"Caisse ouverte - {cash_register.current_balance} MRU"
+            except CashRegister.DoesNotExist:
+                self.fields['cash_register'].initial = "Aucune caisse ouverte"
