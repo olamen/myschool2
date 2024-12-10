@@ -141,7 +141,7 @@ class PaymentForm(forms.ModelForm):
         widgets = {
             'cash_register': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'student': forms.Select(attrs={'class': 'form-control'}),
-            'parent': forms.Select(attrs={'class': 'form-control'}),
+            'parent': forms.Select(attrs={'class': 'form-control parent-select'}),
             'classe': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Montant'}),
             'method': forms.Select(attrs={'class': 'form-control'}),

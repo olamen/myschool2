@@ -36,6 +36,8 @@ urlpatterns = [
     path('student-fees/edit/<int:fee_id>/', edit_student_fee, name='edit_student_fee'),
     path('student-fees/archive/<int:fee_id>/', archive_student_fee, name='archive_student_fee'),
     path('student-fees/delete/<int:fee_id>/', delete_student_fee, name='delete_student_fee'),
+    path('parent-search-autocomplete/', parent_search_autocomplete, name='parent_search_autocomplete'),
+
 
 
     path('get-student-fee-amount/<int:student_id>/', get_student_fee_amount, name='get_student_fee_amount'),

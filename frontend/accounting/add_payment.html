@@ -1,5 +1,7 @@
 {% extends "basef.html" %}
 {% load static %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
 {% block body %}
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Ajouter un Paiement</h2>
@@ -105,4 +107,34 @@ $(document).ready(function() {
     });
 });
 </script>
+<script>
+  $(document).ready(function () {
+      // Initialize Select2 for parent field
+      $('.parent-select').select2({
+          placeholder: "Recherchez un parent (NNI ou nom)",
+          ajax: {
+              url: "{% url 'parent_search_autocomplete' %}", // Define this URL in views
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      q: params.term, // Search query
+                  };
+              },
+              processResults: function (data) {
+                  return {
+                      results: data.map(function (item) {
+                          return {
+                              id: item.id,
+                              text: `${item.name} (${item.nni})`
+                          };
+                      })
+                  };
+              },
+          },
+          minimumInputLength: 2,
+      });
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 {% endblock %}

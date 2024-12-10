@@ -4,9 +4,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
-from students.models import Student
+from students.models import Parent, Student
 from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
+from accounting import models
 
 # Liste des frais des étudiants
 @login_required
@@ -198,3 +199,23 @@ def get_student_details(request, student_id):
         return JsonResponse(response_data, safe=False)
     except Student.DoesNotExist:
         return JsonResponse({"error": "Étudiant introuvable."}, status=404)
+    
+def parent_search_autocomplete(request):
+    query = request.GET.get('q', '')
+    if query:
+        parents = Parent.objects.filter(
+            models.Q(first_name__icontains=query) |
+            models.Q(last_name__icontains=query) |
+            models.Q(nni__icontains=query)
+        ).values('id', 'first_name', 'last_name', 'nni')[:10]
+        results = [
+            {
+                'id': parent['id'],
+                'name': f"{parent['first_name']} {parent['last_name']}",
+                'nni': parent['nni']
+            }
+            for parent in parents
+        ]
+    else:
+        results = []
+    return JsonResponse(results, safe=False)
