@@ -36,7 +36,8 @@ class Student(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     nni = models.CharField(
-        max_length=10, 
+        max_length=10,
+        unique=True,
         validators=[MinLengthValidator(10)]
     )
     mobile = models.CharField(max_length=40)
@@ -63,6 +64,7 @@ class Parent(models.Model):
     nni = models.CharField(
         max_length=10, 
         validators=[MinLengthValidator(10)],
+        unique=True,
         default="1234567890"
     )
     email = models.EmailField(unique=True)
@@ -91,7 +93,7 @@ class Parent(models.Model):
 
 
 class Subject(models.Model):
-    name = models.CharField(max_length=100)  # Nom du sujet
+    name = models.CharField(max_length=100,)  # Nom du sujet
     class_enrolled = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='subjects')  # Classe associée
     coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet
     is_active = models.BooleanField(default=True)  # Statut actif ou inactif
@@ -111,7 +113,12 @@ class Teacher(models.Model):
         null=True, 
         blank=True, 
         related_name='teachers'
-    )  # Relationship with Subject model
+    )  # Relationship with Subject model,
+    nni = models.CharField(
+        max_length=10, 
+        validators=[MinLengthValidator(10)],
+        default="1234567890"
+    )
     enrollment_date = models.DateField()
     salary = models.PositiveIntegerField(null=False)
     salary_type = models.CharField(
@@ -189,7 +196,7 @@ class Devoir(models.Model):
         return f"Homework for {self.student} in {self.subject.name}"
     
 class Composition(models.Model):
-        name = models.CharField(max_length=100,default="Composition")
+        name = models.CharField(max_length=100,default="Composition",unique=True)
         exam_date = models.DateField()  # La date de l'examen
         coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
