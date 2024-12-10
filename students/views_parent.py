@@ -19,6 +19,7 @@ def parent_create(request):
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         phone_number = request.POST.get('phone_number')
+        nni = request.POST.get('nni')
         address = request.POST.get('address')
         children_ids = request.POST.getlist('children')  # List of student IDs
         photo = request.FILES.get('photo')  # Handle uploaded photo
@@ -27,6 +28,7 @@ def parent_create(request):
         parent = Parent.objects.create(
             first_name=first_name,
             last_name=last_name,
+            nni=nni,
             email=email,
             phone_number=phone_number,
             address=address,
