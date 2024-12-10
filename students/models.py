@@ -60,6 +60,10 @@ class Student(models.Model):
 class Parent(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    nni = models.CharField(
+        max_length=10, 
+        validators=[MinLengthValidator(10)]
+    )
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
