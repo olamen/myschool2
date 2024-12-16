@@ -49,30 +49,32 @@ def add_transaction(request):
         form = TransactionForm(request.POST)
         if form.is_valid():
             transaction = form.save(commit=False)
-           # cash_register = CashRegister.objects.filter(is_open=True).first()
-            cash_register = CashRegister.objects.get(user=request.user, is_open=True)
-
-            if not cash_register:
-                messages.error(request, "Impossible d'ajouter une transaction : la caisse est fermée.")
+            
+            # Retrieve the open cash register for the current user
+            try:
+                cash_register = CashRegister.objects.get(user=request.user, is_open=True)
+            except CashRegister.DoesNotExist:
+                messages.error(request, "Impossible d'ajouter une transaction : aucune caisse ouverte.")
                 return redirect('accounting:transaction_list')
 
-            # Mettre à jour le solde de la caisse
+            # Update the cash register balance
             if transaction.transaction_type == 'income':
                 cash_register.current_balance += transaction.amount
             elif transaction.transaction_type == 'expense':
                 if cash_register.current_balance >= transaction.amount:
                     cash_register.current_balance -= transaction.amount
                 else:
-                    messages.error(request, "Le solde de la caisse est insuffisant pour cette dépense.")
+                    messages.error(request, "Le solde de la caisse est insuffisant pour effectuer cette dépense.")
                     return redirect('accounting:add_transaction')
 
+            # Save the cash register and transaction
             cash_register.save()
             transaction.cash_register = cash_register
-            transaction.user = request.user  # Set the user field
+            transaction.user = request.user  # Assign the current user to the transaction
             transaction.save()
 
             messages.success(request, "Transaction ajoutée avec succès.")
-            return redirect('transaction_list')
+            return redirect('accounting:transaction_list')
     else:
         form = TransactionForm()
 
