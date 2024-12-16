@@ -1,45 +1,140 @@
-{% extends "base.html" %}
+{% extends "basef.html" %}
+{% load static %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
 {% block body %}
 <div class="container mt-5">
-    <h1 class="text-center">Ajouter un Paiement</h1>
-    <hr />
-    <form method="post" id="payment-form">
-        {% csrf_token %} 
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success w-100">Enregistrer</button>
-    </form>
-    <a href="{% url 'payment_list' %}" class="btn btn-secondary mt-3">Retour à la Liste</a>
+  <h2 class="mb-4 text-center">Ajouter un Paiement</h2>
+  <div class="card">
+    <div class="card-body">
+      <form id="payment-form" method="post">
+        {% csrf_token %}
+        
+        <div  class="mb-3">
+          <label for="cash_register">Caisse</label>
+          {{ form.cash_register }}
+        </div> 
+        
+        <div class="mb-3">
+          <label for="parent">Parent</label>
+          {{ form.parent }}
+        </div>
+        
+        <div class="mb-3">
+          <label for="student">Étudiant</label>
+          <select id="student" name="student" class="form-control">
+            <option value="">Sélectionnez un parent d'abord</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="classe">Classe</label>
+          <input type="text" id="classe" class="form-control" readonly>
+        </div>
+        
+        <div class="mb-3">
+          <label for="amount">Montant</label>
+          <input type="text" id="amount" class="form-control" readonly>
+        </div>
+        
+        <div class="mb-3">
+          <label for="method">Méthode de Paiement</label>
+          {{ form.method }}
+        </div>
+        
+        <div class="mb-3">
+          <label for="notes">Notes</label>
+          {{ form.notes }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+      </form>
+    </div>
+  </div>
 </div>
 
-<!-- Include Select2 Initialization -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-    $(document).ready(function () {
-        // Initialize Select2 for parent field
-        $('.parent-select').select2({
-            placeholder: "Recherchez un parent (NNI ou nom)",
-            ajax: {
-                url: "{% url 'parent_search_autocomplete' %}", // Define this URL in views
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term, // Search query
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data.map(function (item) {
-                            return {
-                                id: item.id,
-                                text: `${item.name} (${item.nni})`
-                            };
-                        })
-                    };
-                },
-            },
-            minimumInputLength: 2,
-        });
+$(document).ready(function() {
+    // Handle parent change to fetch students
+    $("#id_parent").change(function() {
+        const parentId = $(this).val();
+        const studentSelect = $("#student");
+        studentSelect.html('<option value="">Chargement...</option>');
+
+        if (parentId) {
+            $.ajax({
+                url: "{% url 'get_students_by_parent' 0 %}".replace('0', parentId),
+                method: "GET",
+                success: function(data) {
+                    studentSelect.html('<option value="">Sélectionnez un étudiant</option>');
+                    data.forEach(function(student) {
+                        studentSelect.append(
+                            `<option value="${student.id}">${student.first_name} ${student.last_name}</option>`
+                        );
+                    });
+                }, 
+                error: function() {
+                    studentSelect.html('<option value="">Erreur lors du chargement</option>');
+                }
+            });
+        } else {
+            studentSelect.html('<option value="">Sélectionnez un parent d\'abord</option>');
+        }
     });
+
+    // Handle student change to fetch class and fee details
+    $("#student").change(function() {
+        const studentId = $(this).val();
+        if (studentId) {
+            $.ajax({
+                url: "{% url 'get_student_details' 0 %}".replace('0', studentId),
+                method: "GET",
+                success: function(data) {
+                    $("#classe").val(data.class_name);
+                    $("#amount").val(data.monthly_fee);
+                },
+                error: function() {
+                    alert("Erreur lors du chargement des détails de l'étudiant.");
+                    $("#classe").val("");
+                    $("#amount").val("");
+                }
+            });
+        } else {
+            $("#classe").val("");
+            $("#amount").val("");
+        }
+    });
+});
 </script>
+<script>
+  $(document).ready(function () {
+      // Initialize Select2 for parent field
+      $('.parent-select').select2({
+          placeholder: "Recherchez un parent (NNI ou nom)",
+          ajax: {
+              url: "{% url 'parent_search_autocomplete' %}", // Define this URL in views
+              dataType: 'json',
+              delay: 250,
+              data: function (params) {
+                  return {
+                      q: params.term, // Search query
+                  };
+              },
+              processResults: function (data) {
+                  return {
+                      results: data.map(function (item) {
+                          return {
+                              id: item.id,
+                              text: `${item.name} (${item.nni})`
+                          };
+                      })
+                  };
+              },
+          },
+          minimumInputLength: 2,
+      });
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 {% endblock %}
