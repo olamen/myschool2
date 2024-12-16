@@ -65,7 +65,7 @@ def add_transaction(request):
                     cash_register.current_balance -= transaction.amount
                 else:
                     messages.error(request, "Le solde de la caisse est insuffisant pour effectuer cette dépense.")
-                    return redirect('accounting:add_transaction')
+                    return redirect('add_transaction')
 
             # Save the cash register and transaction
             cash_register.save()
@@ -74,7 +74,7 @@ def add_transaction(request):
             transaction.save()
 
             messages.success(request, "Transaction ajoutée avec succès.")
-            return redirect('accounting:transaction_list')
+            return redirect('transaction_list')
     else:
         form = TransactionForm()
 
