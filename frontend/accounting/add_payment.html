@@ -4,7 +4,7 @@
     <h1 class="text-center">Ajouter un Paiement</h1>
     <hr />
     <form method="post" id="payment-form">
-        {% csrf_token %}
+        {% csrf_token %} 
         {{ form.as_p }}
         <button type="submit" class="btn btn-success w-100">Enregistrer</button>
     </form>
