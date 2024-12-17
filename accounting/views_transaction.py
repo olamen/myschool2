@@ -44,38 +44,33 @@ def transaction_list_adminf(request):
 
 # Ajouter une transaction
 @login_required
+@login_required
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
             transaction = form.save(commit=False)
             
-            # Retrieve the open cash register for the current user
+            # Récupérer la caisse ouverte pour l'utilisateur
             try:
                 cash_register = CashRegister.objects.get(user=request.user, is_open=True)
             except CashRegister.DoesNotExist:
                 messages.error(request, "Impossible d'ajouter une transaction : aucune caisse ouverte pour votre compte.")
-                return redirect('accounting:transaction_list')
+                return redirect('transaction_list')
             
-            # Debugging: Print the current cash register balance and transaction amount
-            print(f"Cash Register Balance: {cash_register.current_balance}")
-            print(f"Transaction Amount: {transaction.amount}")
-            print(f"Transaction Type: {transaction.transaction_type}")
-
-            # Check the transaction type and update cash register balance
-            if transaction.transaction_type == 'income':
-                cash_register.current_balance += transaction.amount
-            elif transaction.transaction_type == 'expense':
-                if cash_register.current_balance >= transaction.amount:
-                    cash_register.current_balance -= transaction.amount
-                else:
-                    messages.error(request, "Pas assez d'argent dans la caisse pour cette dépense.")
+            # Vérification pour maintenir un solde positif
+            if transaction.transaction_type == 'expense':
+                if cash_register.current_balance < transaction.amount:
+                    messages.error(request, "Le solde de la caisse est insuffisant pour cette dépense. Solde actuel : {:.2f} MRU".format(cash_register.current_balance))
                     return redirect('add_transaction')
-
-            # Save the updated cash register and transaction
+                cash_register.current_balance -= transaction.amount
+            elif transaction.transaction_type == 'income':
+                cash_register.current_balance += transaction.amount
+            
+            # Sauvegarder les modifications
             cash_register.save()
             transaction.cash_register = cash_register
-            transaction.user = request.user  # Assign the current user to the transaction
+            transaction.user = request.user  # Lier l'utilisateur actuel à la transaction
             transaction.save()
 
             messages.success(request, "Transaction ajoutée avec succès.")
