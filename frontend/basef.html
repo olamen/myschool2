@@ -65,10 +65,7 @@
                                 data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
                                     class="bi bi-grid-fill"></i> <span>Page d'Accueil</span></a></li>
 
-                        <li class="sidebar-item has-sub">
-                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>La
-                                    Comptabilité</span></a>
+                        <li class="sidebar-item"><a role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>LaComptabilité</span></a>
                             <ul class="sub-menu">
                                 <li><a href=" {% url 'open_cash_register' %} " class="sub-menu-item">Ouvrir la Caisse</a></li>
                                 <li><a href=" {% url 'get_cash_register_status_by_user' %} " class="sub-menu-item">Liste des Caisses</a></li>
@@ -77,6 +74,8 @@
                                 <li><a href=" {% url 'student_fee_list' %} " class="sub-menu-item">Frais Etudient</a></li>
                             </ul>
                         </li>
+                        <li><a href=" {% url 'open_cash_register' %} " class="sidebar-item">Ouvrir la Caisse</a></li>
+
                     </ul>
                     <div class="sidebar-fixed-bottom">
 
