@@ -3,5 +3,6 @@
 {% block body %}
         <h1>Admin finance Dashboard</h1>
         <p>Welcome to the Adminf dashboard, {{ request.user.first_name}} {{ request.user.last_name}}!</p>
+        <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} MRU</p>
 
 {% endblock body %}
