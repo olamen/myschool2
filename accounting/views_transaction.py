@@ -44,7 +44,6 @@ def transaction_list_adminf(request):
 
 # Ajouter une transaction
 @login_required
-@login_required
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
@@ -59,12 +58,12 @@ def add_transaction(request):
                 return redirect('transaction_list')
             
             # Vérification pour maintenir un solde positif
-            if transaction.transaction_type == 'Credit':
+            if transaction.transaction_type == 'Debit':  # Dépense
                 if cash_register.current_balance < transaction.amount:
                     messages.error(request, "Le solde de la caisse est insuffisant pour cette dépense. Solde actuel : {:.2f} MRU".format(cash_register.current_balance))
                     return redirect('add_transaction')
                 cash_register.current_balance -= transaction.amount
-            elif transaction.transaction_type == 'Debit':
+            elif transaction.transaction_type == 'Credit':  # Revenu
                 cash_register.current_balance += transaction.amount
             
             # Sauvegarder les modifications

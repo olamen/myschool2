@@ -136,7 +136,7 @@ class Transaction(models.Model):
     )
 
     def __str__(self):
-        return f"{self.type} - {self.amount} on {self.date}"
+        return f"{self.transaction_type} - {self.amount} on {self.date}"
 
 # Signal pour mettre à jour la caisse après une transaction
 @receiver(post_save, sender=Transaction)
