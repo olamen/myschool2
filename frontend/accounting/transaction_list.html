@@ -11,6 +11,8 @@
             <p><strong>Total des Dépenses :</strong> {{ total_expense }} MRU</p>
         </div>
     </div>
+    <a href="{% url 'add_transaction' %}" class="btn btn-success mt-3">Ajouter une Transaction</a>
+
     <div class="table-responsive">
         <table class="table table-striped" id="myTable"
         class="table table-light data-table table-hover text-nowrap">
@@ -40,6 +42,5 @@
             </tbody>
         </table>
     </div>
-    <a href="{% url 'add_transaction' %}" class="btn btn-success mt-3">Ajouter une Transaction</a>
 </div>
 {% endblock %}
