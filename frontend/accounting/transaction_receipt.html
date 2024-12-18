@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu de Transaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .receipt-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .details {
+            margin: 10px 0;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .print-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <h1>Reçu de Transaction</h1>
+        <div class="details">
+            <p><strong>Numero:</strong> {{ transaction.transaction_type }}</p>
+            <p><strong>Type de Transaction :</strong> {{ transaction.transaction_type }}</p>
+            <p><strong>Montant :</strong> {{ transaction.amount }} MRU</p>
+            <p><strong>Description :</strong> {{ transaction.description }}</p>
+            <p><strong>Date :</strong> {{ transaction.date|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="print-button">
+            <button onclick="window.print()">Imprimer</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -85,3 +85,20 @@ def add_transaction(request):
 def transaction_details(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     return render(request, 'accounting/transaction_details.html', {'transaction': transaction})
+
+
+@login_required
+def print_transaction_receipt(request, transaction_id):
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    
+    # Vérifier que l'utilisateur a le droit de voir cette transaction
+    if transaction.user != request.user:
+        print("Vous n'avez pas la permission d'imprimer ce reçu.")
+        messages.error(request, "Vous n'avez pas la permission d'imprimer ce reçu.")
+        return redirect('transaction_list')
+    
+    # Rendre une page HTML comme reçu
+    context = {
+        'transaction': transaction,
+    }
+    return render(request, 'accounting/transaction_receipt.html', context)

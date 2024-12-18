@@ -24,6 +24,8 @@ urlpatterns = [
     path('transactionslist/',transaction_list_adminf, name='transaction_list_adminf'),
     path('transactions/add/',add_transaction, name='add_transaction'),
     path('transactions/<int:pk>/details/',transaction_details, name='transaction_details'),
+    path('transactions/<int:transaction_id>/print/', print_transaction_receipt, name='print_transaction_receipt'),
+
 
     path('add-payment/', add_payment, name='add_payment'),
     path('get-students/<int:parent_id>/', get_students_by_parent, name='get_students_by_parent'),

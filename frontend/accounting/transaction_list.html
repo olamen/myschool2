@@ -36,6 +36,7 @@
                     <td>{{ transaction.date|date:"d/m/Y H:i" }}</td>
                     <td>
                         <a href="{% url 'transaction_details' transaction.id %}" class="btn btn-primary btn-sm">Détails</a>
+                        <a href="{% url 'print_transaction_receipt' transaction.id %}" class="btn btn-primary">Imprimer</a>
                     </td>
                 </tr>
                 {% endfor %}
