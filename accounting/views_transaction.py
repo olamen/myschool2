@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Sum
@@ -100,5 +101,7 @@ def print_transaction_receipt(request, transaction_id):
     # Rendre une page HTML comme reçu
     context = {
         'transaction': transaction,
+        'cashier': request.user.get_full_name(),  # Nom complet du caissier
+        'school_name': settings.SCHOOL_NAME,      # Nom de l'école
     }
     return render(request, 'accounting/transaction_receipt.html', context)

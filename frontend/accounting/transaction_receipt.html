@@ -5,44 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reçu de Transaction</title>
     <style>
+        @media print {
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            width: 80mm; /* Largeur des imprimantes thermiques */
+            margin: 0; /* Pas de marges */
         }
         .receipt-container {
-            border: 1px solid #ddd;
-            padding: 20px;
-            max-width: 400px;
-            margin: auto;
+            width: 100%;
+            padding: 5mm; /* Marges internes */
+            font-size: 10px; /* Texte adapté au ticket */
         }
-        h1 {
+                     }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .receipt-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+        .header {
             text-align: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
             font-size: 1.5em;
+            color: #333;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.9em;
         }
         .details {
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
         .details p {
             margin: 5px 0;
         }
-        .print-button {
+        .footer {
             text-align: center;
             margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
         }
+        .footer button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .footer button:hover {
+            background: #0056b3;
+        }
+        .thank-you {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: bold;
+        }
+        
     </style>
 </head>
 <body>
     <div class="receipt-container">
-        <h1>Reçu de Transaction</h1>
+        <div class="header">
+            <h1>{{ school_name }}</h1>
+            <p>Reçu officiel</p>
+        </div>
         <div class="details">
-            <p><strong>Numero:</strong> {{ transaction.transaction_type }}</p>
+            <p><strong>ID de Transaction :</strong> {{ transaction.id }}</p>
             <p><strong>Type de Transaction :</strong> {{ transaction.transaction_type }}</p>
             <p><strong>Montant :</strong> {{ transaction.amount }} MRU</p>
-            <p><strong>Description :</strong> {{ transaction.description }}</p>
+            <p><strong>Description :</strong> {{ transaction.description|default:"-" }}</p>
             <p><strong>Date :</strong> {{ transaction.date|date:"d/m/Y H:i" }}</p>
+            <p><strong>Caissier :</strong> {{ cashier }}</p>
         </div>
-        <div class="print-button">
-            <button onclick="window.print()">Imprimer</button>
+        <div class="thank-you">
+            Merci pour votre confiance et votre soutien !
+        </div>
+        <div class="footer">
+            <button onclick="window.print()">Imprimer le reçu</button>
         </div>
     </div>
 </body>
