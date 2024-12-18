@@ -97,11 +97,20 @@ def print_transaction_receipt(request, transaction_id):
         print("Vous n'avez pas la permission d'imprimer ce reçu.")
         messages.error(request, "Vous n'avez pas la permission d'imprimer ce reçu.")
         return redirect('transaction_list')
+    # Determine the type of receipt
+    receipt_type = "Original" if transaction.is_original else "Copy"
+    
+    # Update the transaction to mark it as printed
+    if transaction.is_original:
+        transaction.is_original = False
+        transaction.save()
     
     # Rendre une page HTML comme reçu
     context = {
         'transaction': transaction,
+        "receipt_type": receipt_type,
         'cashier': request.user.get_full_name(),  # Nom complet du caissier
         'school_name': settings.SCHOOL_NAME,      # Nom de l'école
+        "thank_you_message": "Merci pour votre confiance.",
     }
     return render(request, 'accounting/transaction_receipt.html', context)

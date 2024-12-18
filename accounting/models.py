@@ -134,6 +134,7 @@ class Transaction(models.Model):
         on_delete=models.CASCADE, 
         related_name="transactions"
     )
+    is_original = models.BooleanField(default=True)  # Track if it's the first print
 
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} on {self.date}"
