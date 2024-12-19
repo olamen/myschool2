@@ -108,11 +108,11 @@ def open_cash_register(request):
 
 # Vue pour fermer la caisse
 @login_required
-def close_cash_register(request, pk):
+def close_cash_register(request, register_id):
     """
     Close an open cash register for the logged-in user.
     """
-    cash_register = get_object_or_404(CashRegister, pk=pk, is_open=True)
+    cash_register = get_object_or_404(CashRegister, id=register_id, is_open=True)
 
     if request.method == "POST":
         try:
