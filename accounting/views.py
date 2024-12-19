@@ -123,7 +123,7 @@ def close_cash_register(request, register_id):
             cash_register.save()
 
             messages.success(request, "Caisse fermée avec succès.")
-            return redirect("cash_register_status")  # Replace with the appropriate URL name
+            return redirect("index")  # Replace with the appropriate URL name
         except Exception as e:
             messages.error(request, f"Erreur lors de la fermeture de la caisse : {e}")
             return redirect("cash_register_status")
