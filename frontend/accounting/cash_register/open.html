@@ -9,7 +9,11 @@
 </head>
 <body>
 <div class="container mt-5">
+
     <h1 class="text-center mb-4">Ouvrir la Caisse</h1>
+    {% if not user.role == "Adminf" %}
+    <p class="text-danger">Seuls les administrateurs financiers (Adminf) peuvent ouvrir une caisse.</p>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         <div class="card shadow-sm p-4">

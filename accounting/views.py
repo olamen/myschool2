@@ -83,9 +83,15 @@ def expense_list(request):
 # Vue pour ouvrir la caisse
 @login_required
 def open_cash_register(request):
+    # Ensure only users with the 'Adminf' role can access this functionality
+    if request.user.role != 'Adminf':
+        messages.error(request, "Seuls les administrateurs financiers (Adminf) peuvent ouvrir une caisse.")
+        return redirect("home")  # Replace 'home' with the appropriate redirect URL
+
     if request.method == "POST":
         opening_balance = float(request.POST.get("initial_balance", 0.0))
         try:
+            # Create a new cash register for the user
             CashRegister.objects.create(
                 initial_balance=opening_balance,
                 current_balance=opening_balance,
@@ -93,21 +99,35 @@ def open_cash_register(request):
                 user=request.user,
             )
             messages.success(request, "Caisse ouverte avec succès.")
-            return redirect("cash_register_status")
+            return redirect("cash_register_status")  # Replace with the correct URL name
         except ValueError as e:
             messages.error(request, str(e))
+    
     return render(request, "accounting/cash_register/open.html")
 
 
 # Vue pour fermer la caisse
 @login_required
-def close_cash_register(request, register_id):
-    cash_register = CashRegister.objects.get(id=register_id, user=request.user, is_open=True)
+def close_cash_register(request, pk):
+    """
+    Close an open cash register for the logged-in user.
+    """
+    cash_register = get_object_or_404(CashRegister, pk=pk, is_open=True)
+
     if request.method == "POST":
-        closing_balance = float(request.POST.get("closing_balance", cash_register.current_balance))
-        cash_register.close_register(closing_balance)
-        messages.success(request, "Caisse fermée avec succès.")
-        return redirect("cash_register_status")
+        try:
+            # Update the cash register state
+            cash_register.is_open = False
+            cash_register.closing_balance = cash_register.current_balance
+            cash_register.user = request.user  # Ensure the user field is set correctly
+            cash_register.save()
+
+            messages.success(request, "Caisse fermée avec succès.")
+            return redirect("cash_register_status")  # Replace with the appropriate URL name
+        except Exception as e:
+            messages.error(request, f"Erreur lors de la fermeture de la caisse : {e}")
+            return redirect("cash_register_status")
+
     return render(request, "accounting/cash_register/close.html", {"cash_register": cash_register})
 
 

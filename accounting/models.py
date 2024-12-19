@@ -52,12 +52,10 @@ class CashRegister(models.Model):
     notes = models.TextField(null=True, blank=True, verbose_name=_("Notes"))
     date = models.DateField(auto_now_add=True, verbose_name=_("Date"))
     is_open = models.BooleanField(default=False, verbose_name=_("Ouvert"))
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="cash_register",
+    user = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name="cash_registers",
         verbose_name=_("Utilisateur en cours"),
     )
 
