@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <style>
         @media print {
         body {
-            width: 80mm; /* Largeur des imprimantes thermiques */
+            width: 57mm; /* Largeur des imprimantes thermiques */
             margin: 0; /* Pas de marges */
         }
         header, footer {
@@ -88,10 +88,12 @@
 </head>
 <body>
     <div class="receipt-container">
+
         <div class="header">
-            <h1>{{ school_name }}</h1>
+            <p>                 </p>
+            <h1>&Eacute;cole Excellence</h1> <!-- "École Example" -->
             <h3>{{ receipt_type }}</h3>
-            <p>Reçu officiel</p>
+            <p>Re&ccedil;u officiel</p>
         </div>
         <div class="details">
             <p><strong>ID de Transaction :</strong> {{ transaction.id }}</p>
