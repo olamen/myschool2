@@ -13,7 +13,7 @@
         <div class="card shadow-sm p-4">
             <div class="mb-3">
                 <label for="final_balance" class="form-label">Solde Final (MRU)</label>
-                <input type="number" step="0.01" name="final_balance" id="final_balance" class="form-control" placeholder="Entrez le solde final" required>
+                <input value="{{ cash_register.current_balance }}" type="number" step="0.01" name="final_balance" id="final_balance" class="form-control" placeholder="Entrez le solde final" required readonly>
             </div>
             <div class="mb-3">
                 <label for="notes" class="form-label">Commentaires (optionnel)</label>
