@@ -168,16 +168,18 @@ class AppConfig(models.Model):
     def __str__(self):
         return f"Configuration for {self.school_name}"
     
+class Trimestre(models.Model):
+      name = models.CharField(max_length=100,default="Trimestre",unique=True)
+
  #devoir   
 class Devoir(models.Model):
     name = models.CharField(max_length=100,default="Devoir")
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='homeworks')  # L'étudiant
+    trimestre = models.ForeignKey(Trimestre, on_delete=models.CASCADE, default=1)
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='homeworks')  # L'étudiant
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='homeworkssub')  # La matière
-    due_date = models.DateField()  # Date d'échéance
+    date = models.DateField()  # Date d'échéance
     description = models.TextField()  # Description du devoir
-    submission_date = models.DateField(null=True, blank=True)  # Date de soumission du devoir
-    submitted = models.BooleanField(default=False)  # Statut de soumission
-    score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score du devoir, null si pas encore noté
+    coefficient = models.DecimalField(max_digits=5, decimal_places=2, default=1)  # Score du devoir, null si pas encore noté
     
     def clean(self):
         if self.score and (self.score < 0 or self.score > 20):
@@ -197,6 +199,7 @@ class Devoir(models.Model):
     
 class Composition(models.Model):
         name = models.CharField(max_length=100,default="Composition",unique=True)
+        trimestre = models.ForeignKey(Trimestre, on_delete=models.CASCADE, default=1)
         exam_date = models.DateField()  # La date de l'examen
         coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)

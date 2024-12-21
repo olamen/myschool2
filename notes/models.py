@@ -6,7 +6,6 @@ class Exam(models.Model):
     name = models.CharField(max_length=100)  # e.g., "1ère composition"
     school_year = models.CharField(max_length=9)  # e.g., "2023/2024"
     date = models.DateField()
-
     def __str__(self):
         return f"{self.name} - {self.school_year}"
 
