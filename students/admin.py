@@ -4,7 +4,7 @@ from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject
 
 # Register your models here.
 class HomeworkAdmin(admin.ModelAdmin):
-    list_display = ['student', 'subject', 'due_date', 'score', 'get_weighted_score']
+    list_display = ['name','trimestre','classe','subject', 'date', 'description', 'get_weighted_score']
 
 admin.site.register(Devoir, HomeworkAdmin)
 admin.site.register(Student)

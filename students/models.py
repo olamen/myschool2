@@ -175,9 +175,9 @@ class Trimestre(models.Model):
 class Devoir(models.Model):
     name = models.CharField(max_length=100,default="Devoir")
     trimestre = models.ForeignKey(Trimestre, on_delete=models.CASCADE, default=1)
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='homeworks')  # L'étudiant
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='homeworks',default=1)  # L'étudiant
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='homeworkssub')  # La matière
-    date = models.DateField()  # Date d'échéance
+    date = models.DateField(auto_now=True)  # Date d'échéance
     description = models.TextField()  # Description du devoir
     coefficient = models.DecimalField(max_digits=5, decimal_places=2, default=1)  # Score du devoir, null si pas encore noté
     
