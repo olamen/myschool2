@@ -3,13 +3,15 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from students import views_subject, views_teacher
+from students.views_devoir import composition_create, composition_delete, composition_list, composition_update, devoir_create, devoir_delete, devoir_list, devoir_update
+from students.views_trimestres import trimestre_create, trimestre_delete, trimestre_list, trimestre_update
 
 from .views_class import class_archive, class_archived_list, class_list, class_create, class_update 
 from .views_composition import exam_detail, edit_exam
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, CompositionViewSet, HomeworkViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_fees_by_month,update_student, get_classes, grades_list, add_grade, update_grade
+from .views import AppConfigViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_fees_by_month,update_student, get_classes, grades_list, add_grade, update_grade
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -19,8 +21,7 @@ router.register(r'classes', ClassViewSet)
 router.register(r'subject', SubjectViewSet)
 router.register(r'attendances', AttendanceViewSet)
 router.register(r'config', AppConfigViewSet)
-router.register(r'homeworks', HomeworkViewSet)
-router.register(r'compositions', CompositionViewSet)
+
 
 urlpatterns = [
     path('', indexview, name='index'),
@@ -69,4 +70,20 @@ urlpatterns = [
 
     path("exams/<int:exam_id>/", exam_detail, name="exam_detail"),
     path("exams/<int:exam_id>/edit/", edit_exam, name="edit_exam"),
+
+    #
+    path('trimestres/', trimestre_list, name='trimestre_list'),
+    path('trimestres/create/', trimestre_create, name='trimestre_create'),
+    path('trimestres/<int:pk>/update/', trimestre_update, name='trimestre_update'),
+    path('trimestres/<int:pk>/delete/', trimestre_delete, name='trimestre_delete'),
+
+    path('devoirs/', devoir_list, name='devoir_list'),
+    path('devoirs/create/', devoir_create, name='devoir_create'),
+    path('devoirs/<int:pk>/update/', devoir_update, name='devoir_update'),
+    path('devoirs/<int:pk>/delete/', devoir_delete, name='devoir_delete'),
+
+    path('compositions/', composition_list, name='composition_list'),
+    path('compositions/create/', composition_create, name='composition_create'),
+    path('compositions/<int:pk>/update/', composition_update, name='composition_update'),
+    path('compositions/<int:pk>/delete/', composition_delete, name='composition_delete'),
 ]

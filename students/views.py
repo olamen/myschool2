@@ -16,7 +16,7 @@ from django.utils import timezone
 from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
 from .models import AppConfig, Grade, Devoir, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
-from .serializers import AppConfigSerializer, CompositionSerializer, HomeworkSerializer, StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
+from .serializers import AppConfigSerializer , StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
 
 
 def forbidden_view(request, exception=None):
@@ -334,51 +334,3 @@ class AppConfigViewSet(viewsets.ModelViewSet):
             return Response({"error": "AppConfig not found"}, status=404)
         
 
-# Vue pour gérer les devoirs
-class HomeworkViewSet(viewsets.ModelViewSet):
-    queryset = Devoir.objects.all()
-    serializer_class = HomeworkSerializer
-
-    @action(detail=True, methods=['patch'])
-    def update_score(self, request, pk=None):
-        """Mettre à jour le score d'un devoir."""
-        homework = self.get_object()
-        score = request.data.get('score')  # Récupère le score du corps de la requête
-        
-        if score is not None:
-            homework.score = score
-            homework.save()
-            return Response({"message": "Score updated successfully"})
-        else:
-            return Response({"error": "Score is required"}, status=400)
-
-    @action(detail=True, methods=['get'])
-    def weighted_score(self, request, pk=None):
-        """Calculer le score pondéré basé sur le coefficient du sujet."""
-        homework = self.get_object()
-        weighted_score = homework.get_weighted_score()  # Méthode pour calculer le score pondéré
-        return Response({"weighted_score": weighted_score})
-    
-class CompositionViewSet(viewsets.ModelViewSet):
-    queryset = Composition.objects.all()
-    serializer_class = CompositionSerializer
-
-    @action(detail=True, methods=['patch'])
-    def update_score(self, request, pk=None):
-        """Mettre à jour le score d'une composition."""
-        composition = self.get_object()
-        score = request.data.get('score')  # Récupère le score du corps de la requête
-        
-        if score is not None:
-            composition.score = score
-            composition.save()
-            return Response({"message": "Score updated successfully"})
-        else:
-            return Response({"error": "Score is required"}, status=400)
-
-    @action(detail=True, methods=['get'])
-    def weighted_score(self, request, pk=None):
-        """Calculer le score pondéré basé sur le coefficient du sujet."""
-        composition = self.get_object()
-        weighted_score = composition.score * composition.subject.coefficient  # Score pondéré
-        return Response({"weighted_score": weighted_score})

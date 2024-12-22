@@ -1,0 +1,40 @@
+<!-- templates/composition_list.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Compositions</title>
+</head>
+<body>
+    <h1>Liste des Compositions</h1>
+    <a href="{% url 'composition_create' %}">Ajouter une Composition</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Trimestre</th>
+                <th>Date d'Examen</th>
+                <th>Coefficient</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for composition in compositions %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ composition.name }}</td>
+                <td>{{ composition.trimestre.name }}</td>
+                <td>{{ composition.exam_date }}</td>
+                <td>{{ composition.coefficient }}</td>
+                <td>
+                    <a href="{% url 'composition_update' composition.id %}">Modifier</a> |
+                    <a href="{% url 'composition_delete' composition.id %}">Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
