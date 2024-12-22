@@ -59,7 +59,7 @@ def delete_homework(request, pk):
     """Delete homework."""
     homework = get_object_or_404(Devoir, pk=pk)
     homework.delete()
-    return redirect('notes:homework_list')
+    return redirect('homework_list')
 
 # Composition CRUD
 def composition_list(request):
@@ -97,7 +97,7 @@ def edit_composition(request, pk):
         composition.exam_date = request.POST.get('exam_date')
         composition.remarks = request.POST.get('remarks', '')
         composition.save()
-        return redirect('notes:composition_list')
+        return redirect('composition_list')
     students = Student.objects.all()
     subjects = Subject.objects.all()
     return render(request, 'notes/edit_composition.html', {'composition': composition, 'students': students, 'subjects': subjects})
@@ -106,4 +106,4 @@ def delete_composition(request, pk):
     """Delete composition."""
     composition = get_object_or_404(Composition, pk=pk)
     composition.delete()
-    return redirect('notes:composition_list')
+    return redirect('composition_list')
