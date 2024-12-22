@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter les Notes des Étudiants</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="mb-4">Ajouter les Notes des Étudiants</h2>
+
+        <!-- Formulaire principal -->
+        <form id="notesForm">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="sessionYear" class="form-label">Année Scolaire</label>
+                    <select class="form-select" id="sessionYear" name="sessionYear">
+                        <option value="">Sélectionnez une année</option>
+                        <!-- Options dynamiques -->
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="trimestre" class="form-label">Trimestre</label>
+                    <select class="form-select" id="trimestre" name="trimestre">
+                        <option value="">Sélectionnez un trimestre</option>
+                        <!-- Options dynamiques -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="devoir" class="form-label">Devoir</label>
+                    <select class="form-select" id="devoir" name="devoir">
+                        <option value="">Sélectionnez un devoir</option>
+                        <!-- Options dynamiques -->
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="subject" class="form-label">Matière</label>
+                    <select class="form-select" id="subject" name="subject">
+                        <option value="">Sélectionnez une matière</option>
+                        <!-- Options dynamiques -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="classe" class="form-label">Classe</label>
+                    <select class="form-select" id="classe" name="classe">
+                        <option value="">Sélectionnez une classe</option>
+                        <!-- Options dynamiques -->
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tableau des étudiants -->
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom de l'Étudiant</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTable">
+                <!-- Les étudiants seront ajoutés dynamiquement ici -->
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-primary" id="saveNotes">Enregistrer les Notes</button>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script JS -->
+    <script>
+        $(document).ready(function () {
+            // Charger les années scolaires, trimestres, devoirs, matières et classes via AJAX
+            function loadOptions(url, targetSelect) {
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (data) {
+                        $(targetSelect).empty().append('<option value="">Sélectionnez une option</option>');
+                        $.each(data, function (index, item) {
+                            $(targetSelect).append(`<option value="${item.id}">${item.name}</option>`);
+                        });
+                    }
+                });
+            }
+
+            // Charger les années scolaires
+            loadOptions('/api/sessionyears/', '#sessionYear');
+
+            // Charger les trimestres lorsque l'année scolaire change
+            $('#sessionYear').change(function () {
+                let sessionYearId = $(this).val();
+                if (sessionYearId) {
+                    loadOptions(`/api/trimestres/${sessionYearId}/`, '#trimestre');
+                }
+            });
+
+            // Charger les devoirs lorsque le trimestre change
+            $('#trimestre').change(function () {
+                let trimestreId = $(this).val();
+                if (trimestreId) {
+                    loadOptions(`/api/devoirs/${trimestreId}/`, '#devoir');
+                }
+            });
+
+            // Charger les matières lorsque le devoir change
+            $('#devoir').change(function () {
+                let devoirId = $(this).val();
+                if (devoirId) {
+                    loadOptions(`/api/subjects/${devoirId}/`, '#subject');
+                }
+            });
+
+            // Charger les étudiants lorsque la classe est sélectionnée
+            $('#classe').change(function () {
+                let classeId = $(this).val();
+                let devoirId = $('#devoir').val();
+                if (classeId && devoirId) {
+                    $.ajax({
+                        url: `/api/students/${classeId}/${devoirId}/`,
+                        type: "GET",
+                        success: function (data) {
+                            let studentsTable = $('#studentsTable');
+                            studentsTable.empty();
+                            $.each(data.students, function (index, student) {
+                                studentsTable.append(`
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${student.name}</td>
+                                        <td>
+                                            <input type="number" class="form-control student-score" data-student-id="${student.id}" min="0" max="20" step="0.1">
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Enregistrer les notes
+            $('#saveNotes').click(function () {
+                let notes = [];
+                $('.student-score').each(function () {
+                    let studentId = $(this).data('student-id');
+                    let score = $(this).val();
+                    if (score) {
+                        notes.push({
+                            student_id: studentId,
+                            score: score
+                        });
+                    }
+                });
+
+                if (notes.length > 0) {
+                    $.ajax({
+                        url: '/api/save_notes/',
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ notes: notes }),
+                        success: function () {
+                            alert("Notes enregistrées avec succès !");
+                        },
+                        error: function () {
+                            alert("Erreur lors de l'enregistrement des notes.");
+                        }
+                    });
+                } else {
+                    alert("Veuillez entrer des notes pour les étudiants.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
