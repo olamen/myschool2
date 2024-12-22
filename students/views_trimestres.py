@@ -26,7 +26,7 @@ def trimestre_update(request, pk):
             return redirect('trimestre_list')
     else:
         form = TrimestreForm(instance=trimestre)
-    return render(request, 'trimestre_form.html', {'form': form})
+    return render(request, 'students/trimestres/trimestre_form.html', {'form': form})
 
 def trimestre_delete(request, pk):
     trimestre = get_object_or_404(Trimestre, pk=pk)

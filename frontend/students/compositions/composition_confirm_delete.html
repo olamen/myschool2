@@ -1,14 +1,12 @@
 <!-- templates/composition_confirm_delete.html -->
- {% load static %}
-
-<!DOCTYPE html>
-<html lang="fr">
+{% extends "base.html" %}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supprimer une Composition</title>
 </head>
-<body>
+{% block body %}
     <h1>Supprimer une Composition</h1>
     <p>Êtes-vous sûr de vouloir supprimer la composition "{{ composition.name }}" ? Cette action est irréversible.</p>
     <form method="post">
@@ -16,5 +14,4 @@
         <button type="submit">Oui, supprimer</button>
         <a href="{% url 'composition_list' %}">Annuler</a>
     </form>
-</body>
-</html>
+    {% endblock %}

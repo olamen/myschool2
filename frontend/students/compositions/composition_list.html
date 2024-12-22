@@ -1,13 +1,14 @@
 <!-- templates/composition_list.html -->
-<!DOCTYPE html>
-<html lang="fr">
+{% extends "base.html" %}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Compositions</title>
 </head>
-<body>
-    <h1>Liste des Compositions</h1>
+
+{% block body %}
+<h1>Liste des Compositions</h1>
     <a href="{% url 'composition_create' %}">Ajouter une Composition</a>
     <table border="1">
         <thead>
@@ -37,4 +38,4 @@
         </tbody>
     </table>
 </body>
-</html>
+{% endblock body %}
