@@ -38,7 +38,6 @@ def devoir_delete(request, pk):
     return render(request, 'students/devoirs/devoir_confirm_delete.html', {'devoir': devoir})
 
 # Composition CRUD
-
 def composition_list(request):
     compositions = Composition.objects.all()
     return render(request, 'students/compositions/composition_list.html', {'compositions': compositions})

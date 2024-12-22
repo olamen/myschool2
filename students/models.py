@@ -183,16 +183,13 @@ class Devoir(models.Model):
     description = models.TextField()  # Description du devoir
     coefficient = models.DecimalField(max_digits=5, decimal_places=2, default=1)  # Score du devoir, null si pas encore noté
     
-    def clean(self):
-        if self.score and (self.score < 0 or self.score > 20):
-            raise ValidationError("Le resultat doit etre entre 0 et 20.")
 
 
     def get_weighted_score(self):
         """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
-        if self.score is not None:
+        if self.coefficient is not None:
             # Assure-toi que le score est sur 20
-            score_on_20 = (self.score / 20) * self.subject.coefficient
+            score_on_20 = (self.coefficient / 20) * self.subject.coefficient
             return score_on_20  # Score pondéré basé sur le coefficient
         return None  # Si aucun score, retourne None
 
