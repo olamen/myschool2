@@ -25,7 +25,7 @@ def ajouter_notes_devoir(request):
         'subjects': subjects,
         'classes': classes,
     }
-    return render(request, 'notes/add_notes.html', context)
+    return render(request, 'notes/ajouter_notes_devoir.html', context)
 
 
 def get_students(request, classe_id, devoir_id):
