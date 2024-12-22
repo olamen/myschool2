@@ -29,14 +29,13 @@ def ajouter_notes_devoir(request):
 
 
 def get_students(request, classe_id, devoir_id):
-    # Récupérer la classe
+    print(f"Classe ID: {classe_id}, Devoir ID: {devoir_id}")  # Vérification
     classe = get_object_or_404(Classe, id=classe_id)
     # Récupérer les étudiants de cette classe via student_class
     students = Student.objects.filter(student_class=classe)
     # Préparer les données des étudiants
     students_data = [{"id": student.id, "name": f"{student.first_name} {student.last_name}"} for student in students]
     return JsonResponse({"students": students_data})
-
 
 
 

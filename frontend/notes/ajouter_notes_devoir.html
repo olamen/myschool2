@@ -94,7 +94,7 @@
                 let devoirId = $('#devoir').val();
                 if (classeId && devoirId) {
                     $.ajax({
-                        url: `/students/get_students/${classeId}/${devoirId}/`,
+                        url: `/notes/get_students/${classeId}/${devoirId}/`,
                         type: "GET",
                         success: function (data) {
                             let studentsTable = $('#studentsTable');
