@@ -32,8 +32,8 @@
                 <td>{{ devoir.subject.name }}</td>
                 <td>{{ devoir.coefficient }}</td>
                 <td>
-                    <a href="{% url 'devoir_update' devoir.id %}">Modifier</a> |
-                    <a href="{% url 'devoir_delete' devoir.id %}">Supprimer</a>
+                    <a href="{% url 'devoir_update' devoir.id %}" class="btn btn-warning">Modifier</a> |
+                    <a href="{% url 'devoir_delete' devoir.id %}" class="btn btn-secondary">Supprimer</a>
                 </td>
             </tr>
             {% endfor %}

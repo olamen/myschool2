@@ -30,8 +30,8 @@
                 <td>{{ composition.exam_date }}</td>
                 <td>{{ composition.coefficient }}</td>
                 <td>
-                    <a href="{% url 'composition_update' composition.id %}">Modifier</a> |
-                    <a href="{% url 'composition_delete' composition.id %}">Supprimer</a>
+                    <a href="{% url 'composition_update' composition.id %}" class="btn btn-warning">Modifier</a> |
+                    <a href="{% url 'composition_delete' composition.id %}" class="btn btn-secondary">Supprimer</a>
                 </td>
             </tr>
             {% endfor %}

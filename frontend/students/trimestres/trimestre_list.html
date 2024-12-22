@@ -25,8 +25,8 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ trimestre.name }}</td>
                 <td>
-                    <a href="{% url 'trimestre_update' trimestre.id %}">Modifier</a> |
-                    <a href="{% url 'trimestre_delete' trimestre.id %}">Supprimer</a>
+                    <a href="{% url 'trimestre_update' trimestre.id %}" class="btn btn-warning">Modifier</a> |
+                    <a href="{% url 'trimestre_delete' trimestre.id %}" class="btn btn-secondary">Supprimer</a>
                 </td>
             </tr>
             {% endfor %}
