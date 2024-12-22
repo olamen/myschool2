@@ -10,8 +10,8 @@ urlpatterns = [
     path('homeworks/delete/<int:pk>/', delete_homework, name='delete_homework'),
 
     # Composition URLs
-    path('compositions/', composition_list, name='composition_list'),
-    path('compositions/add/', add_composition, name='add_composition'),
-    path('compositions/edit/<int:pk>/', edit_composition, name='edit_composition'),
-    path('compositions/delete/<int:pk>/', delete_composition, name='delete_composition'),
+    path('compositions/', composition_list, name='note_composition'),
+    path('compositions/add/', add_composition, name='add_note_composition'),
+    path('compositions/edit/<int:pk>/', edit_composition, name='edit_note_composition'),
+    path('compositions/delete/<int:pk>/', delete_composition, name='delete_note_composition'),
 ]

@@ -82,7 +82,7 @@ def add_composition(request):
             exam_date=exam_date,
             remarks=remarks
         )
-        return redirect('notes:composition_list')
+        return redirect('composition_list')
     students = Student.objects.all()
     subjects = Subject.objects.all()
     return render(request, 'notes/add_composition.html', {'students': students, 'subjects': subjects})
