@@ -6,11 +6,12 @@ from django.core.exceptions import ValidationError
 
 
 class SessionYearModel(models.Model):
+    name= models.CharField(max_length=100, unique=True, null=True)
     session_start_year = models.DateField()
     session_end_year = models.DateField()
 
     def __str__(self):
-        return f"{self.session_start_year} to {self.session_end_year}"
+        return f"{self.name}"
  
 
 class Grade(models.Model):
