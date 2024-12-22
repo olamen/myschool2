@@ -170,6 +170,8 @@ class AppConfig(models.Model):
     
 class Trimestre(models.Model):
       name = models.CharField(max_length=100,default="Trimestre",unique=True)
+      def __str__(self):
+        return f"Configuration for {self.name}"
 
  #devoir   
 class Devoir(models.Model):
