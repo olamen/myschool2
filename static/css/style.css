@@ -531,7 +531,7 @@ button {
 }
 /* main content style */
 .main-content {
-  padding: 30px 0 20px 300px;
+  padding: 2px 0 20px 300px;
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
 }
