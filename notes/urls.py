@@ -17,4 +17,5 @@ urlpatterns = [
     path('compositions/delete/<int:pk>/', delete_composition, name='delete_note_composition'),
 
     path('get_students/<int:classe_id>/<int:devoir_id>/', get_students, name='get_students'),
+    path('notes_devoir/save/', save_note_devoir, name='save_note'),
 ]
