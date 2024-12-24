@@ -116,10 +116,14 @@
 
             // Enregistrer les notes
             $('#saveNotes').click(function () {
+                console.log("Save Notes button clicked."); // Debug: Button click
+
                 let notes = [];
                 $('.student-score').each(function () {
                     let studentId = $(this).data('student-id');
                     let score = $(this).val();
+                    console.log(`Processing student ID: ${studentId}, Score: ${score}`); // Debug: Student ID and score
+
                     if (score) {
                         notes.push({
                             student_id: studentId,
@@ -128,24 +132,35 @@
                     }
                 });
 
+                console.log("Notes collected:", notes); // Debug: Collected notes
+
                 if (notes.length > 0) {
+                    let csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+                    console.log("CSRF Token:", csrfToken); // Debug: CSRF token
+
                     $.ajax({
                         url: '/notes/notes_devoir/save/',
                         type: "POST",
                         contentType: "application/json",
                         data: JSON.stringify({ notes: notes }),
                         headers: {
-                            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Ajout du CSRF token
+                            'X-CSRFToken': csrfToken // Adding CSRF token
                         },
-                        success: function () {
+                        beforeSend: function () {
+                            console.log("Sending AJAX request with data:", { notes: notes }); // Debug: Data being sent
+                        },
+                        success: function (response) {
+                            console.log("Server response:", response); // Debug: Server response
                             alert("Notes enregistrées avec succès !");
                         },
-                        error: function (xhr) {
-                            console.error(xhr.responseJSON.message); // Affiche l'erreur retournée par le serveur
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error:", status, error); // Debug: AJAX error details
+                            console.error("Server response:", xhr.responseJSON); // Debug: Server response error
                             alert("Erreur lors de l'enregistrement des notes.");
                         }
                     });
                 } else {
+                    console.log("No notes to save."); // Debug: No notes condition
                     alert("Veuillez entrer des notes pour les étudiants.");
                 }
             });
