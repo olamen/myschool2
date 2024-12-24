@@ -142,12 +142,23 @@
                         url: '/notes/notes_devoir/save/',
                         type: "POST",
                         contentType: "application/json",
-                        data: JSON.stringify({ notes: notes }),
+                        data: JSON.stringify({ 
+                            notes: notes, 
+                            subject_id: $('#subject').val(), // Pass subject ID
+                            devoir_id: $('#devoir').val(),
+                            classe_id: $('#classe').val(),
+                            trimestre_id: $('#trimestre').val()}),
                         headers: {
                             'X-CSRFToken': csrfToken // Adding CSRF token
                         },
                         beforeSend: function () {
-                            console.log("Sending AJAX request with data:", { notes: notes }); // Debug: Data being sent
+                            console.log("Sending AJAX request with data:", { 
+                                notes: notes,
+                                subject_id: $('#subject').val(), // Pass subject ID
+                                devoir_id: $('#devoir').val(),
+                                classe_id: $('#classe').val(),
+                                trimestre_id: $('#trimestre').val()
+                             }); // Debug: Data being sent
                         },
                         success: function (response) {
                             console.log("Server response:", response); // Debug: Server response
