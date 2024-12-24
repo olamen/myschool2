@@ -1,13 +1,49 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 
-from notes.models import NoteComposition
+from notes.models import NoteComposition, NoteDevoir
 from .models import  ReportCard
-from students.models import Student, Composition
+from students.models import Classe, SessionYearModel, Student, Composition, Subject, Trimestre
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 
 from xhtml2pdf import pisa  # Utilisé pour générer des PDF
+
+
+
+def afficher_notes(request):
+    # Récupérer les données nécessaires
+    classes = Classe.objects.all()
+    trimestres = Trimestre.objects.all()
+    subjects = Subject.objects.all()
+    session_years = SessionYearModel.objects.all()
+
+    # Filtrer les données si des filtres sont sélectionnés
+    classe_id = request.GET.get('classe')
+    trimestre_id = request.GET.get('trimestre')
+    subject_id = request.GET.get('subject')
+    session_year_id = request.GET.get('session_year')
+
+    notes = NoteDevoir.objects.all()
+
+    if classe_id:
+        notes = notes.filter(classe_id=classe_id)
+    if trimestre_id:
+        notes = notes.filter(trimestre_id=trimestre_id)
+    if subject_id:
+        notes = notes.filter(subject_id=subject_id)
+    if session_year_id:
+        notes = notes.filter(sessionyear_id=session_year_id)
+
+    context = {
+        'classes': classes,
+        'trimestres': trimestres,
+        'subjects': subjects,
+        'session_years': session_years,
+        'notes': notes,
+    }
+    return render(request, 'reporting/afficher_notes_devoir_list.html', context)
+
 
 @login_required
 def exam_list(request):
