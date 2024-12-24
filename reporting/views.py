@@ -42,7 +42,7 @@ def afficher_notes_devoir(request):
         'session_years': session_years,
         'notes': notes,
     }
-    return render(request, 'notes/afficher_notes.html', context)
+    return render(request, 'reporting/afficher_notes_devoir_list.html', context)
 
 
 @login_required
