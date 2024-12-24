@@ -46,6 +46,9 @@ def get_students(request, classe_id, devoir_id):
 @csrf_exempt
 def save_note_devoir(request):
     if request.method == 'POST':
+        # Vérifiez les données reçues
+        print("Données reçues :", request.body)  # Affiche les données brutes
+        print("Données POST :", request.POST)    # Affiche les données parsées
         try:
             data = json.loads(request.body)
             notes = data.get('notes', [])
@@ -88,6 +91,7 @@ def save_note_devoir(request):
 
             return JsonResponse({'success': True, 'message': 'Notes enregistrées avec succès !'})
         except Exception as e:
+            print("Erreur :", str(e))  # Pour déboguer
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
     return JsonResponse({'success': False, 'message': 'Méthode non autorisée.'}, status=405)
 
