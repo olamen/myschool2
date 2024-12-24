@@ -46,54 +46,47 @@ def get_students(request, classe_id, devoir_id):
 @csrf_exempt
 def save_note_devoir(request):
     if request.method == 'POST':
-        # Vérifiez les données reçues
-        print("Données reçues :", request.body)  # Affiche les données brutes
-        print("Données POST :", request.POST)    # Affiche les données parsées
         try:
+            # Analyser le JSON brut
             data = json.loads(request.body)
+
+            # Récupérer les champs nécessaires
             notes = data.get('notes', [])
 
+            if not notes:
+                return JsonResponse({'success': False, 'message': 'Aucune note fournie.'})
+
+            # Enregistrer les notes
             for note_data in notes:
                 student_id = note_data.get('student_id')
-                subject_id = note_data.get('subject_id')
-                classe_id = note_data.get('classe_id')
-                sessionyear_id = note_data.get('sessionyear_id')
-                trimestre_id = note_data.get('trimestre_id')
-                devoir_id = note_data.get('devoir_id')
                 score = note_data.get('score')
 
-                if not all([student_id, subject_id, classe_id, sessionyear_id, trimestre_id, devoir_id, score]):
-                    return JsonResponse({'success': False, 'message': 'Données manquantes.'}, status=400)
+                if student_id is None or score is None:
+                    return JsonResponse({'success': False, 'message': 'Notes ou étudiant manquants.'})
 
-                student = get_object_or_404(Student, id=student_id)
-                subject = get_object_or_404(Subject, id=subject_id)
-                classe = get_object_or_404(Classe, id=classe_id)
-                session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
-                trimestre = get_object_or_404(Trimestre, id=trimestre_id)
-                devoir = get_object_or_404(Devoir, id=devoir_id)
-
-                if not 0 <= float(score) <= 20:
-                    return JsonResponse({'success': False, 'message': f'Note invalide pour {student.first_name} {student.last_name}.'}, status=400)
-
-                # Créer ou mettre à jour la note
-                NoteDevoir.objects.update_or_create(
-                    student=student,
-                    subject=subject,
-                    classe=classe,
-                    sessionyear=session_year,
-                    trimestre=trimestre,
-                    exam=devoir,
-                    defaults={
-                        'coefficient': devoir.coefficient,
-                        'score': float(score),
-                    }
-                )
+                try:
+                    student = Student.objects.get(id=student_id)
+                    # Sauvegarder la note
+                    NoteDevoir.objects.update_or_create(
+                        student=student,
+                        subject_id=data.get('matiere_id'),  # Assurez-vous que ces champs sont envoyés
+                        sessionyear_id=data.get('session_year'),
+                        trimestre_id=data.get('trimestre'),
+                        exam_id=data.get('devoir_id'),
+                        defaults={
+                            'score': float(score)  # Convertir le score en float
+                        }
+                    )
+                except Student.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': f'Étudiant introuvable : ID {student_id}'})
 
             return JsonResponse({'success': True, 'message': 'Notes enregistrées avec succès !'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Données JSON invalides.'})
         except Exception as e:
-            print("Erreur :", str(e))  # Pour déboguer
-            return JsonResponse({'success': False, 'message': str(e)}, status=400)
-    return JsonResponse({'success': False, 'message': 'Méthode non autorisée.'}, status=405)
+            return JsonResponse({'success': False, 'message': f'Erreur : {str(e)}'})
+
+    return JsonResponse({'success': False, 'message': 'Requête invalide.'})
 
 #old
 def exam_list(request):
