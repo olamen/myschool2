@@ -134,10 +134,14 @@
                         type: "POST",
                         contentType: "application/json",
                         data: JSON.stringify({ notes: notes }),
+                        headers: {
+                            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Ajout du CSRF token
+                        },
                         success: function () {
                             alert("Notes enregistrées avec succès !");
                         },
-                        error: function () {
+                        error: function (xhr) {
+                            console.error(xhr.responseJSON.message); // Affiche l'erreur retournée par le serveur
                             alert("Erreur lors de l'enregistrement des notes.");
                         }
                     });
