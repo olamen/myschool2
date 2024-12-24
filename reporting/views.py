@@ -9,25 +9,25 @@ from django.contrib.auth.decorators import login_required
 
 from xhtml2pdf import pisa  # Utilisé pour générer des PDF
 
-
-
-def afficher_notes(request):
-    # Récupérer les données nécessaires
+@login_required
+def afficher_notes_devoir(request):
     classes = Classe.objects.all()
     trimestres = Trimestre.objects.all()
     subjects = Subject.objects.all()
     session_years = SessionYearModel.objects.all()
 
-    # Filtrer les données si des filtres sont sélectionnés
+    # Récupération des filtres depuis les paramètres GET
     classe_id = request.GET.get('classe')
     trimestre_id = request.GET.get('trimestre')
     subject_id = request.GET.get('subject')
     session_year_id = request.GET.get('session_year')
 
+    # Filtrage des notes
     notes = NoteDevoir.objects.all()
 
     if classe_id:
-        notes = notes.filter(classe_id=classe_id)
+        # Filtrer les notes par classe via l'étudiant
+        notes = notes.filter(student__student_class_id=classe_id)
     if trimestre_id:
         notes = notes.filter(trimestre_id=trimestre_id)
     if subject_id:
@@ -42,7 +42,7 @@ def afficher_notes(request):
         'session_years': session_years,
         'notes': notes,
     }
-    return render(request, 'reporting/afficher_notes_devoir_list.html', context)
+    return render(request, 'notes/afficher_notes.html', context)
 
 
 @login_required
