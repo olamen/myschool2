@@ -138,7 +138,7 @@
                             alert("Notes enregistrées avec succès !");
                         },
                         error: function () {
-                            alert("Erreur lors de l'enregistrement des notes.");
+                            alert("Erreur lors de l'enregistrement des notes." + xhr.responseJSON.message);
                         }
                     });
                 } else {
