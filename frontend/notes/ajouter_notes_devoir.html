@@ -130,7 +130,7 @@
 
                 if (notes.length > 0) {
                     $.ajax({
-                        url: '/notes_devoir/save_notes/',
+                        url: '/notes/notes_devoir/save_notes/',
                         type: "POST",
                         contentType: "application/json",
                         data: JSON.stringify({ notes: notes }),
