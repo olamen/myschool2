@@ -87,7 +87,7 @@
     <!-- Script JS -->
     <script>
         $(document).ready(function () {
-            // Charger les étudiants lorsque la classe est sélectionnée
+            // Load students when the class is selected
             $('#classe').change(function () {
                 let classeId = $(this).val();
                 let devoirId = $('#devoir').val();
@@ -113,17 +113,14 @@
                     });
                 }
             });
-
-            // Enregistrer les notes
+    
+            // Save notes
             $('#saveNotes').click(function () {
-                console.log("Save Notes button clicked."); // Debug: Button click
-
                 let notes = [];
                 $('.student-score').each(function () {
                     let studentId = $(this).data('student-id');
                     let score = $(this).val();
-                    console.log(`Processing student ID: ${studentId}, Score: ${score}`); // Debug: Student ID and score
-
+    
                     if (score) {
                         notes.push({
                             student_id: studentId,
@@ -131,49 +128,41 @@
                         });
                     }
                 });
-
-                console.log("Notes collected:", notes); // Debug: Collected notes
-
+    
                 if (notes.length > 0) {
                     let csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-                    console.log("CSRF Token:", csrfToken); // Debug: CSRF token
-
+                    let sessionYear = $('#sessionYear').val();
+                    let subjectId = $('#subject').val();
+                    let devoirId = $('#devoir').val();
+                    let trimestreId = $('#trimestre').val();
+    
+                    if (!sessionYear) {
+                        alert("Veuillez sélectionner une année scolaire.");
+                        return;
+                    }
+    
                     $.ajax({
                         url: '/notes/notes_devoir/save/',
                         type: "POST",
                         contentType: "application/json",
-                        data: JSON.stringify({ 
-                            notes: notes, 
-                            sessionyear: $('#sessionYear').val(), // Corrected ID reference
-                            subject_id: $('#subject').val(), // Pass subject ID
-                            devoir_id: $('#devoir').val(),
-                            classe_id: $('#classe').val(),
-                            trimestre_id: $('#trimestre').val()}),
+                        data: JSON.stringify({
+                            notes: notes,
+                            sessionyear: sessionYear,
+                            subject_id: subjectId,
+                            devoir_id: devoirId,
+                            trimestre_id: trimestreId
+                        }),
                         headers: {
-                            'X-CSRFToken': csrfToken // Adding CSRF token
-                        },
-                        beforeSend: function () {
-                            console.log("Sending AJAX request with data:", { 
-                                notes: notes,
-                                subject_id: $('#subject').val(), // Pass subject ID
-                                sessionyear: $('#sessionYear').val(), // Corrected ID reference
-                                devoir_id: $('#devoir').val(),
-                                classe_id: $('#classe').val(),
-                                trimestre_id: $('#trimestre').val()
-                             }); // Debug: Data being sent
+                            'X-CSRFToken': csrfToken
                         },
                         success: function (response) {
-                            console.log("Server response:", response); // Debug: Server response
-                            alert("Notes enregistrées avec succès !");
+                            alert(response.message);
                         },
-                        error: function (xhr, status, error) {
-                            console.error("AJAX Error:", status, error); // Debug: AJAX error details
-                            console.error("Server response:", xhr.responseJSON); // Debug: Server response error
-                            alert("Erreur lors de l'enregistrement des notes.");
+                        error: function (xhr) {
+                            alert(xhr.responseJSON.message || "Erreur lors de l'enregistrement des notes.");
                         }
                     });
                 } else {
-                    console.log("No notes to save."); // Debug: No notes condition
                     alert("Veuillez entrer des notes pour les étudiants.");
                 }
             });

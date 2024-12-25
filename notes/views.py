@@ -45,50 +45,54 @@ def get_students(request, classe_id, devoir_id):
 @login_required
 @csrf_exempt
 def save_note_devoir(request):
-    if request.method == 'POST':
-        import json
-        data = json.loads(request.body)  # Charger les données JSON
-        notes = data.get('notes', [])
-
-        if not notes:
-            return JsonResponse({'success': False, 'message': 'Aucune note à enregistrer.'})
-
+    if request.method == "POST":
         try:
+            # Parse the JSON data
+            data = json.loads(request.body)
+            notes = data.get('notes', [])
+            subject_id = data.get('subject_id')
+            devoir_id = data.get('devoir_id')
+            session_year_id = data.get('sessionyear')
+            trimestre_id = data.get('trimestre_id')
+
+            # Validate required fields
+            if not all([notes, subject_id, devoir_id, session_year_id, trimestre_id]):
+                return JsonResponse({'success': False, 'message': 'Données manquantes.'})
+
+            # Get the related objects
+            subject = Subject.objects.get(id=subject_id)
+            session_year = SessionYearModel.objects.get(id=session_year_id)
+            trimestre = Trimestre.objects.get(id=trimestre_id)
+            devoir = Devoir.objects.get(id=devoir_id)
+
             for note_data in notes:
                 student_id = note_data.get('student_id')
                 score = note_data.get('score')
 
-                # Vérifiez que les données obligatoires sont présentes
-                if not student_id or score is None:
-                    return JsonResponse({'success': False, 'message': 'Données de note manquantes.'})
+                # Validate student and score
+                try:
+                    student = Student.objects.get(id=student_id)
+                except Student.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': f"L'étudiant avec l'ID {student_id} n'existe pas."})
 
-                # Vérifiez si l'étudiant existe
-                student = Student.objects.get(id=student_id)
+                # Ensure score is valid
+                if not (0 <= float(score) <= 20):
+                    return JsonResponse({'success': False, 'message': f"Score invalide pour l'étudiant {student.first_name} {student.last_name}."})
 
-                # Récupérez d'autres champs nécessaires (ajustez selon votre logique)
-                subject_id = data.get('subject_id')
-                trimestre_id = data.get('trimestre_id')
-                sessionyear_id = data.get('sessionyear_id')
-                devoir_id = data.get('devoir_id')
-
-                subject = Subject.objects.get(id=subject_id)
-                trimestre = Trimestre.objects.get(id=trimestre_id)
-                sessionyear = SessionYearModel.objects.get(id=sessionyear_id)
-                devoir = Devoir.objects.get(id=devoir_id)
-
-                # Enregistrez ou mettez à jour la note
-                note, created = NoteDevoir.objects.update_or_create(
+                # Create or update the note
+                NoteDevoir.objects.update_or_create(
                     student=student,
                     subject=subject,
-                    sessionyear=sessionyear,
+                    sessionyear=session_year,
                     trimestre=trimestre,
-                    devoir = devoir,
                     defaults={'score': score}
                 )
 
             return JsonResponse({'success': True, 'message': 'Notes enregistrées avec succès !'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Données JSON invalides.'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Erreur : {str(e)}'})
+            return JsonResponse({'success': False, 'message': str(e)})
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
 
