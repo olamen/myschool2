@@ -144,8 +144,8 @@
                         contentType: "application/json",
                         data: JSON.stringify({ 
                             notes: notes, 
+                            session: $('#sessionYear').val(), // Corrected ID reference
                             subject_id: $('#subject').val(), // Pass subject ID
-                            sessionyear: $('#sessionYear').val(), // Corrected ID reference
                             devoir_id: $('#devoir').val(),
                             classe_id: $('#classe').val(),
                             trimestre_id: $('#trimestre').val()}),
@@ -156,7 +156,7 @@
                             console.log("Sending AJAX request with data:", { 
                                 notes: notes,
                                 subject_id: $('#subject').val(), // Pass subject ID
-                                sessionyear: $('#sessionYear').val(), // Corrected ID reference
+                                session: $('#sessionYear').val(), // Corrected ID reference
                                 devoir_id: $('#devoir').val(),
                                 classe_id: $('#classe').val(),
                                 trimestre_id: $('#trimestre').val()
