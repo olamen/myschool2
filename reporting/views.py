@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from notes.models import NoteComposition, NoteDevoir
 from .models import  ReportCard
-from students.models import Classe, SessionYearModel, Student, Composition, Subject, Trimestre
+from students.models import Classe, Devoir, SessionYearModel, Student, Composition, Subject, Trimestre
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 
@@ -15,12 +15,14 @@ def afficher_notes_devoir(request):
     trimestres = Trimestre.objects.all()
     subjects = Subject.objects.all()
     session_years = SessionYearModel.objects.all()
+    devoirs = Devoir.objects.all()
 
     # Récupération des filtres depuis les paramètres GET
     classe_id = request.GET.get('classe')
     trimestre_id = request.GET.get('trimestre')
     subject_id = request.GET.get('subject')
     session_year_id = request.GET.get('session_year')
+    devoir_id= request.GET.get('devoir')
 
     # Filtrage des notes
     notes = NoteDevoir.objects.all()
@@ -34,12 +36,15 @@ def afficher_notes_devoir(request):
         notes = notes.filter(subject_id=subject_id)
     if session_year_id:
         notes = notes.filter(sessionyear_id=session_year_id)
+    if devoir_id:
+        notes = notes.filter(devoir_id=devoir_id)
 
     context = {
         'classes': classes,
         'trimestres': trimestres,
         'subjects': subjects,
         'session_years': session_years,
+        'devoirs':devoirs,
         'notes': notes,
     }
     return render(request, 'reporting/afficher_notes_devoir_list.html', context)

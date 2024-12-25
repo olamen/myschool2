@@ -19,6 +19,17 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label for="devoir" class="form-label">Devoir</label>
+                <select name="devoir" id="devoir" class="form-control">
+                    <option value="">Toutes</option>
+                    {% for devoir in devoirs %}
+                    <option value="{{ devoir.id }}" {% if request.GET.devoir == devoir.id|stringformat:"s" %}selected{% endif %}>
+                        {{ devoir.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
                 <label for="trimestre" class="form-label">Trimestre</label>
                 <select name="trimestre" id="trimestre" class="form-control">
                     <option value="">Tous</option>
