@@ -8,7 +8,6 @@
     <thead>
         <tr>
             <th>Nom</th>
-            <th>Classe</th>
             <th>Coefficient</th>
             <th>Statut</th>
             <th>Actions</th>
@@ -18,7 +17,6 @@
         {% for subject in subjects %}
         <tr>
             <td>{{ subject.name }}</td>
-            <td>{{ subject.class_enrolled.name }}</td>
             <td>{{ subject.coefficient }}</td>
             <td>
                 {% if subject.is_active %}

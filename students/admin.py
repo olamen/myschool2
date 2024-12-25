@@ -18,8 +18,8 @@ admin.site.register(SessionYearModel)
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    search_fields = ('name','class_enrolled')
-    ordering = ('class_enrolled',)
+    search_fields = ('name',)
+    ordering = ('name',)
 
 @admin.register(Parent)
 class ParentAdmin(admin.ModelAdmin):
