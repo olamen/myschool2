@@ -166,6 +166,50 @@
                     alert("Veuillez entrer des notes pour les étudiants.");
                 }
             });
+            function loadNotes() {
+            let classeId = $('#classe').val();
+            let devoirId = $('#devoir').val();
+            let subjectId = $('#subject').val();
+            let sessionYear = $('#sessionYear').val();
+            let trimestre = $('#trimestre').val();
+
+            if (classeId && devoirId && subjectId && sessionYear && trimestre) {
+                $.ajax({
+                    url: '/notes/get_notes/',
+                    type: 'GET',
+                    data: {
+                        classe_id: classeId,
+                        devoir_id: devoirId,
+                        subject_id: subjectId,
+                        sessionyear_id: sessionYear,
+                        trimestre_id: trimestre,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            let notes = response.notes;
+                            $('.student-score').each(function () {
+                                let studentId = $(this).data('student-id');
+                                let note = notes.find(n => n.student_id == studentId);
+                                if (note) {
+                                    $(this).val(note.score);
+                                }
+                            });
+                        } else {
+                            console.error(response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Erreur lors du chargement des notes:", xhr.responseText);
+                    }
+                });
+            }
+        }
+
+        // Charger les étudiants et les notes quand la classe change
+        $('#classe, #devoir, #subject, #sessionYear, #trimestre').change(function () {
+            loadNotes();
         });
+        });
+
     </script>
 {% endblock %}

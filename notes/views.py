@@ -97,6 +97,41 @@ def save_note_devoir(request):
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
 
+#chargement des donnes pour la modification
+def get_notes(request):
+    if request.method == "GET":
+        classe_id = request.GET.get("classe_id")
+        devoir_id = request.GET.get("devoir_id")
+        subject_id = request.GET.get("subject_id")
+        sessionyear_id = request.GET.get("sessionyear_id")
+        trimestre_id = request.GET.get("trimestre_id")
+
+        if not all([classe_id, devoir_id, subject_id, sessionyear_id, trimestre_id]):
+            return JsonResponse({"success": False, "message": "Données manquantes"})
+
+        # Récupérer les étudiants de la classe
+        students = Student.objects.filter(student_class_id=classe_id)
+
+        # Préparer les notes existantes
+        notes = NoteDevoir.objects.filter(
+            student__in=students,
+            subject_id=subject_id,
+            sessionyear_id=sessionyear_id,
+            trimestre_id=trimestre_id,
+        )
+        
+        notes_data = [
+            {
+                "student_id": note.student.id,
+                "score": note.score,
+            }
+            for note in notes
+        ]
+
+        return JsonResponse({"success": True, "notes": notes_data})
+
+    return JsonResponse({"success": False, "message": "Requête invalide"})
+
 #old
 def exam_list(request):
     exams = Exam.objects.all()
