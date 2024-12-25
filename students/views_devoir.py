@@ -1,10 +1,9 @@
 # Devoir CRUD
-
 from django.shortcuts import get_object_or_404, redirect, render
 from students.forms import CompositionForm, DevoirForm
 from students.models import Composition, Devoir
 
-#crude dev
+#crude devoir
 def devoir_list(request):
     devoirs = Devoir.objects.all()
     return render(request, 'students/devoirs/devoir_list.html', {'devoirs': devoirs})

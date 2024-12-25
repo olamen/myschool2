@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Subject, Classe
+from .models import Subject
 
 # Liste des sujets
 def subject_list(request):
@@ -16,9 +16,7 @@ def subject_create(request):
         Subject.objects.create(name=name, coefficient=coefficient)
         messages.success(request, "Sujet créé avec succès !")
         return redirect('subject_list')
-
-    classes = Classe.objects.all()
-    return render(request, 'subjects/subject_form.html', {'classes': classes})
+    return render(request, 'subjects/subject_form.html',)
 
 # Modifier un sujet
 def subject_update(request, subject_id):

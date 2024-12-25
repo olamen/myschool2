@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from students.forms import TrimestreForm
+from django.contrib import messages
 from students.models import Trimestre
 
 
@@ -12,6 +13,7 @@ def trimestre_create(request):
         form = TrimestreForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, f"Trimestre créé avec succès !")
             return redirect('trimestre_list')
     else:
         form = TrimestreForm()
@@ -32,5 +34,6 @@ def trimestre_delete(request, pk):
     trimestre = get_object_or_404(Trimestre, pk=pk)
     if request.method == 'POST':
         trimestre.delete()
+        messages.success(request, f"Trimestre a été supprimer avec succès !")
         return redirect('trimestre_list')
     return render(request, 'students/trimestres/trimestre_confirm_delete.html', {'trimestre': trimestre})
