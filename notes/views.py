@@ -68,18 +68,21 @@ def save_note_devoir(request):
                 # Récupérez d'autres champs nécessaires (ajustez selon votre logique)
                 subject_id = data.get('subject_id')
                 trimestre_id = data.get('trimestre_id')
-                session_year_id = data.get('session_year_id')
+                sessionyear_id = data.get('sessionyear_id')
+                devoir_id = data.get('devoir_id')
 
                 subject = Subject.objects.get(id=subject_id)
                 trimestre = Trimestre.objects.get(id=trimestre_id)
-                session_year = SessionYearModel.objects.get(id=session_year_id)
+                sessionyear = SessionYearModel.objects.get(id=sessionyear_id)
+                devoir = Devoir.objects.get(id=devoir_id)
 
                 # Enregistrez ou mettez à jour la note
                 note, created = NoteDevoir.objects.update_or_create(
                     student=student,
                     subject=subject,
-                    sessionyear=session_year,
+                    sessionyear=sessionyear,
                     trimestre=trimestre,
+                    devoir = devoir,
                     defaults={'score': score}
                 )
 
