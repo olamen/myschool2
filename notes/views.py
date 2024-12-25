@@ -85,6 +85,7 @@ def save_note_devoir(request):
                     subject=subject,
                     sessionyear=session_year,
                     trimestre=trimestre,
+                    devoir= devoir,
                     defaults={'score': score}
                 )
 
