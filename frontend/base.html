@@ -145,25 +145,19 @@
                                 <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Listes des compositions </a></li>
                             </ul>
                         </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les Notes" tabindex="0"><i class="bi bi-egg-fill"></i> <span>Les Rapports</span></a>
+                            <ul class="sub-menu">
+                                
+                                <li><a href="{% url 'add_note_devoir' %}" class="sub-menu-item">Notes Devoirs</a></li>
+                                <li><a href="{% url 'homework_list' %}" class="sub-menu-item">Notes Examens</a></li>
+                                <li><a href="{% url 'add_note_composition' %}" class="sub-menu-item">Listes des Eleves</a></li>
+                                <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Listes des compositions </a></li>
+                            </ul>
+                        </li>
                         
                     </ul>
-                    <div class="sidebar-fixed-bottom">
-
-                        <a role="button" class="text-center btn-show-group">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-
-                        <div class="btn-group-wrapper">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a href="#" class="text-center" role="button"><i class="fas fa-cogs"></i></a>
-                                <a href="xp-lockscreen.html" class="text-center" role="button"><i
-                                        class="fas fa-lock"></i></a>
-                                <a href="xp-login.html" class="text-center" role="button"><i
-                                        class="fas fa-sign-out-alt"></i></a>
-                            </div>
-                        </div>
-
-                    </div>
                 </div>
             </div>
         </div>
