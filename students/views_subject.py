@@ -11,18 +11,9 @@ def subject_list(request):
 def subject_create(request):
     if request.method == 'POST':
         name = request.POST.get('name')
-        class_id = request.POST.get('class_id')
         coefficient = request.POST.get('coefficient')
-
-        # Vérifiez si la classe existe
-        try:
-            class_enrolled = Classe.objects.get(id=class_id)
-        except Classe.DoesNotExist:
-            messages.error(request, "Classe introuvable.")
-            return redirect('subject_create')
-
         # Créer un nouveau sujet
-        Subject.objects.create(name=name, class_enrolled=class_enrolled, coefficient=coefficient)
+        Subject.objects.create(name=name, coefficient=coefficient)
         messages.success(request, "Sujet créé avec succès !")
         return redirect('subject_list')
 
@@ -35,22 +26,11 @@ def subject_update(request, subject_id):
     if request.method == 'POST':
         subject.name = request.POST.get('name')
         subject.coefficient = request.POST.get('coefficient')
-        class_id = request.POST.get('class_id')
-
-        # Vérifiez si la classe existe
-        try:
-            class_enrolled = Classe.objects.get(id=class_id)
-        except Classe.DoesNotExist:
-            messages.error(request, "Classe introuvable.")
-            return redirect('subject_update', subject_id=subject_id)
-
-        subject.class_enrolled = class_enrolled
         subject.save()
         messages.success(request, "Sujet modifié avec succès !")
         return redirect('subject_list')
 
-    classes = Classe.objects.all()
-    return render(request, 'subjects/subject_form.html', {'subject': subject, 'classes': classes})
+    return render(request, 'subjects/subject_form.html', {'subject': subject,})
 
 # Activer/Désactiver un sujet
 def subject_toggle_status(request, subject_id):
