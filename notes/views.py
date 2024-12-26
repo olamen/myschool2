@@ -194,7 +194,7 @@ def save_note_exam(request):
                     subject=subject,
                     sessionyear=session_year,
                     trimestre=trimestre,
-                    exam= composition,
+                    composition= composition,
                     defaults={'score': score}
                 )
 
