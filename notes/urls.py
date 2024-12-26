@@ -5,7 +5,7 @@ urlpatterns = [
     path("exams/", exam_list, name="exam_list"),
     # Homework URLs
     path('notedevoir/add/', ajouter_notes_devoir, name='add_note_devoir'),
-    path('noteexam/add/', ajouter_notes_exam, name='add_note_exams'),
+    path('noteexam/add/', ajouter_notes_exam, name='add_note_exam'),
     path('homeworks/', homework_list, name='homework_list'),
     path('homeworks/add/', add_homework, name='add_homework'),
     path('homeworks/edit/<int:pk>/', edit_homework, name='edit_homework'),
