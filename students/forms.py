@@ -26,11 +26,13 @@ class DevoirForm(ModelForm):
 class CompositionForm(ModelForm):
     class Meta:
         model = Composition
-        fields = ['name', 'trimestre', 'exam_date', 'coefficient', 'remarks']
+        fields = ['name', 'trimestre', 'classe', 'subject', 'exam_date', 'remarks', 'coefficient']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter composition name'}),
+            'name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter le nom'}),
             'trimestre': Select(attrs={'class': 'form-control'}),
+            'classe': Select(attrs={'class': 'form-control'}),
+            'subject': Select(attrs={'class': 'form-control'}),
             'exam_date': DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'remarks': Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter une remarks '}),
             'coefficient': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter coefficient'}),
-            'remarks': Textarea(attrs={'class': 'form-control', 'placeholder': 'Add remarks (optional)'}),
         }
