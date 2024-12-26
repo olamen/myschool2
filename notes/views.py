@@ -172,7 +172,7 @@ def save_note_exam(request):
             subject = Subject.objects.get(id=subject_id)
             session_year = SessionYearModel.objects.get(id=session_year_id)
             trimestre = Trimestre.objects.get(id=trimestre_id)
-            exam = Composition.objects.get(id=exam_id)
+            composition = Composition.objects.get(id=exam_id)
 
             for note_data in notes:
                 student_id = note_data.get('student_id')
@@ -194,7 +194,7 @@ def save_note_exam(request):
                     subject=subject,
                     sessionyear=session_year,
                     trimestre=trimestre,
-                    exam= exam,
+                    exam= composition,
                     defaults={'score': score}
                 )
 
