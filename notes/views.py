@@ -148,7 +148,7 @@ def ajouter_notes_exam(request):
         'subjects': subjects,
         'classes': classes,
     }
-    return render(request, 'notes/ajouter_notes_exams.html', context)
+    return render(request, 'notes/ajouter_notes_exam.html', context)
 
 #save note devoir
 @login_required
