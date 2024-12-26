@@ -49,6 +49,46 @@ def afficher_notes_devoir(request):
     }
     return render(request, 'reporting/afficher_notes_devoir_list.html', context)
 
+@login_required
+def afficher_notes_exam(request):
+    classes = Classe.objects.all()
+    trimestres = Trimestre.objects.all()
+    subjects = Subject.objects.all()
+    session_years = SessionYearModel.objects.all()
+    exams = NoteComposition.objects.all()
+
+    # Récupération des filtres depuis les paramètres GET
+    classe_id = request.GET.get('classe')
+    trimestre_id = request.GET.get('trimestre')
+    subject_id = request.GET.get('subject')
+    session_year_id = request.GET.get('session_year')
+    exam_id= request.GET.get('exam')
+
+    # Filtrage des notes
+    notes = NoteComposition.objects.all()
+
+    if classe_id:
+        # Filtrer les notes par classe via l'étudiant
+        notes = notes.filter(student__student_class_id=classe_id)
+    if trimestre_id:
+        notes = notes.filter(trimestre_id=trimestre_id)
+    if subject_id:
+        notes = notes.filter(subject_id=subject_id)
+    if session_year_id:
+        notes = notes.filter(sessionyear_id=session_year_id)
+    if exam_id:
+        notes = notes.filter(exam_id=exam_id)
+
+    context = {
+        'classes': classes,
+        'trimestres': trimestres,
+        'subjects': subjects,
+        'session_years': session_years,
+        'exams':exams,
+        'notes': notes,
+    }
+    return render(request, 'reporting/afficher_notes_devoir_list.html', context)
+
 
 @login_required
 def exam_list(request):
