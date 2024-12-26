@@ -105,20 +105,34 @@ def get_notes(request):
         subject_id = request.GET.get("subject_id")
         sessionyear_id = request.GET.get("sessionyear_id")
         trimestre_id = request.GET.get("trimestre_id")
+        composition_id = request.GET.get("composition_id")  # Optional for NoteComposition
 
-        if not all([classe_id, devoir_id, subject_id, sessionyear_id, trimestre_id]):
+
+        if not all([classe_id, subject_id, sessionyear_id, trimestre_id])or (not devoir_id and not composition_id):
             return JsonResponse({"success": False, "message": "Données manquantes"})
 
         # Récupérer les étudiants de la classe
         students = Student.objects.filter(student_class_id=classe_id)
 
+        if devoir_id:
         # Préparer les notes existantes
-        notes = NoteDevoir.objects.filter(
-            student__in=students,
-            subject_id=subject_id,
-            sessionyear_id=sessionyear_id,
-            trimestre_id=trimestre_id,
-        )
+            notes = NoteDevoir.objects.filter(
+                student__in=students,
+                subject_id=subject_id,
+                sessionyear_id=sessionyear_id,
+                trimestre_id=trimestre_id,
+            )
+        elif composition_id:
+            # Query for NoteComposition
+            notes = NoteComposition.objects.filter(
+                student__in=students,
+                subject_id=subject_id,
+                sessionyear_id=sessionyear_id,
+                trimestre_id=trimestre_id,
+                composition_id=composition_id,
+            )
+        else:
+            return JsonResponse({"success": False, "message": "Données insuffisantes pour déterminer le modèle."})
         
         notes_data = [
             {
