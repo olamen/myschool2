@@ -23,19 +23,8 @@
     <link rel="stylesheet" href=" {% static '/css/responsive.bootstrap.min.css' %} ">
     <link rel="stylesheet" href=" {% static '/css/bootstrap.min.css' %} ">
     <link rel="stylesheet" href=" {% static 'css/style.css' %}">
+    <script src=" {% static 'js/toastr.min.js' %}"></script>
     <style>
-        .zoom {
-            transition: transform 0.3s ease;
-            /* Smooth zoom effect */
-            cursor: pointer;
-            /* Change cursor to pointer to indicate clickability */
-        }
-
-        .zoom:hover {
-            transform: scale(1.2);
-            /* Zoom in the image on hover */
-        }
-
         .col-md-4 {
             overflow: visible;
         }
@@ -111,20 +100,6 @@
     <script src=" {% static '/js/jquery.dataTables.min.js' %}"></script>
     <script src=" {% static '/js/dataTables.responsive.min.js' %}"></script>
     <script src=" {% static '/js/datatables-init.js' %}"></script>
-
-
-    <!-- Toastr JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script>
-        // Loop through Django messages and display them with Toastr
-
-    </script>
-    <script>
-        function showImage(imageUrl) {
-            const modalImage = document.getElementById('modalImage');
-            modalImage.src = imageUrl;
-        }
-    </script>
 </body>
 
 </html>
