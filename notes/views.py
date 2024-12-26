@@ -150,7 +150,7 @@ def ajouter_notes_exam(request):
     }
     return render(request, 'notes/ajouter_notes_exam.html', context)
 
-#save note devoir
+#save note exam
 @login_required
 @csrf_exempt
 def save_note_exam(request):
@@ -189,7 +189,7 @@ def save_note_exam(request):
                     return JsonResponse({'success': False, 'message': f"Score invalide pour l'étudiant {student.first_name} {student.last_name}."})
 
                 # Create or update the note
-                NoteDevoir.objects.update_or_create(
+                NoteComposition.objects.update_or_create(
                     student=student,
                     subject=subject,
                     sessionyear=session_year,
