@@ -30,14 +30,14 @@ class NoteDevoir(models.Model):
         return f"{self.student} - {self.subject} - {self.score}"
     
 class NoteComposition(models.Model):
-        composition = models.ForeignKey(Composition, on_delete=models.CASCADE, related_name='notecomposition')
-        grade= models.ForeignKey(Grade,on_delete=models.CASCADE)
-        classe = models.ForeignKey(Classe,on_delete=models.CASCADE)
         student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='notecompositions')  # L'étudiant
         subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='notecompositions')  # La matière
+        composition = models.ForeignKey(Composition, on_delete=models.CASCADE, related_name='notecomposition')
         sessionyear = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
+        trimestre = models.ForeignKey(Trimestre,on_delete=models.CASCADE)
         score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score de l'examen, peut être null si non évalué
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
+        coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
 
         def clean(self):
             if self.score and (self.score < 0 or self.score > 20):
@@ -52,5 +52,5 @@ class NoteComposition(models.Model):
             return None  # Si aucun score, retourne None
 
         def __str__(self):
-            return f"Composition for {self.student.first_name} {self.student.last_name} in {self.subject.name} on {self.sessionyear}"
+            return f"{self.composition.name} on {self.sessionyear}"
 

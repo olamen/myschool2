@@ -181,9 +181,6 @@ class Devoir(models.Model):
     date = models.DateField() 
     description = models.TextField()  # Description du devoir
     coefficient = models.DecimalField(max_digits=5, decimal_places=2, default=1)  # Score du devoir, null si pas encore noté
-    
-
-
     def get_weighted_score(self):
         """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
         if self.coefficient is not None:
@@ -198,9 +195,17 @@ class Devoir(models.Model):
 class Composition(models.Model):
         name = models.CharField(max_length=100,default="Composition",unique=True)
         trimestre = models.ForeignKey(Trimestre, on_delete=models.CASCADE, default=1)
+        classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='Exam',default=1)  # L'étudiant
+        subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='examsub')  # La matière
         exam_date = models.DateField()  # La date de l'examen
         coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
+        def get_weighted_score(self):
+            if self.coefficient is not None:
+                # Assure-toi que le score est sur 20
+                score_on_20 = (self.coefficient / 20) * self.subject.coefficient
+                return score_on_20  # Score pondéré basé sur le coefficient
+            return None  # Si aucun score, retourne None
         def __str__(self):
             return self.name
 
