@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impression des Notes</title>
     <style>
+        /* Styles optimized for printing */
         @media print {
             body {
                 font-family: Arial, sans-serif;
@@ -20,10 +21,9 @@
                 padding-bottom: 10px;
             }
             .logo {
-                text-align: center;
-            }
-            .logo img {
-                max-height: 80px; /* Adjust size as needed */
+                display: flex;
+                justify-content: center;
+                margin-bottom: 10px;
             }
             .title {
                 text-align: center;
@@ -55,7 +55,7 @@
             <h3>{{ school_name_fr }}</h3>
         </div>
         <div class="logo">
-            <img src="{% url 'images/logoo.png' %}" alt="Logo de l'école">
+            <img src="{% static 'images/school_logo.png' %}" alt="Logo de l'école" width="100">
         </div>
         <div style="text-align: right;">
             <h3>{{ school_name_ar }}</h3>
@@ -64,7 +64,7 @@
 
     <div class="title">
         {% if devoir %}
-        <h1>Les Notes du Devoir : {{ devoir.name }} </h1>
+        <h1>Les Notes du Devoir : {{ devoir.name }}</h1>
         {% else %}
         <h1>Les Notes des Devoirs</h1>
         {% endif %}
@@ -88,7 +88,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <button class="no-print" onclick="window.print()">Imprimer</button>
 </body>
 </html>

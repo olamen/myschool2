@@ -1,45 +1,39 @@
-
-from notes.models import  NoteDevoir
-from django.contrib.auth.decorators import login_required
-
-from xhtml2pdf import pisa  # Utilisé pour générer des PDF
-
-from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from students.models import  Devoir, Student, SessionYearModel, Classe, Subject, Trimestre
-from django.template.loader import render_to_string
+from django.shortcuts import render
+from students.models import NoteDevoir, Classe, Subject, Trimestre, SessionYearModel
 
-@login_required
 def print_notes(request):
-    classe_id = request.GET.get("classe_id")
-    devoir_id = request.GET.get("devoir_id")
-    subject_id = request.GET.get("subject_id")
-    sessionyear_id = request.GET.get("sessionyear_id")
-    trimestre_id = request.GET.get("trimestre_id")
+    classe_id = request.GET.get("classe")
+    devoir_id = request.GET.get("devoir")
+    trimestre_id = request.GET.get("trimestre")
+    subject_id = request.GET.get("subject")
+    session_year_id = request.GET.get("session_year")
 
-    # Validate input
-    if not all([classe_id, subject_id, sessionyear_id, trimestre_id]):
+    # Validate the required fields
+    if not any([classe_id, devoir_id, trimestre_id, subject_id, session_year_id]):
         return JsonResponse({"success": False, "message": "Données manquantes"})
 
-    # Retrieve filtered notes
-    students = Student.objects.filter(student_class_id=classe_id)
-    notes = NoteDevoir.objects.filter(
-        student__in=students,
-        subject_id=subject_id,
-        sessionyear_id=sessionyear_id,
-        trimestre_id=trimestre_id,
-    )
+    # Query the data based on provided filters
+    notes = NoteDevoir.objects.all()
 
-    # Retrieve related objects for the header
-    school_name_ar = "مدرستي"  # Replace with your school name in Arabic
-    school_name_fr = "Mon École"  # Replace with your school name in French
-    devoir = get_object_or_404(Devoir, id=devoir_id) if devoir_id else None
+    if classe_id:
+        notes = notes.filter(student__student_class_id=classe_id)
+    if devoir_id:
+        notes = notes.filter(devoir_id=devoir_id)
+    if trimestre_id:
+        notes = notes.filter(trimestre_id=trimestre_id)
+    if subject_id:
+        notes = notes.filter(subject_id=subject_id)
+    if session_year_id:
+        notes = notes.filter(sessionyear_id=session_year_id)
 
-    context = {
-        "school_name_ar": school_name_ar,
-        "school_name_fr": school_name_fr,
-        "devoir": devoir,
-        "notes": notes,
-    }
+    if not notes.exists():
+        return JsonResponse({"success": False, "message": "Aucune note trouvée pour les filtres sélectionnés."})
 
-    return render(request, "notes/print/print_notes.html", context)
+    # Render the printable page
+    return render(request, 'reporting/print_notes.html', {
+        'notes': notes,
+        'school_name_ar': "اسم المدرسة بالعربية",
+        'school_name_fr': "Nom de l'école en français",
+        'devoir': notes.first().devoir if devoir_id else None,
+    })
