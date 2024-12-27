@@ -35,6 +35,6 @@ def print_notes(request):
     return render(request, 'reporting/print_notes.html', {
         'notes': notes,
         'school_name_ar': " مدارس النجوم الحرة",
-        'school_name_fr': "'Ecole Privée Enojoume",
+        'school_name_fr': "Ecole Privée Enojoume",
         'devoir': notes.first().devoir if devoir_id else None,
     })
