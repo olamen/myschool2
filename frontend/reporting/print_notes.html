@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impression des Notes</title>
     <style>
-        /* Styles optimized for printing */
         @media print {
             body {
-                font-family: Arial, sans-serif;
+                font-family: "Arial", sans-serif;
                 font-size: 12px;
                 margin: 20px;
             }
@@ -17,57 +16,112 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 2px solid black;
+                border-bottom: 3px solid black;
                 margin-bottom: 20px;
                 padding-bottom: 10px;
             }
-            .logo {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 10px;
+            .header img {
+                height: 80px;
+                object-fit: contain;
+            }
+            .school-name {
+                font-size: 16px;
+                font-weight: bold;
             }
             .title {
                 text-align: center;
-                font-size: 20px;
-                margin-bottom: 20px;
+                font-size: 24px;
+                margin: 20px 0;
+                font-weight: bold;
+                text-transform: uppercase;
             }
             table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-bottom: 20px;
+                margin-top: 20px;
             }
             th, td {
                 border: 1px solid black;
-                padding: 8px;
+                padding: 10px;
                 text-align: center;
             }
             th {
                 background-color: #f2f2f2;
+                font-weight: bold;
             }
-            .no-print {
-                display: none;
-            }
+        }
+
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid black;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 80px;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        .no-print {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .no-print button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .no-print button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div style="text-align: left;">
-            <h3>{{ school_name_fr }}</h3>
+        <div class="school-name" style="text-align: left;">
+            Nom de l'école en français
         </div>
-        <div class="logo">
-            <img src=" {% static 'images/logoo.png' %} " alt="Logo de l'école" width="100">
+        <div>
+            <img src="{% static 'images/school_logo.png' %}" alt="Logo de l'école">
         </div>
-        <div style="text-align: right;">
-            <h3>{{ school_name_ar }}</h3>
+        <div class="school-name" style="text-align: right;">
+            اسم المدرسة بالعربية
         </div>
     </div>
 
     <div class="title">
         {% if devoir %}
-        <h1>Les Notes du Devoir : {{ devoir.name }}</h1>
+        Les Notes du Devoir : {{ devoir.name }}
         {% else %}
-        <h1>Les Notes des Devoirs</h1>
+        Les Notes des Devoirs
         {% endif %}
     </div>
 
@@ -89,5 +143,9 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="no-print">
+        <button onclick="window.print()">Imprimer</button>
+    </div>
 </body>
 </html>
