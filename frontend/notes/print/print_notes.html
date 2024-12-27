@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression des Notes</title>
+    <style>
+        @media print {
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin: 20px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid black;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
+            .logo {
+                text-align: center;
+            }
+            .logo img {
+                max-height: 80px; /* Adjust size as needed */
+            }
+            .title {
+                text-align: center;
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="text-align: left;">
+            <h3>{{ school_name_fr }}</h3>
+        </div>
+        <div class="logo">
+            <img src="{% url 'images/logoo.png' %}" alt="Logo de l'école">
+        </div>
+        <div style="text-align: right;">
+            <h3>{{ school_name_ar }}</h3>
+        </div>
+    </div>
+
+    <div class="title">
+        {% if devoir %}
+        <h1>Les Notes du Devoir : {{ devoir.name }} </h1>
+        {% else %}
+        <h1>Les Notes des Devoirs</h1>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom de l'Étudiant</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in notes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ note.student.first_name }} {{ note.student.last_name }}</td>
+                <td>{{ note.score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button class="no-print" onclick="window.print()">Imprimer</button>
+</body>
+</html>

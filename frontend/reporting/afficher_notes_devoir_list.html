@@ -5,7 +5,7 @@
     <h2 class="text-center mb-4">Afficher les Notes</h2>
 
     <!-- Formulaire de filtrage -->
-    <form method="get" class="mb-4">
+    <form id="filterForm" method="get" class="mb-4">
         <div class="row g-3">
             <div class="col-md-3">
                 <label for="classe" class="form-label">Classe</label>
@@ -66,8 +66,11 @@
         <div class="mt-3 text-end">
             <button type="submit" class="btn btn-primary">Filtrer</button>
             <a href="{% url 'afficher_notes' %}" class="btn btn-secondary">Réinitialiser</a>
+            <!-- Print Button -->
+            <button type="button" id="printResults" class="btn btn-success">Imprimer les Résultats</button>
         </div>
     </form>
+    
 
     <!-- Tableau des notes -->
     <div class="table-responsive">
@@ -90,7 +93,7 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ note.devoir.name }}</td>
                     <td>{{ note.student.first_name }} {{ note.student.last_name }}</td>
-                    <td>{{ note.classe_id.name }}</td>
+                    <td>{{ note.student.student_class.name }}</td>
                     <td>{{ note.subject.name }}</td>
                     <td>{{ note.trimestre.name }}</td>
                     <td>{{ note.sessionyear }}</td>
@@ -105,4 +108,13 @@
         </table>
     </div>
 </div>
+
+<!-- Add JavaScript for Print Button -->
+<script>
+    document.getElementById("printResults").addEventListener("click", function () {
+        const params = new URLSearchParams(new FormData(document.getElementById("filterForm"))).toString();
+        const printUrl = `{% url 'print_notes' %}?` + params;
+        window.open(printUrl, '_blank'); // Open the print page in a new tab
+    });
+</script>
 {% endblock %}
