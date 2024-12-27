@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from students.models import NoteDevoir, Classe, Subject, Trimestre, SessionYearModel
+from students.models import  Classe, Subject, Trimestre, SessionYearModel
+from notes.models import NoteDevoir
 
 def print_notes(request):
     classe_id = request.GET.get("classe")
