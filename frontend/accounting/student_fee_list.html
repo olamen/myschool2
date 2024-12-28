@@ -12,10 +12,10 @@
             <p><strong>Total des Frais Payés :</strong> {{ total_paid }} MRU</p>
         </div>
         <div class="col-md-4">
-            {% if request.user.role in ['Adminf'] %}
-                {% if request.user.role == 'Adminf' and cash_register %}
-                    <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais</a>
-                {% endif %}
+            {% if request.user.role == 'Adminf' and cash_register %}
+                <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais</a>
+            {% elif request.user.role == 'Super Admin' %}
+                <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais Not Autorise</a>
             {% endif %}
         </div>
     </div>

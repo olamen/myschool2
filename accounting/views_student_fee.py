@@ -9,12 +9,6 @@ from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
 from accounting import models
 
-# Liste des frais des étudiants
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Fee, CashRegister
-from django.db.models import Sum
 
 @login_required
 def student_fee_list(request):
