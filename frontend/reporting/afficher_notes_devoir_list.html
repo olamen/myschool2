@@ -68,7 +68,8 @@
             <a href="{% url 'afficher_notes' %}" class="btn btn-secondary">Réinitialiser</a>
             <!-- Print Button -->
             <a href="{% url 'export_notes_to_excel' %}?classe={{ request.GET.classe }}&devoir={{ request.GET.devoir }}&trimestre={{ request.GET.trimestre }}&subject={{ request.GET.subject }}&session_year={{ request.GET.session_year }}" class="btn btn-success">
-                Exporter en Excel
+                Exporter en Excel     <i class="bi bi-file-earmark-excel"></i>
+
             </a>
             <button type="button" id="printResults" class="btn btn-success">Imprimer les Résultats</button>
         </div>
