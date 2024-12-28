@@ -5,13 +5,21 @@
     <h1 class="text-center">Liste des Frais des Étudiants</h1>
     <hr />
     <div class="row mb-3">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <p><strong>Total des Frais Dus :</strong> {{ total_due }} MRU</p>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <p><strong>Total des Frais Payés :</strong> {{ total_paid }} MRU</p>
         </div>
+        <div class="col-md-4">
+            {% if request.user.role in ['Adminf'] %}
+                {% if request.user.role == 'Adminf' and cash_register %}
+                    <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais</a>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
+
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="table-primary">
@@ -47,6 +55,5 @@
             </tbody>
         </table>
     </div>
-    <a href="{% url 'add_student_fee' %}" class="btn btn-success mt-3">Ajouter un Frais</a>
 </div>
 {% endblock %}

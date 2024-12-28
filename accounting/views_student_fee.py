@@ -10,8 +10,28 @@ from .forms import FeeForm, PaymentForm
 from accounting import models
 
 # Liste des frais des étudiants
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Fee, CashRegister
+from django.db.models import Sum
+
 @login_required
 def student_fee_list(request):
+    # Check if the user has the 'Adminf' or 'Super Admin' role
+    if request.user.role not in ['Adminf', 'Super Admin']:
+        messages.error(request, "Vous n'êtes pas autorisé à accéder à cette page.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to the previous page or home
+
+    # Check if the user has an open cash register (only for Adminf role)
+    if request.user.role == 'Adminf':
+        try:
+            cash_register = CashRegister.objects.get(user=request.user, is_open=True)
+        except CashRegister.DoesNotExist:
+            messages.error(request, "Aucune caisse ouverte pour votre compte. Veuillez ouvrir une caisse.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirect to the previous page or home
+
+    # Retrieve fees data
     fees = Fee.objects.filter(archived=False).order_by('-due_date')
     total_due = fees.filter(paid=False).aggregate(Sum('amount_due'))['amount_due__sum'] or 0
     total_paid = fees.filter(paid=True).aggregate(Sum('amount_due'))['amount_due__sum'] or 0
@@ -20,6 +40,7 @@ def student_fee_list(request):
         'fees': fees,
         'total_due': total_due,
         'total_paid': total_paid,
+        'cash_register': cash_register if request.user.role == 'Adminf' else None,  # Pass cash_register if applicable
     }
     return render(request, 'accounting/student_fee_list.html', context)
 
