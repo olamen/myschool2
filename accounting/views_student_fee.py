@@ -24,9 +24,14 @@ def student_fee_list(request):
     return render(request, 'accounting/student_fee_list.html', context)
 
 
-# Ajouter un frais pour un étudiant
+
 @login_required
 def add_student_fee(request):
+    # Check if the user's role is 'Adminf'
+    if request.user.role != 'Adminf':
+        messages.error(request, "Vous n'êtes pas autorisé à effectuer cette action.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))  # Redirect back to the previous page or home if not available
+
     # Retrieve the current open cash register for the logged-in user
     try:
         cash_register = CashRegister.objects.get(user=request.user, is_open=True)
