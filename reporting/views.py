@@ -87,7 +87,7 @@ def afficher_notes_exam(request):
         'exams':exams,
         'notes': notes,
     }
-    return render(request, 'reporting/afficher_notes_devoir_list.html', context)
+    return render(request, 'reporting/afficher_notes_exam_list.html', context)
 
 
 @login_required
