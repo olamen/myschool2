@@ -2,7 +2,9 @@ import openpyxl
 from openpyxl.styles import Alignment, Font, Border, Side
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from .models import NoteDevoir, Devoir, Classe, Subject, Trimestre, SessionYearModel
+from notes.models import NoteDevoir
+from students.models import  Classe,Devoir,Subject, Trimestre, SessionYearModel
+
 
 def export_notes_to_excel(request):
     # Récupérer les paramètres de filtre
