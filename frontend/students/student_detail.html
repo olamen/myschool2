@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-
+<div class="right">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="index.html">Acceuil</a>
+        </li>
+        <li class="breadcrumb-item">
+          <i class="bi bi-caret-right"></i>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Étudiant : {{ student.first_name }} {{ student.last_name }}
+        </li>
+      </ol>
+    </nav>
+  </div>
     <!-- Student Information -->
     <h1>Détails de l'Étudiant</h1>
     <div class="card mb-4">
