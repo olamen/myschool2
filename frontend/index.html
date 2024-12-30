@@ -36,7 +36,7 @@
                                     <i class="bi bi-home"></i>
                                 </div>
                                 <div class="part-txt">
-                                    <p><span>Following</span>80.000</p>
+                                    <p><span>Total des Professeurs</span>{{ total_teachers }}</p>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                                     <i class="bi bi-bookmark-dash-fill"></i>
                                 </div>
                                 <div class="part-txt">
-                                    <p><span>Saved Post</span>112</p>
+                                    <p><span>Total des Matiéres</span>{{ total_subjects }}</p>
                                 </div>
                             </div>
                         </div>
@@ -268,10 +268,10 @@
                                 dataLabels: { enabled: false },
                                 chart: { type: 'bar', height: 450 },
                                 fill: { opacity: 1 },
-                                series: [{ name: 'Student Fees', data: data.series }],
+                                series: [{ name: 'Frais', data: data.series }],
                                 colors: ['#9cd02d'],
                                 xaxis: {
-                                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                                    categories: ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                                 },
                                 fill: {
                                     type: 'gradient',
