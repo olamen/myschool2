@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulletin des Notes</title>
+    <style>
+        @media print {
+            body {
+                font-family: "Arial", sans-serif;
+                font-size: 12px;
+                margin: 20px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 3px solid black;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
+            .header img {
+                height: 50px;
+                object-fit: contain;
+            }
+            .school-name {
+                font-size: 16px;
+                font-weight: bold;
+            }
+            .student-section {
+                margin-top: 40px;
+                page-break-after: always;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+            }
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% for card in report_cards %}
+    <div class="student-section">
+        <div class="header">
+            <div class="school-name" style="text-align: left;">
+                Nom de l'école en français
+            </div>
+            <div>
+                <img src="{% static 'images/logo.png' %}" alt="Logo de l'école">
+            </div>
+            <div class="school-name" style="text-align: right;">
+                اسم المدرسة بالعربية
+            </div>
+        </div>
+
+        <h2 style="text-align: center;">Bulletin de Notes - {{ trimestre.name }}</h2>
+        <p><strong>Étudiant :</strong> {{ card.student.first_name }} {{ card.student.last_name }}</p>
+        <p><strong>Classe :</strong> {{ card.student.student_class.name }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Matière</th>
+                    <th>Note Trimestrielle</th>
+                    <th>Note Cumulative</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Score Trimestriel</td>
+                    <td>{{ card.trimester_score }}</td>
+                    <td>{{ card.yearly_score }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</body>
+</html>

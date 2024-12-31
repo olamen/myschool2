@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin de Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .header, .footer {
+            text-align: center;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        .title {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nom de l'École</h1>
+        <h3>Bulletin de Notes - {{ trimestre.name }}</h3>
+        <p>Année Scolaire: {{ student.student_class }}</p>
+    </div>
+
+    <div class="title">
+        Bulletin de {{ student.first_name }} {{ student.last_name }}
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Matière</th>
+                <th>Score</th>
+                <th>Coefficient</th>
+                <th>Score Pondéré</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in notes %}
+            <tr>
+                <td>Devoir</td>
+                <td>{{ note.subject.name }}</td>
+                <td>{{ note.score }}</td>
+                <td>{{ note.coefficient }}</td>
+                <td>{{ note.score|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4"><strong>Score Trimester</strong></td>
+                <td>{{ trimester_score|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td colspan="4"><strong>Score Annuel Cumulé</strong></td>
+                <td>{{ yearly_score|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Fait le: {{ date|date:"d/m/Y" }}</p>
+        <p>Signature:</p>
+    </div>
+</body>
+</html>
