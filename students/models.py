@@ -190,7 +190,7 @@ class Devoir(models.Model):
         return None  # Si aucun score, retourne None
 
     def __str__(self):
-        return f"Homework for {self.student} in {self.subject.name}"
+        return f"Devoir {self.name} in {self.subject.name} for {self.trimestre.name}"
     
 class Composition(models.Model):
         name = models.CharField(max_length=100,default="Composition",unique=True)
