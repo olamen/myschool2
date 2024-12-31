@@ -63,7 +63,6 @@ def generate_report_card(request, student_id, trimestre_id):
 
     return render(request, 'reporting/report_card.html', context)
 
-@login_required
 def generate_class_report_cards(request, classe_id, trimestre_id):
     students = Student.objects.filter(student_class_id=classe_id)
     trimestre = Trimestre.objects.get(id=trimestre_id)
