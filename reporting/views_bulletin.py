@@ -8,7 +8,6 @@ from weasyprint import HTML
 from django.template.loader import render_to_string
 
 
-@login_required
 def calculate_cumulative_scores(student, trimestre):
     """
     Calculate cumulative scores for a student in a specific trimester.
@@ -31,7 +30,6 @@ def calculate_cumulative_scores(student, trimestre):
 
     return assignment_total + exam_total
 
-@login_required
 def calculate_yearly_cumulative(student, trimestre):
     """
     Calculate the cumulative score for the year up to a specific trimester.
@@ -45,7 +43,6 @@ def calculate_yearly_cumulative(student, trimestre):
     return cumulative_score
 
 
-@login_required
 def generate_report_card(request, student_id, trimestre_id):
     student = Student.objects.get(id=student_id)
     trimestre = Trimestre.objects.get(id=trimestre_id)
