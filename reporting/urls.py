@@ -12,6 +12,7 @@ urlpatterns = [
     path('notes_exam/', afficher_notes_exam, name='afficher_notes_exams'),
     path('notes/export/', export_notes_to_excel, name='export_notes_to_excel'),
     path('notes/print/', print_notes, name='print_notes'),
+    path('notes/rep/', print_notes, name='rep'),
     path('buletin_card/<int:student_id>/<int:trimestre_id>/', generate_report_card, name='generate_report_card'),
     path('class_report_cards/<int:classe_id>/<int:trimestre_id>/', generate_class_report_cards, name='generate_class_report_cards'),
     path('report_card/pdf/<int:student_id>/<int:trimestre_id>/', generate_pdf_report_card, name='generate_pdf_report_card'),

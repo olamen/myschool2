@@ -3,6 +3,9 @@ from django.shortcuts import render
 from students.models import  Classe, Subject, Trimestre, SessionYearModel
 from notes.models import NoteDevoir
 
+def rep(request):
+    return render(request,'reporting/rep.html')
+
 def print_notes(request):
     classe_id = request.GET.get("classe")
     devoir_id = request.GET.get("devoir")
