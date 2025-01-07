@@ -104,9 +104,8 @@
                     <td>{{ note.sessionyear }}</td>
                     <td>{{ note.score }}</td>
                     <td>
-                        <a href="{% url 'generate_report_card' note.student.id note.trimestre.id %}" 
-                           class="btn btn-sm btn-primary" target="_blank">
-                            Bulletin
+                        <a href="{% url 'generate_report_card' student.id trimestre.id session_year.id %}">
+                            Générer le Bulletin
                         </a>
                     </td>
                 </tr>
