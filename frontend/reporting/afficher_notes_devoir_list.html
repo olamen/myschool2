@@ -89,6 +89,7 @@
                     <th>Trimestre</th>
                     <th>Session</th>
                     <th>Score</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,6 +103,12 @@
                     <td>{{ note.trimestre.name }}</td>
                     <td>{{ note.sessionyear }}</td>
                     <td>{{ note.score }}</td>
+                    <td>
+                        <a href="{% url 'generate_report_card' note.student.id note.trimestre.id %}" 
+                           class="btn btn-sm btn-primary" target="_blank">
+                            Bulletin
+                        </a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
