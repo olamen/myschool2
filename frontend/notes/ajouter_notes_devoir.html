@@ -32,15 +32,13 @@
                     </select>
                 </div>
             </div>
-
+            
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="devoir" class="form-label">Devoir</label>
                     <select class="form-select" id="devoir" name="devoir">
                         <option value="">Sélectionnez un devoir</option>
-                        {% for devoir in devoirs %}
-                        <option value="{{ devoir.id }}">{{ devoir.name }}</option>
-                        {% endfor %}
+                        <!-- Les options des devoirs seront ajoutées dynamiquement ici -->
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -211,5 +209,37 @@
         });
         });
 
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Charger les devoirs lorsque le trimestre est sélectionné
+            $('#trimestre').change(function () {
+                const trimestreId = $(this).val();
+                const devoirSelect = $('#devoir');
+    
+                // Réinitialiser les options des devoirs
+                devoirSelect.empty();
+                devoirSelect.append('<option value="">Sélectionnez un devoir</option>');
+    
+                if (trimestreId) {
+                    $.ajax({
+                        url: `/notes/get_devoirs/${trimestreId}/`, // URL pour récupérer les devoirs du trimestre
+                        type: 'GET',
+                        success: function (data) {
+                            if (data.devoirs && data.devoirs.length > 0) {
+                                data.devoirs.forEach(function (devoir) {
+                                    devoirSelect.append(`<option value="${devoir.id}">${devoir.name}</option>`);
+                                });
+                            } else {
+                                alert("Aucun devoir trouvé pour ce trimestre.");
+                            }
+                        },
+                        error: function () {
+                            alert("Erreur lors du chargement des devoirs.");
+                        }
+                    });
+                }
+            });
+        });
     </script>
 {% endblock %}

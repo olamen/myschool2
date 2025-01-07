@@ -32,6 +32,14 @@ def ajouter_notes_devoir(request):
     return render(request, 'notes/ajouter_notes_devoir.html', context)
 
 @login_required
+def get_devoirs_by_trimestre(request, trimestre_id):
+    if request.method == 'GET':
+        devoirs = Devoir.objects.filter(trimestre_id=trimestre_id)
+        devoirs_data = [{'id': devoir.id, 'name': devoir.name} for devoir in devoirs]
+        return JsonResponse({'devoirs': devoirs_data})
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@login_required
 def get_students(request, classe_id, devoir_id):
     print(f"Classe ID: {classe_id}, Devoir ID: {devoir_id}")  # Vérification
     classe = get_object_or_404(Classe, id=classe_id)
