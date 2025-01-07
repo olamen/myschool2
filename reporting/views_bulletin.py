@@ -48,16 +48,22 @@ def generate_report_card(request, student_id, trimestre_id):
     student = Student.objects.get(id=student_id)
     trimestre = Trimestre.objects.get(id=trimestre_id)
 
-    # Calculate trimester scores with normalization to a scale of 20
+    # Get all subjects for the student in this trimester
+    subjects = NoteDevoir.objects.filter(student=student, trimestre=trimestre).values('subject__name', 'coefficient').annotate(
+        total_score=Sum(F('score') * F('coefficient')),
+        normalized_score=(Sum(F('score') * F('coefficient')) / Sum('coefficient')) * 20
+    )
+
+    # Calculate trimester and yearly scores
+    trimester_total_raw_score = calculate_cumulative_scores(student, trimestre)
     trimester_total_coefficient = NoteDevoir.objects.filter(
         student=student,
         trimestre=trimestre
-    ).aggregate(Sum('coefficient'))['coefficient__sum'] or 1
+    ).aggregate(total_coefficient=Sum('coefficient'))['total_coefficient'] or 1
 
-    trimester_score_raw = calculate_cumulative_scores(student, trimestre)
-    trimester_score = (trimester_score_raw / trimester_total_coefficient) * 20
+    trimester_score = (trimester_total_raw_score / trimester_total_coefficient) * 20
 
-    # Calculate yearly cumulative scores with normalization to a scale of 20
+    yearly_total_raw_score = calculate_yearly_cumulative(student, trimestre)
     yearly_total_coefficient = sum(
         NoteDevoir.objects.filter(
             student=student,
@@ -66,14 +72,14 @@ def generate_report_card(request, student_id, trimestre_id):
         for t in Trimestre.objects.filter(id__lte=trimestre.id)
     ) or 1
 
-    yearly_score_raw = calculate_yearly_cumulative(student, trimestre)
-    yearly_score = (yearly_score_raw / yearly_total_coefficient) * 20
+    yearly_score = (yearly_total_raw_score / yearly_total_coefficient) * 20
 
     context = {
         'student': student,
         'trimestre': trimestre,
-        'trimester_score': round(trimester_score, 2),  # Round to 2 decimals
-        'yearly_score': round(yearly_score, 2),  # Round to 2 decimals
+        'subjects': subjects,
+        'trimester_score': round(trimester_score, 2),
+        'yearly_score': round(yearly_score, 2),
     }
 
     return render(request, 'reporting/report_card.html', context)

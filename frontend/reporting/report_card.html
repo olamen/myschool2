@@ -40,32 +40,32 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Type</th>
                 <th>Matière</th>
-                <th>Score</th>
                 <th>Coefficient</th>
+                <th>Score</th>
                 <th>Score Pondéré</th>
             </tr>
         </thead>
         <tbody>
-            {% for note in notes %}
+            {% for subject in subjects %}
             <tr>
-                <td>Devoir</td>
-                <td>{{ note.subject.name }}</td>
-                <td>{{ note.score }}</td>
-                <td>{{ note.coefficient }}</td>
-                <td>{{ note.score|floatformat:2 }}</td>
+                <td>{{ subject.subject__name }}</td>
+                <td>{{ subject.coefficient }}</td>
+                <td>{{ subject.total_score|floatformat:2 }}</td>
+                <td>{{ subject.normalized_score|floatformat:2 }}/20</td>
             </tr>
             {% endfor %}
-            <tr>
-                <td colspan="4"><strong>Score Trimester</strong></td>
-                <td>{{ trimester_score|floatformat:2 }}</td>
-            </tr>
-            <tr>
-                <td colspan="4"><strong>Score Annuel Cumulé</strong></td>
-                <td>{{ yearly_score|floatformat:2 }}</td>
-            </tr>
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Score Trimester</td>
+                <td colspan="2">{{ trimester_score }}/20</td>
+            </tr>
+            <tr>
+                <td colspan="2">Score Annuel Cumulé</td>
+                <td colspan="2">{{ yearly_score }}/20</td>
+            </tr>
+        </tfoot>
     </table>
 
     <div class="footer">
