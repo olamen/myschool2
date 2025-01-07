@@ -21,7 +21,7 @@ def afficher_notes_devoir(request):
     classe_id = request.GET.get('classe')
     trimestre_id = request.GET.get('trimestre')
     subject_id = request.GET.get('subject')
-    session_year_id = request.GET.get('sessionyear')
+    sessionyear_id = request.GET.get('sessionyear')
     devoir_id= request.GET.get('devoir')
 
     # Filtrage des notes
@@ -34,8 +34,8 @@ def afficher_notes_devoir(request):
         notes = notes.filter(trimestre_id=trimestre_id)
     if subject_id:
         notes = notes.filter(subject_id=subject_id)
-    if session_year_id:
-        notes = notes.filter(sessionyear_id=session_year_id)
+    if sessionyear_id:
+        notes = notes.filter(sessionyear_id=sessionyear_id)
     if devoir_id:
         notes = notes.filter(devoir_id=devoir_id)
 
