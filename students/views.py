@@ -17,6 +17,7 @@ from Auth.models import CustomUser
 from rest_framework.permissions import BasePermission
 from .models import AppConfig, Grade, Devoir, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer , StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
+from datetime import date, timedelta
 
 
 def forbidden_view(request, exception=None):
@@ -139,23 +140,49 @@ def indexview(request):
     }
     return render(request, 'index.html', context)
 
+# def student_fees_by_month(request):
+#     current_year = date.today().year
+#     fees_by_month = (
+#         Fee.objects.filter(due_date__year=current_year)
+#         .values('due_date__month')
+#         .annotate(total_amount=Sum('amount_due'))
+#         .order_by('due_date__month')
+#     )
+
+#     # Create a list of 12 months with default value 0 for missing months
+#     fees_data = [0] * 12
+#     for fee in fees_by_month:
+#         month_index = fee['due_date__month'] - 1  # Months are 1-indexed
+#         fees_data[month_index] = float(fee['total_amount'])
+
+#     return JsonResponse({"series": fees_data})
+
+
 def student_fees_by_month(request):
-    current_year = date.today().year
+    # Calculer la date il y a 12 mois à partir d'aujourd'hui
+    today = date.today()
+    start_date = (today - timedelta(days=365)).replace(day=1)  # Premier jour du mois il y a 12 mois
+
+    # Filtrer les frais sur les 12 derniers mois
     fees_by_month = (
-        Fee.objects.filter(due_date__year=current_year)
-        .values('due_date__month')
+        Fee.objects.filter(due_date__gte=start_date, due_date__lte=today)
+        .values('due_date__month', 'due_date__year')
         .annotate(total_amount=Sum('amount_due'))
-        .order_by('due_date__month')
+        .order_by('due_date__year', 'due_date__month')
     )
 
-    # Create a list of 12 months with default value 0 for missing months
+    # Créer un tableau des 12 derniers mois avec des valeurs par défaut à 0
     fees_data = [0] * 12
+    current_month = today.month
+    current_year = today.year
+
     for fee in fees_by_month:
-        month_index = fee['due_date__month'] - 1  # Months are 1-indexed
-        fees_data[month_index] = float(fee['total_amount'])
+        # Calculer l'index correct pour les 12 derniers mois
+        month_diff = (current_year - fee['due_date__year']) * 12 + (current_month - fee['due_date__month'])
+        if 0 <= month_diff < 12:
+            fees_data[11 - month_diff] = float(fee['total_amount'])
 
     return JsonResponse({"series": fees_data})
-
 
     
     
