@@ -79,6 +79,7 @@ def generate_report_card(request, student_id, trimestre_id,sessionyear_id):
         'student': student,
         'trimestre': trimestre,
         'subjects': subjects,
+        'session_year':session_year,
         'trimester_score': round(trimester_score, 2),
         'yearly_score': round(yearly_score, 2),
     }
