@@ -13,7 +13,7 @@ urlpatterns = [
     path('notes/export/', export_notes_to_excel, name='export_notes_to_excel'),
     path('notes/print/', print_notes, name='print_notes'),
     path('notes/rep/', rep, name='rep'),
-    path('buletin_card/<int:student_id>/<int:trimestre_id>/<int:session_year_id>/', generate_report_card, name='generate_report_card'),
+    path('buletin_card/<int:student_id>/<int:trimestre_id>/<int:sessionyear_id>/', generate_report_card, name='generate_report_card'),
     path('class_report_cards/<int:classe_id>/<int:trimestre_id>/', generate_class_report_cards, name='generate_class_report_cards'),
     path('report_card/pdf/<int:student_id>/<int:trimestre_id>/', generate_pdf_report_card, name='generate_pdf_report_card'),
 
