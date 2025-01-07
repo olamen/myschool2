@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
-from students.models import Student, Trimestre
+from students.models import Student, Trimestre,SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
 
@@ -44,9 +44,10 @@ def calculate_yearly_cumulative(student, trimestre):
 
 
 @login_required
-def generate_report_card(request, student_id, trimestre_id):
+def generate_report_card(request, student_id, trimestre_id,sessionyear_id):
     student = Student.objects.get(id=student_id)
     trimestre = Trimestre.objects.get(id=trimestre_id)
+    session_year = SessionYearModel.objects.get(id=sessionyear_id)
 
     # Get all subjects for the student in this trimester
     subjects = NoteDevoir.objects.filter(student=student, trimestre=trimestre).values('subject__name', 'coefficient').annotate(
