@@ -86,6 +86,9 @@
     <script>
         $(document).ready(function () {
             // Load students when the class is selected
+            function resetNotes() {
+                $('.student-score').val(''); // Réinitialise les valeurs des champs de notes
+            }
             $('#classe').change(function () {
                 let classeId = $(this).val();
                 let devoirId = $('#devoir').val();
@@ -173,9 +176,8 @@
 
     // Vérifier que tous les champs obligatoires sont sélectionnés
     if (!classeId || !subjectId || !sessionYear || !trimestre || (!devoirId && !$('#composition').val())) {
-        alert("Veuillez sélectionner une classe, une matière, une année scolaire, un trimestre et un devoir ou une composition.");
-        return;
-    }
+        
+    
 
     $.ajax({
         url: '/notes/get_notes/',
@@ -207,11 +209,12 @@
         }
     });
 }
-
-        // Charger les étudiants et les notes quand la classe change
-        $('#classe, #devoir, #subject, #sessionYear, #trimestre').change(function () {
-            loadNotes();
-        });
+}
+// Événement de changement pour réinitialiser les notes
+$('#classe, #devoir, #subject, #sessionYear, #trimestre, #composition').change(function () {
+        resetNotes(); // Réinitialiser les champs de notes
+        loadNotes();  // Charger les nouvelles notes
+    });
         });
 
     </script>
