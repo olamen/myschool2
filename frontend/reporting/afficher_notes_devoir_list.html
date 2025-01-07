@@ -104,9 +104,13 @@
                     <td>{{ note.sessionyear }}</td>
                     <td>{{ note.score }}</td>
                     <td>
-                        <a href="{% url 'generate_report_card' student.id trimestre.id session_year.id %}">
-                            Générer le Bulletin
-                        </a>
+                        {% if note.student and note.trimestre and note.sessionyear %}
+                            <a href="{% url 'generate_report_card' note.student.id note.trimestre.id note.sessionyear.id %}">
+                                Générer le Bulletin
+                            </a>
+                        {% else %}
+                            <span>Pas de données</span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
