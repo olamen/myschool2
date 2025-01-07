@@ -28,13 +28,13 @@
 </head>
 <body>
     <div class="header">
-        <h1>Nom de l'École</h1>
-        <h3>Bulletin de Notes - {{ trimestre.name }}</h3>
-        <p>Année Scolaire: {{ student.student_class }}</p>
-    </div>
-
-    <div class="title">
-        Bulletin de {{ student.first_name }} {{ student.last_name }}
+        <h2>Nom de l'École</h2>
+        <p>Bulletin de Notes - {{ trimestre.name }}</p>
+        <p>Année Scolaire: {{ session_year.session_start_year }} - {{ session_year.session_end_year }}</p>
+        <p>Classe: {{ student.student_class.name }}</p>
+        <div class="title">
+            Bulletin de {{ student.first_name }} {{ student.last_name }}
+        </div>
     </div>
 
     <table class="table">
