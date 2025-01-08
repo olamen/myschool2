@@ -116,5 +116,4 @@ var optionsAnalytics = {
 };
 
 
-var chartProfileVisit = new ApexCharts(document.querySelector("#chart-profile-visit"), optionsProfileVisit).render();
 var chartAnalytics = new ApexCharts(document.querySelector("#chart-analytics"), optionsAnalytics).render();
