@@ -116,4 +116,3 @@ var optionsAnalytics = {
 };
 
 
-var chartAnalytics = new ApexCharts(document.querySelector("#chart-analytics"), optionsAnalytics).render();
