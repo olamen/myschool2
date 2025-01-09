@@ -1,34 +1,43 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Subject
+from .models import Grade, Subject
 
 # Liste des sujets
 def subject_list(request):
     subjects = Subject.objects.all()
     return render(request, 'subjects/subject_list.html', {'subjects': subjects})
 
-# Créer un sujet
-def subject_create(request):
+# Create or Update Subject
+def subject_form(request, subject_id=None):
+    subject = get_object_or_404(Subject, id=subject_id) if subject_id else None
+    grades = Grade.objects.all()
+
     if request.method == 'POST':
         name = request.POST.get('name')
+        grade_id = request.POST.get('grade')
+        points = request.POST.get('points')
         coefficient = request.POST.get('coefficient')
-        # Créer un nouveau sujet
-        Subject.objects.create(name=name, coefficient=coefficient)
-        messages.success(request, "Sujet créé avec succès !")
-        return redirect('subject_list')
-    return render(request, 'subjects/subject_form.html',)
 
-# Modifier un sujet
-def subject_update(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id)
-    if request.method == 'POST':
-        subject.name = request.POST.get('name')
-        subject.coefficient = request.POST.get('coefficient')
+        grade = get_object_or_404(Grade, id=grade_id)
+        
+        if not subject:
+            subject = Subject(name=name, grade=grade)
+        else:
+            subject.name = name
+            subject.grade = grade
+        
+        if grade.name.lower() == 'primaire':
+            subject.points = points
+            subject.coefficient = None
+        else:
+            subject.coefficient = coefficient
+            subject.points = None
+
         subject.save()
-        messages.success(request, "Sujet modifié avec succès !")
+        messages.success(request, "Sujet enregistré avec succès !")
         return redirect('subject_list')
 
-    return render(request, 'subjects/subject_form.html', {'subject': subject,})
+    return render(request, 'subjects/subject_form.html', {'subject': subject, 'grades': grades})
 
 # Activer/Désactiver un sujet
 def subject_toggle_status(request, subject_id):

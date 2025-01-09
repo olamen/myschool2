@@ -62,16 +62,18 @@ urlpatterns = [
 
     path('parents/add/', parent_create, name='add_parent'),
     path('parents/<int:parent_id>/', parent_detail, name='parent_detail'),
-
+    
+#subject
     path('subjects/', views_subject.subject_list, name='subject_list'),
-    path('subjects/create/', views_subject.subject_create, name='subject_create'),
-    path('subjects/<int:subject_id>/update/', views_subject.subject_update, name='subject_update'),
-    path('subjects/<int:subject_id>/toggle/', views_subject.subject_toggle_status, name='subject_toggle_status'),
+    path('subjects/new/', views_subject.subject_form, name='subject_create'),
+    path('subjects/<int:subject_id>/edit/', views_subject.subject_form, name='subject_update'),
+    path('subjects/<int:subject_id>/toggle-status/', views_subject.subject_toggle_status, name='subject_toggle_status'),
+
 
     path("exams/<int:exam_id>/", exam_detail, name="exam_detail"),
     path("exams/<int:exam_id>/edit/", edit_exam, name="edit_exam"),
 
-    #
+#
     path('trimestres/', trimestre_list, name='trimestre_list'),
     path('trimestres/create/', trimestre_create, name='trimestre_create'),
     path('trimestres/<int:pk>/update/', trimestre_update, name='trimestre_update'),

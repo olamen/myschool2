@@ -94,11 +94,21 @@ class Parent(models.Model):
 
 
 class Subject(models.Model):
-    name = models.CharField(max_length=100,)  # Nom du sujet
-    coefficient = models.DecimalField(max_digits=3, decimal_places=1, default=1)  # Coefficient du sujet
-    is_active = models.BooleanField(default=True)  # Statut actif ou inactif
+    name = models.CharField(max_length=100)  # Subject name
+    grade = models.ForeignKey('Grade', on_delete=models.CASCADE, related_name='subjects')  # Associated grade
+    points = models.PositiveIntegerField(null=True, blank=True)  # Points (for primary)
+    coefficient = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)  # Coefficient (for secondary and lycée)
+    is_active = models.BooleanField(default=True)  # Active status
+
     def __str__(self):
-        return f"{self.name} (Coefficient: {self.coefficient})"
+        return f"{self.name} ({self.grade.name})"
+
+    def clean(self):
+        # Ensure only points or coefficient is used based on the grade
+        if self.grade.name.lower() == 'primaire' and self.points is None:
+            raise ValidationError("Primary subjects must have points.")
+        elif self.grade.name.lower() in ['second', 'lycée'] and self.coefficient is None:
+            raise ValidationError("Secondary or lycée subjects must have coefficients.")
     
 class Teacher(models.Model):
     SALARY_TYPE_CHOICES = [

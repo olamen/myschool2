@@ -1,42 +1,46 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-{{ block.super }}
-<h1>Liste des sujets</h1>
-<a href="{% url 'subject_create' %}" class="btn btn-primary">Créer un sujet</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Coefficient</th>
-            <th>Statut</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for subject in subjects %}
-        <tr>
-            <td>{{ subject.name }}</td>
-            <td>{{ subject.coefficient }}</td>
-            <td>
-                {% if subject.is_active %}
-                    Actif
-                {% else %}
-                    Inactif
-                {% endif %}
-            </td>
-            <td>
-                <a href="{% url 'subject_update' subject.id %}" class="btn btn-warning">Modifier</a>
-                <a href="{% url 'subject_toggle_status' subject.id %}" class="btn btn-secondary">
-                    {% if subject.is_active %}
-                        Désactiver
-                    {% else %}
-                        Activer
-                    {% endif %}
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container mt-5">
+    <h1 class="mb-4">Liste des Sujets</h1>
+    <a href="{% url 'subject_create' %}" class="btn btn-primary mb-3">Créer un Sujet</a>
+    
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th>Nom</th>
+                <th>Grade</th>
+                <th>Points</th>
+                <th>Coefficient</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.name }}</td>
+                <td>{{ subject.grade.name }}</td>
+                <td>{% if subject.grade.name|lower == "primaire" %}{{ subject.points|default:"-" }}{% else %}-{% endif %}</td>
+                <td>{% if subject.grade.name|lower != "primaire" %}{{ subject.coefficient|default:"-" }}{% else %}-{% endif %}</td>
+                <td>
+                    <span class="badge {% if subject.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if subject.is_active %}Actif{% else %}Inactif{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'subject_update' subject.id %}" class="btn btn-sm btn-warning">Modifier</a>
+                    <a href="{% url 'subject_toggle_status' subject.id %}" class="btn btn-sm {% if subject.is_active %}btn-secondary{% else %}btn-success{% endif %}">
+                        {% if subject.is_active %}Désactiver{% else %}Activer{% endif %}
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Aucun sujet trouvé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
