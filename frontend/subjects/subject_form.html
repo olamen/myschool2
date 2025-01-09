@@ -32,12 +32,11 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+   document.addEventListener('DOMContentLoaded', function () {
     const gradeSelect = document.getElementById('grade');
     const primaryFields = document.getElementById('primary-fields');
     const secondaryFields = document.getElementById('secondary-fields');
 
-    // Ensure all elements are found
     if (!gradeSelect || !primaryFields || !secondaryFields) {
         console.error('Missing required elements. Check the IDs:', {
             gradeSelect,
@@ -48,11 +47,11 @@
     }
 
     function toggleFields() {
-        // Get the selected grade text
+        // Get the selected grade text and normalize it (trim and lowercase)
         const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex]?.text.trim().toLowerCase();
-        console.log('Selected grade:', selectedGrade);
+        console.log('Selected grade (normalized):', selectedGrade);
 
-        // Toggle visibility using inline styles
+        // Match against normalized values
         if (selectedGrade === 'primaire') {
             console.log('Displaying primary fields, hiding secondary fields');
             primaryFields.style.display = 'block'; // Show primary fields
@@ -67,7 +66,6 @@
             secondaryFields.style.display = 'none'; // Hide secondary fields
         }
 
-        // Debugging: Check applied styles
         console.log('Primary fields display style:', primaryFields.style.display);
         console.log('Secondary fields display style:', secondaryFields.style.display);
     }
