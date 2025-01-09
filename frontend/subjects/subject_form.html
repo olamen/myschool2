@@ -13,7 +13,9 @@
             <select id="grade" name="grade" class="form-select" required>
                 <option value="">Sélectionnez un grade</option>
                 {% for grade in grades %}
-                <option value="{{ grade.id }}" {% if subject and subject.grade.id == grade.id %}selected{% endif %}>{{ grade.name }}</option>
+                <option value="{{ grade.id }}" {% if subject and subject.grade.id == grade.id %}selected{% endif %}>
+                    {{ grade.name }}
+                </option>
                 {% endfor %}
             </select>
         </div>
@@ -31,30 +33,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const gradeSelect = document.getElementById('grade');
-    const primaryFields = document.getElementById('primary-fields');
-    const secondaryFields = document.getElementById('secondary-fields');
+        const gradeSelect = document.getElementById('grade');
+        const primaryFields = document.getElementById('primary-fields');
+        const secondaryFields = document.getElementById('secondary-fields');
 
-    if (!gradeSelect || !primaryFields || !secondaryFields) {
-        console.error('Required elements are missing.');
-        return;
-    }
-
-    function toggleFields() {
-        const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex]?.text.trim().toLowerCase() || '';
-        console.log('Selected grade:', selectedGrade);
-
-        if (selectedGrade === 'primaire') {
-            primaryFields.classList.remove('d-none');
-            secondaryFields.classList.add('d-none');
-        } else {
-            primaryFields.classList.add('d-none');
-            secondaryFields.classList.remove('d-none');
+        if (!gradeSelect || !primaryFields || !secondaryFields) {
+            console.error('Missing elements:', { gradeSelect, primaryFields, secondaryFields });
+            return;
         }
-    }
 
-    gradeSelect.addEventListener('change', toggleFields);
-    toggleFields();
-});
+        function toggleFields() {
+            const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex]?.text.trim().toLowerCase();
+            console.log('Selected grade:', selectedGrade);
+
+            if (selectedGrade === 'primaire') {
+                primaryFields.classList.remove('d-none');
+                secondaryFields.classList.add('d-none');
+            } else if (selectedGrade === 'secondaire' || selectedGrade === 'lycée') {
+                primaryFields.classList.add('d-none');
+                secondaryFields.classList.remove('d-none');
+            } else {
+                primaryFields.classList.add('d-none');
+                secondaryFields.classList.add('d-none');
+            }
+        }
+
+        gradeSelect.addEventListener('change', toggleFields);
+        toggleFields(); // Initial trigger
+    });
 </script>
 {% endblock %}
