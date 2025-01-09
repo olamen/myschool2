@@ -14,7 +14,7 @@ def subject_list(request):
 @login_required
 def subject_form(request, subject_id=None):
     subject = get_object_or_404(Subject, id=subject_id) if subject_id else None
-    grades = Grade.objects.all()
+    grades = Grade.objects.all().order_by('-id')
 
     if request.method == 'POST':
         name = request.POST.get('name')
