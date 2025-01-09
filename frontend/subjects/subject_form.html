@@ -19,11 +19,11 @@
                 {% endfor %}
             </select>
         </div>
-        <div id="primary-fields" class="mb-3 d-none">
+        <div id="primary-fields" class="mb-3" style="display: none;">
             <label for="points" class="form-label">Points (pour primaire)</label>
             <input type="number" id="points" name="points" class="form-control" min="0" value="{{ subject.points|default:'' }}">
         </div>
-        <div id="secondary-fields" class="mb-3 d-none">
+        <div id="secondary-fields" class="mb-3" style="display: none;">
             <label for="coefficient" class="form-label">Coefficient (pour secondaire/lycée)</label>
             <input type="number" id="coefficient" name="coefficient" class="form-control" step="0.1" value="{{ subject.coefficient|default:'' }}">
         </div>
@@ -52,24 +52,24 @@
         const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex]?.text.trim().toLowerCase();
         console.log('Selected grade:', selectedGrade);
 
-        // Toggle visibility based on selected grade
+        // Toggle visibility using inline styles
         if (selectedGrade === 'primaire') {
-            console.log('Showing primary fields, hiding secondary fields');
-            primaryFields.classList.remove('d-none'); // Show primary fields
-            secondaryFields.classList.add('d-none'); // Hide secondary fields
+            console.log('Displaying primary fields, hiding secondary fields');
+            primaryFields.style.display = 'block'; // Show primary fields
+            secondaryFields.style.display = 'none'; // Hide secondary fields
         } else if (selectedGrade === 'secondaire' || selectedGrade === 'lycée') {
-            console.log('Showing secondary fields, hiding primary fields');
-            primaryFields.classList.add('d-none'); // Hide primary fields
-            secondaryFields.classList.remove('d-none'); // Show secondary fields
+            console.log('Displaying secondary fields, hiding primary fields');
+            primaryFields.style.display = 'none'; // Hide primary fields
+            secondaryFields.style.display = 'block'; // Show secondary fields
         } else {
             console.log('Hiding both fields (default case)');
-            primaryFields.classList.add('d-none'); // Hide primary fields
-            secondaryFields.classList.add('d-none'); // Hide secondary fields
+            primaryFields.style.display = 'none'; // Hide primary fields
+            secondaryFields.style.display = 'none'; // Hide secondary fields
         }
 
-        // Debugging: Check applied classes
-        console.log('Primary fields classes:', primaryFields.classList.toString());
-        console.log('Secondary fields classes:', secondaryFields.classList.toString());
+        // Debugging: Check applied styles
+        console.log('Primary fields display style:', primaryFields.style.display);
+        console.log('Secondary fields display style:', secondaryFields.style.display);
     }
 
     // Add event listener to the grade dropdown
