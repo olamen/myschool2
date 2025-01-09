@@ -31,34 +31,30 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const gradeSelect = document.getElementById('grade');
-        const primaryFields = document.getElementById('primary-fields');
-        const secondaryFields = document.getElementById('secondary-fields');
+    const gradeSelect = document.getElementById('grade');
+    const primaryFields = document.getElementById('primary-fields');
+    const secondaryFields = document.getElementById('secondary-fields');
 
-        function toggleFields() {
-            const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex].text.trim().toLowerCase();
-            console.log('Selected grade:', selectedGrade); // Debug: Log selected grade
-            console.log('Primary fields element:', primaryFields); // Debug: Log primary fields element
-            console.log('Secondary fields element:', secondaryFields); // Debug: Log secondary fields element
+    if (!gradeSelect || !primaryFields || !secondaryFields) {
+        console.error('Required elements are missing.');
+        return;
+    }
 
-            if (selectedGrade === 'primaire') {
-                console.log('Displaying primary fields, hiding secondary fields'); // Debug: Log action
-                primaryFields.classList.remove('d-none');
-                secondaryFields.classList.add('d-none');
-            } else {
-                console.log('Displaying secondary fields, hiding primary fields'); // Debug: Log action
-                primaryFields.classList.add('d-none');
-                secondaryFields.classList.remove('d-none');
-            }
+    function toggleFields() {
+        const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex]?.text.trim().toLowerCase() || '';
+        console.log('Selected grade:', selectedGrade);
+
+        if (selectedGrade === 'primaire') {
+            primaryFields.classList.remove('d-none');
+            secondaryFields.classList.add('d-none');
+        } else {
+            primaryFields.classList.add('d-none');
+            secondaryFields.classList.remove('d-none');
         }
+    }
 
-        gradeSelect.addEventListener('change', function () {
-            console.log('Grade dropdown changed'); // Debug: Log dropdown change
-            toggleFields();
-        });
-
-        console.log('Initializing toggleFields on page load'); // Debug: Log initialization
-        toggleFields(); // Initial toggle based on preselected grade
-    });
+    gradeSelect.addEventListener('change', toggleFields);
+    toggleFields();
+});
 </script>
 {% endblock %}
