@@ -36,17 +36,28 @@
         const secondaryFields = document.getElementById('secondary-fields');
 
         function toggleFields() {
-            const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex].text.toLowerCase();
+            const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex].text.trim().toLowerCase();
+            console.log('Selected grade:', selectedGrade); // Debug: Log selected grade
+            console.log('Primary fields element:', primaryFields); // Debug: Log primary fields element
+            console.log('Secondary fields element:', secondaryFields); // Debug: Log secondary fields element
+
             if (selectedGrade === 'primaire') {
+                console.log('Displaying primary fields, hiding secondary fields'); // Debug: Log action
                 primaryFields.classList.remove('d-none');
                 secondaryFields.classList.add('d-none');
             } else {
+                console.log('Displaying secondary fields, hiding primary fields'); // Debug: Log action
                 primaryFields.classList.add('d-none');
                 secondaryFields.classList.remove('d-none');
             }
         }
 
-        gradeSelect.addEventListener('change', toggleFields);
+        gradeSelect.addEventListener('change', function () {
+            console.log('Grade dropdown changed'); // Debug: Log dropdown change
+            toggleFields();
+        });
+
+        console.log('Initializing toggleFields on page load'); // Debug: Log initialization
         toggleFields(); // Initial toggle based on preselected grade
     });
 </script>
