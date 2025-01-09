@@ -1,13 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Grade, Subject
+from django.contrib.auth.decorators import login_required
+
 
 # Liste des sujets
+@login_required
 def subject_list(request):
     subjects = Subject.objects.all()
     return render(request, 'subjects/subject_list.html', {'subjects': subjects})
 
 # Create or Update Subject
+@login_required
 def subject_form(request, subject_id=None):
     subject = get_object_or_404(Subject, id=subject_id) if subject_id else None
     grades = Grade.objects.all()
@@ -40,6 +44,7 @@ def subject_form(request, subject_id=None):
     return render(request, 'subjects/subject_form.html', {'subject': subject, 'grades': grades})
 
 # Activer/Désactiver un sujet
+@login_required
 def subject_toggle_status(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
     subject.is_active = not subject.is_active
