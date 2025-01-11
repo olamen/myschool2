@@ -42,17 +42,26 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="classe" class="form-label">Grade</label>
-                    <select class="form-select" id="classe" name="classe">
+                    <label for="grade" class="form-label">Grade</label>
+                    <select class="form-select" id="grade" name="grade">
                         <option value="">Sélectionnez un grade</option>
                         {% for grade in grades %}
-                        <option value="{{ classe.id }}">{{ classe.name }}</option>
+                        <option value="{{ grade.id }}">{{ grade.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
 
             <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="classe" class="form-label">Classe</label>
+                    <select class="form-select" id="classe" name="classe">
+                        <option value="">Sélectionnez un grade</option>
+                        {% for classe in classes %}
+                        <option value="{{ classe.id }}">{{ classe.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="col-md-6">
                     <label for="subject" class="form-label">Matière</label>
                     <select class="form-select" id="subject" name="subject">
