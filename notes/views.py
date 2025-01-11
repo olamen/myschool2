@@ -17,11 +17,11 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def ajouter_notes_devoir(request):
     session_years = SessionYearModel.objects.all()
-    trimestres = Trimestre.objects.all()
-    devoirs = Devoir.objects.all()
+    trimestres = Trimestre.objects.all().order_by('id')
+    devoirs = Devoir.objects.all().order_by('id')
     subjects = Subject.objects.all()
-    classes = Classe.objects.all()
-    grades = Grade.objects.all()
+    classes = Classe.objects.all().order_by('id')
+    grades = Grade.objects.all().order_by('id')
 
     context = {
         'session_years': session_years,
