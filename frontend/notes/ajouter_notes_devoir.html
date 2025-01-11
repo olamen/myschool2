@@ -119,6 +119,33 @@
             });
         }
     });
+    $('#grade').change(function () {
+        const gradeId = $(this).val();
+        const subjectSelect = $('#classe');
+
+        // Reset subject options
+        classeSelect.empty();
+        classeSelect.append('<option value="">Sélectionnez une Classe</option>');
+
+        if (gradeId) {
+            $.ajax({
+                url: `/notes/get_classes/${gradeId}/`,
+                type: 'GET',
+                success: function (data) {
+                    if (data.success && data.classes.length > 0) {
+                        data.classes.forEach(function (classe) {
+                            classeSelect.append(`<option value="${classe.id}">${classe.name}</option>`);
+                        });
+                    } else {
+                        alert("Aucune matière trouvée pour ce classe.");
+                    }
+                },
+                error: function () {
+                    alert("Erreur lors du chargement des classes.");
+                }
+            });
+        }
+    });
             // Load students when the class is selected
             $('#classe').change(function () {
                 let classeId = $(this).val();

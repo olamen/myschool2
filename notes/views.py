@@ -51,6 +51,15 @@ def get_subjects_by_grade(request, grade_id):
         return JsonResponse({"success": False, "message": str(e)})
     
 @login_required
+def get_classes_by_grade(request, grade_id):
+    try:
+        classes = Classe.objects.filter(grade_id=grade_id)
+        classe_data = [{"id": classe.id, "name": classe.name} for classe in classes]
+        return JsonResponse({"success": True, "classes": classe_data})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)})
+    
+@login_required
 def get_students(request, classe_id, devoir_id):
     print(f"Classe ID: {classe_id}, Devoir ID: {devoir_id}")  # Vérification
     classe = get_object_or_404(Classe, id=classe_id)
