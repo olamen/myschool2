@@ -42,11 +42,11 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="subject" class="form-label">Matière</label>
-                    <select class="form-select" id="subject" name="subject">
-                        <option value="">Sélectionnez une matière</option>
-                        {% for subject in subjects %}
-                        <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    <label for="classe" class="form-label">Grade</label>
+                    <select class="form-select" id="classe" name="classe">
+                        <option value="">Sélectionnez un grade</option>
+                        {% for classe in classes %}
+                        <option value="{{ classe.id }}">{{ classe.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -54,12 +54,10 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="classe" class="form-label">Classe</label>
-                    <select class="form-select" id="classe" name="classe">
-                        <option value="">Sélectionnez une classe</option>
-                        {% for classe in classes %}
-                        <option value="{{ classe.id }}">{{ classe.name }}</option>
-                        {% endfor %}
+                    <label for="subject" class="form-label">Matière</label>
+                    <select class="form-select" id="subject" name="subject">
+                        <option value="">Sélectionnez une matière</option>
+                        <!-- Options will be populated dynamically -->
                     </select>
                 </div>
             </div>
@@ -85,6 +83,33 @@
     <!-- Script JS -->
     <script>
         $(document).ready(function () {
+            $('#classe').change(function () {
+        const gradeId = $(this).val();
+        const subjectSelect = $('#subject');
+
+        // Reset subject options
+        subjectSelect.empty();
+        subjectSelect.append('<option value="">Sélectionnez une matière</option>');
+
+        if (gradeId) {
+            $.ajax({
+                url: `/notes/get_subjects/${gradeId}/`, // URL to fetch subjects for the selected grade
+                type: 'GET',
+                success: function (data) {
+                    if (data.success && data.subjects.length > 0) {
+                        data.subjects.forEach(function (subject) {
+                            subjectSelect.append(`<option value="${subject.id}">${subject.name}</option>`);
+                        });
+                    } else {
+                        alert("Aucune matière trouvée pour ce grade.");
+                    }
+                },
+                error: function () {
+                    alert("Erreur lors du chargement des matières.");
+                }
+            });
+        }
+    });
             // Load students when the class is selected
             $('#classe').change(function () {
                 let classeId = $(this).val();
@@ -111,6 +136,7 @@
                     });
                 }
             });
+
     
             // Save notes
             $('#saveNotes').click(function () {

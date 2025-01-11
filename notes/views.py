@@ -40,6 +40,15 @@ def get_devoirs_by_trimestre(request, trimestre_id):
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 @login_required
+def get_subjects_by_grade(request, grade_id):
+    try:
+        subjects = Subject.objects.filter(grade_id=grade_id)
+        subject_data = [{"id": subject.id, "name": subject.name} for subject in subjects]
+        return JsonResponse({"success": True, "subjects": subject_data})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)})
+    
+@login_required
 def get_students(request, classe_id, devoir_id):
     print(f"Classe ID: {classe_id}, Devoir ID: {devoir_id}")  # Vérification
     classe = get_object_or_404(Classe, id=classe_id)
