@@ -21,6 +21,7 @@ def ajouter_notes_devoir(request):
     devoirs = Devoir.objects.all()
     subjects = Subject.objects.all()
     classes = Classe.objects.all()
+    grades = Grade.objects.all()
 
     context = {
         'session_years': session_years,
@@ -28,6 +29,7 @@ def ajouter_notes_devoir(request):
         'devoirs': devoirs,
         'subjects': subjects,
         'classes': classes,
+        'grades': grades,
     }
     return render(request, 'notes/ajouter_notes_devoir.html', context)
 
