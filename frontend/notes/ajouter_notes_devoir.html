@@ -315,6 +315,9 @@
     </script>
     <script>
         $(document).ready(function () {
+            function resetNotes() {
+                $('.student-score').val(''); // Réinitialise les valeurs des champs de notes
+            }
             $('#classe').change(function () {
                 resetNotes(); 
             const subjectSelect = $('#subject');
