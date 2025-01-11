@@ -313,4 +313,14 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            $('#classe').change(function () {
+                resetNotes(); 
+            const subjectSelect = $('#subject');
+            subjectSelect.empty();
+            subjectSelect.append('<option value="">Sélectionnez une Matière</option>');        
+        });
+    });
+    </script>
 {% endblock %}
