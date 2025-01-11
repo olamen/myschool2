@@ -92,7 +92,7 @@
     <!-- Script JS -->
     <script>
         $(document).ready(function () {
-            $('#classe').change(function () {
+            $('#grade').change(function () {
         const gradeId = $(this).val();
         const subjectSelect = $('#subject');
 
@@ -110,7 +110,7 @@
                             subjectSelect.append(`<option value="${subject.id}">${subject.name}</option>`);
                         });
                     } else {
-                        alert("Aucune matière trouvée pour ce grade.");
+                        alert("Aucune matière trouvée pour ce classe.");
                     }
                 },
                 error: function () {
