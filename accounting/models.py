@@ -137,18 +137,18 @@ class Transaction(models.Model):
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} on {self.date}"
 
-# Signal pour mettre à jour la caisse après une transaction
-@receiver(post_save, sender=Transaction)
-def update_cash_register(sender, instance, **kwargs):
+
+def update_cash_register(sender, instance, created, **kwargs):
     """
     Met à jour le solde actuel de la caisse après chaque transaction.
+    Cette mise à jour ne doit être effectuée que si l'objet est modifié après sa création.
     """
-    if instance.transaction_type == 'Credit':
-        instance.cash_register.current_balance += instance.amount
-    elif instance.transaction_type == 'Debit':
-        instance.cash_register.current_balance -= instance.amount
-    instance.cash_register.save()
-
+    if not created:  # Ne pas exécuter lors de la création initiale
+        if instance.transaction_type == 'Credit':
+            instance.cash_register.current_balance += instance.amount
+        elif instance.transaction_type == 'Debit':
+            instance.cash_register.current_balance -= instance.amount
+        instance.cash_register.save()
 
 class StudentFee(models.Model):
     """
@@ -170,7 +170,7 @@ class StudentFee(models.Model):
             # Crée une transaction pour ce paiement
             transaction = Transaction(
                 amount=self.amount,
-                transaction_type="income",
+                transaction_type="Credit",
                 description=f"Paiement des frais pour {self.student.first_name} {self.student.last_name}",
                 user=self.cash_register.user,
                 cash_register=self.cash_register,
