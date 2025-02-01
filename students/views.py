@@ -56,10 +56,7 @@ def update_grade(request, grade_id):
         return redirect('grades_list')
     return render(request, 'students/grade_form.html', {'grade': grade})
 
-@login_required
-def get_classes(request, grade_id):
-    classes = Classe.objects.filter(grade_id=grade_id, is_active=True).values('id', 'name')
-    return JsonResponse({'classes': list(classes)})
+
 
 #end Grade
 
@@ -290,8 +287,8 @@ class StudentViewSet(viewsets.ModelViewSet):
             return redirect('students_list')  # Rediriger vers la liste des étudiants
 
         # Afficher le formulaire si la requête est GET
-        classes = Classe.objects.all()
-        return render(request, 'students/add_student.html', {'classes': classes})
+        context = {'classes': Classe.objects.all(),}
+        return render(request, 'students/add_student.html', context)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
