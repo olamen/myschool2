@@ -32,7 +32,7 @@ APPEND_SLASH = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG","False").lower() == "true"
-
+COMPRESS_ENABLED = True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(" ")
 
 AUTH_USER_MODEL = 'Auth.CustomUser'
@@ -54,11 +54,20 @@ INSTALLED_APPS = [
     
     'corsheaders',
     'rest_framework',
+    'compressor',
     
     
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
 INSTALLED_APPS += ['whitenoise.runserver_nostatic']
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'compressor.finders.CompressorFinder',
+)
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
