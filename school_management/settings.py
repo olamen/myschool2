@@ -176,19 +176,20 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # Ensure it starts with a forward slash
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Use a separate directory for static files you want to include
+
+# Remove extra entries in STATICFILES_DIRS (just include the 'static' directory)
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'static/css'),  # Add specific CSS directory
-    os.path.join(BASE_DIR, 'static/js'),
 ]
-# Compressor settings
-COMPRESS_ROOT = os.path.join(BASE_DIR, 'static')  # Instead of STATIC_ROOT
+
+# Fix Django Compressor settings
+COMPRESS_ROOT = STATIC_ROOT  # Use STATIC_ROOT instead of static
 COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = True
-COMPRESS_OUTPUT_DIR = 'cache'
 COMPRESS_OFFLINE = True
+COMPRESS_OUTPUT_DIR = 'cache'
+
 
 LOGIN_URL = '/auth/login/'
