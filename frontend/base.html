@@ -1,0 +1,205 @@
+{% load compress static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Ecole</title>
+    <link rel="shortcut icon" href="favicon.png">
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+        <link rel="stylesheet" href="{% static 'bootstrap-icon/bootstrap-icons.css' %}">
+        <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
+        <link rel="stylesheet" href="{% static 'css/toastify.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% endcompress%}
+
+
+</head>
+
+<body>
+
+{% block sidebar %}
+    
+
+    
+    <!-- main sidebar -->
+    <div class="fixed-sidebar sidebar-mini">
+        <div class="logo">
+            <button class="sidebar-collapse"><i class="bi bi-list"></i></button>
+            <a href=" {% url 'index' %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+        </div>
+        <!-- sidebar menu -->
+        <div class="menu">
+            <div class="custom-scroll">
+                <div class="sidebar-menu">
+                    <ul>
+                        <li class="sidebar-title"><span>Menu</span>
+                        </li>
+                        <li class="sidebar-item"><a href=" {% url 'index' %} " class=" sidebar-link active"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
+                                    class="bi bi-grid-fill"></i> <span>Page d'Accueil</span></a></li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les
+                                étudiants" tabindex="0"><i class="bi bi-person"></i><span>Les
+                                    étudiants</span></a>
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'add_student' %} " class="sub-menu-item">Ajouter un étudiant</a>
+                                <li><a href=" {% url 'students_list' %} " class="sub-menu-item">Listes des étudiants</a>
+                                </li>
+                                </li>
+                                <li><a href=" {% url 'add_parent' %} " class="sub-menu-item">Ajouter un Parent</a></li>
+                                <li><a href=" {% url 'parent_list' %} " class="sub-menu-item">List des Parents</a></li>
+                                <li><a href=" {% url 'parent_list_card' %} " class="sub-menu-item">List des Parents Card</a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>La
+                                    Comptabilité</span></a>
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'open_cash_register' %} " class="sub-menu-item">Ouvrir la Caisse</a></li>
+                                <li><a href=" {% url 'cash_register_list' %} " class="sub-menu-item">Liste des Caisses</a></li>
+                                <li><a href=" {% url 'cash_register_status' %} " class="sub-menu-item">Le Status De La Caisses</a></li>
+                                <li><a href=" {% url 'transaction_list' %} " class="sub-menu-item">Les Transaction</a></li>
+                                <li><a href=" {% url 'student_fee_list' %} " class="sub-menu-item">Frais Etudient</a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Gestion des
+                                classe" tabindex="0"><i class="bi bi-stack"></i> <span>Gestion des
+                                    Classe</span></a>
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'class_create' %} " class="sub-menu-item">Ajouter une classe</a>
+                                </li>
+                                <li><a href="{% url 'class_list' %}" class="sub-menu-item">Liste des Classes</a></li>
+                                <li><a href="{% url 'class_archived_list' %}" class="sub-menu-item">Archives des
+                                        classes</a></li>
+                            </ul>
+                            <li class="sidebar-item has-sub">
+                                        <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="Gestion des
+                                        Grades" tabindex="0"><i class="bi bi-stack"></i> <span>Gestion des
+                                            Grades</span></a>
+                                    <ul class="sub-menu">
+                                        <li><a href=" {% url 'add_grade' %} " class="sub-menu-item">Ajouter une Grade</a>
+                                        </li>
+                                        <li><a href="{% url 'grades_list' %}" class="sub-menu-item">Liste des Grades</a></li>
+                                    </ul>
+                            </li>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les
+                                Enseignants" tabindex="0"><i class="bi bi-person"></i> <span>Les
+                                    Enseignants</span></a>
+
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'teacher_create' %} " class="sub-menu-item">Ajouter un
+                                        enseignants</a></li>
+                                <li><a href="{% url 'teacher_list' %}" class="sub-menu-item">Liste des Enseignants</a>
+                                </li>
+                                <li><a href="{% url 'teacher_archived_list' %}" class="sub-menu-item">Archives des
+                                        Enseignants</a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les
+                                Sujet" tabindex="0"><i class="bi bi-person"></i> <span>Les
+                                    Sujet</span></a>
+
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'subject_create' %} " class="sub-menu-item">Ajouter un
+                                    Sujet</a></li>
+                                <li><a href="{% url 'subject_list' %}" class="sub-menu-item">Liste des Sujet</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Devoirs et Examens" tabindex="0"><i class="bi bi-list"></i> <span>Devoirs et Examens</span></a>
+                            <ul class="sub-menu">
+                                <li><a href="{% url 'trimestre_list' %}" class="sub-menu-item">Liste des Trimestres</a></li>
+                                <li><a href="{% url 'devoir_create' %}" class="sub-menu-item">Ajouter un Devoir</a></li>
+                                <li><a href="{% url 'devoir_list' %}" class="sub-menu-item">Liste des Devoirs</a></li>
+                                <li><a href="{% url 'composition_create' %}" class="sub-menu-item">Ajouter un Examen</a></li>
+                                <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Liste des compositions </a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les Notes" tabindex="0"><i class="bi bi-egg-fill"></i> <span>Les Notes</span></a>
+                            <ul class="sub-menu">
+                                
+                                <li><a href="{% url 'add_note_devoir' %}" class="sub-menu-item">Ajouter notes devoir</a></li>
+                                <li><a href="{% url 'homework_list' %}" class="sub-menu-item">Listes des Devoirs</a></li>
+                                <li><a href="{% url 'add_note_exam' %}" class="sub-menu-item">Ajouter un Examen</a></li>
+                                <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Listes des compositions </a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a role="button" class="sidebar-link" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Les Rapports" tabindex="0"><i class="bi bi-table"></i> <span>Les Rapports</span></a>
+                            <ul class="sub-menu">
+                                
+                                <li><a href="{% url 'afficher_notes' %}" class="sub-menu-item">Notes Devoirs</a></li>
+                                <li><a href="{% url 'afficher_notes_exams' %}" class="sub-menu-item">Notes Examens</a></li>
+                                <li><a href="{% url 'students_list' %}" class="sub-menu-item">Listes des Eleves</a></li>
+                                <li><a href=" {% url 'composition_list' %} " class="sub-menu-item">Listes des compositions </a></li>
+                            </ul>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar menu -->
+    </div>
+{% endblock sidebar %}
+    <div class="main-content">
+        <div class="breadcrumb-wrap mb-20">
+            
+            {% block body %}
+            {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% endblock body %}
+        </div>
+    </div>
+    </div>
+    {% compress js %}
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <script src="{% static 'js/chart-init.js' %}"></script>
+        <script src="{% static 'js/apexcharts.js' %}"></script>
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/sweetalert.min.js' %}"></script>
+        <script src="{% static 'js/toastify-js.js' %}"></script>
+        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'js/datatables-init.js' %}"></script>
+        <script src="{% static 'js/toastr.min.js' %}"></script>
+    {% endcompress %}
+
+</body>
+
+</html>
