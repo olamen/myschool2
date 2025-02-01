@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress static %}
+{% load static %}
 {% block body %}
     {{ block.super }}
         <!-- main sidebar -->
@@ -136,7 +136,7 @@
                     </div>
                 </div>
             </div>
-            {% compress js %}
+            
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     // Fetch data for the student fees chart
@@ -179,5 +179,4 @@
                         .catch(error => console.error('Error fetching chart data:', error));
                 });
                 </script>
-            {% endcompress %}
 {% endblock body %}
