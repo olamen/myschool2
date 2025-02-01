@@ -1,9 +1,9 @@
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Case, When
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
-from students.models import Student, Trimestre,SessionYearModel
+from students.models import Student, Subject, Trimestre,SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
 
@@ -49,8 +49,8 @@ def generate_report_card(request, student_id, trimestre_id, sessionyear_id):
     trimestre = Trimestre.objects.get(id=trimestre_id)
     session_year = SessionYearModel.objects.get(id=sessionyear_id)
 
-    # Vérifier le grade de l'étudiant
-    student_grade = student.grade.name.lower()
+    # Vérifier le grade de l'élève via la classe
+    student_grade = student.student_class.grade.name.lower()
 
     # Récupération des notes avec ajustement selon le grade
     subjects = NoteDevoir.objects.filter(student=student, trimestre=trimestre).values(
