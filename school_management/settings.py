@@ -157,7 +157,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Use a separate directory for static files you want to include
 
 
 
@@ -180,4 +179,5 @@ REST_FRAMEWORK = {
 }
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Use a separate directory for static files you want to include
 LOGIN_URL = '/auth/login/'
