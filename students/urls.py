@@ -11,7 +11,7 @@ from .views_composition import exam_detail, edit_exam
 from .views_parent import parent_create, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_fees_by_month,update_student, get_classes, grades_list, add_grade, update_grade
+from .views import AppConfigViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_fees_by_month,update_student, grades_list, add_grade, update_grade
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
