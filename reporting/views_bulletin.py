@@ -49,44 +49,45 @@ def generate_report_card(request, student_id, trimestre_id, sessionyear_id):
     trimestre = Trimestre.objects.get(id=trimestre_id)
     session_year = SessionYearModel.objects.get(id=sessionyear_id)
 
-    # Vérifier le grade de l'élève via la classe
     student_grade = student.student_class.grade.name.lower()
 
-    # Récupération des notes avec ajustement selon le grade
     subjects = NoteDevoir.objects.filter(student=student, trimestre=trimestre).values(
         'subject__name', 'subject__points', 'coefficient'
     ).annotate(
         total_score=Case(
-            When(subject__grade__name__iexact='primaire', then=Sum('score')),  # Score brut pour Primaire
-            default=Sum(F('score') * F('coefficient'))  # Score pondéré pour Secondaire/Lycée
+            When(subject__grade__name__iexact='primaire', then=Sum('score')),
+            default=Sum(F('score') * F('coefficient'))
         ),
         normalized_score=Case(
             When(
                 subject__grade__name__iexact='primaire',
-                then=Sum('score')  # Normalisation inutile pour Primaire
+                then=Sum('score')
             ),
-            default=(Sum(F('score') * F('coefficient')) / Sum('coefficient')) * 20  # Normalisation pour les autres
+            default=(Sum(F('score') * F('coefficient')) / Sum('coefficient')) * 20
         )
     )
 
-    # Calcul des moyennes trimestrielles et annuelles
     if student_grade == 'primaire':
         trimester_total_raw_score = sum(
             NoteDevoir.objects.filter(student=student, trimestre=trimestre, subject__grade__name__iexact='primaire')
             .values_list('score', flat=True)
         )
+
         trimester_total_possible = sum(
-            Subject.objects.filter(grade__name__iexact='primaire').values_list('points', flat=True)
+            filter(None, Subject.objects.filter(grade__name__iexact='primaire').values_list('points', flat=True))
         ) or 1
-        trimester_score = (trimester_total_raw_score / trimester_total_possible) * 20  # Normalisation sur 20
+
+        trimester_score = (trimester_total_raw_score / trimester_total_possible) * 20
 
         yearly_total_raw_score = sum(
             NoteDevoir.objects.filter(student=student, trimestre__id__lte=trimestre.id, subject__grade__name__iexact='primaire')
             .values_list('score', flat=True)
         )
+
         yearly_total_possible = sum(
-            Subject.objects.filter(grade__name__iexact='primaire').values_list('points', flat=True)
+            filter(None, Subject.objects.filter(grade__name__iexact='primaire').values_list('points', flat=True))
         ) or 1
+
         yearly_score = (yearly_total_raw_score / yearly_total_possible) * 20
     else:
         trimester_total_raw_score = calculate_cumulative_scores(student, trimestre)
