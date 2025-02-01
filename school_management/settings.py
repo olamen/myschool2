@@ -32,7 +32,6 @@ APPEND_SLASH = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG","False").lower() == "true"
-COMPRESS_ENABLED = True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(" ")
 
 AUTH_USER_MODEL = 'Auth.CustomUser'
@@ -179,5 +178,17 @@ REST_FRAMEWORK = {
 }
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Use a separate directory for static files you want to include
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Use a separate directory for static files you want to include
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static/css'),  # Add specific CSS directory
+    os.path.join(BASE_DIR, 'static/js'),
+]
+# Compressor settings
+COMPRESS_ROOT = os.path.join(BASE_DIR, 'static')  # Instead of STATIC_ROOT
+COMPRESS_URL = STATIC_URL
+COMPRESS_ENABLED = True
+COMPRESS_OUTPUT_DIR = 'cache'
+COMPRESS_OFFLINE = True
+
 LOGIN_URL = '/auth/login/'
