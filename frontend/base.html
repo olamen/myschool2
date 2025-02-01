@@ -171,8 +171,6 @@
 {% endblock sidebar %}
     <div class="main-content">
         <div class="breadcrumb-wrap mb-20">
-            
-            {% block body %}
             {% if messages %}
             <div class="container mt-4">
                 {% for message in messages %}
@@ -183,25 +181,25 @@
                 {% endfor %}
             </div>
             {% endif %}
+            {% block body %}
+            
 
             {% endblock body %}
         </div>
     </div>
     </div>
     {% compress js %}
-        <script src=" {% static 'js/jquery-3.6.0.min.js' %}"></script>
-        <script src=" {% static 'js/jquery-3.6.0.min.js' %}"></script>
-        <script src=" {% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-        <script src=" {% static 'js/chart-init.js' %}"></script>
-        <script src=" {% static 'js/apexcharts.js' %}"></script>
-        <script src=" {% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <script src=" {% static 'js/main.js' %}"></script>
-        <script src=" {% static 'js/sweetalert.min.js' %}"></script>
-        <script src=" {% static 'js/toastify-js.js' %}"></script>
-        <script src=" {% static 'js/jquery.dataTables.min.js' %}"></script>
-        <script src=" {% static 'js/dataTables.responsive.min.js' %}"></script>
-        <script src=" {% static 'js/datatables-init.js' %}"></script>
-        <script src=" {% static 'js/toastr.min.js' %}"></script>
+        <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <script src="{% static 'js/chart-init.js' %}"></script>
+        <script src="{% static 'js/apexcharts.js' %}"></script>
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/sweetalert.min.js' %}"></script>
+        <script src="{% static 'js/toastify-js.js' %}"></script>
+        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'js/datatables-init.js' %}"></script>
+        <script src="{% static 'js/toastr.min.js' %}"></script>
     {% endcompress %}
 
 </body>
