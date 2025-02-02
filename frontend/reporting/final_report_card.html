@@ -49,7 +49,7 @@
 
         p.fail {
             color: red;
-            font-weight: bold.
+            font-weight: bold;
         }
 
         a {
@@ -57,7 +57,7 @@
             margin-top: 20px;
             text-decoration: none;
             color: #000;
-            font-weight: bold.
+            font-weight: bold;
         }
     </style>
 </head>
@@ -92,6 +92,10 @@
 
     {% if yearly_average >= 10 %}
         <p class="pass">Décision : PASSABLE</p>
+    {% elif %}
+        <p class="fail">Décision : REDOUBLEMENT</p>
+    {% elif %}
+        <p class="fail">Décision : REDOUBLEMENT</p>
     {% else %}
         <p class="fail">Décision : REDOUBLEMENT</p>
     {% endif %}
