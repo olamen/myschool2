@@ -144,7 +144,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         subject_result["yearly_score"] = yearly_score
         results.append(subject_result)
 
-    yearly_average = round((float(total_yearly_score) / total_coefficient) * 20 if total_coefficient else 0, 2)
+    yearly_average = round((float(total_yearly_score) / total_coefficient) if total_coefficient else 0, 2)
 
     context = {
         "student": student,
