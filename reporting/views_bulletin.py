@@ -93,7 +93,6 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
-
     # Récupérer les trimestres liés aux NotesDevoir
     trimestres_devoirs = Trimestre.objects.filter(
         id__in=NoteDevoir.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
@@ -130,22 +129,22 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
             subject_result["trimesters"].append({
                 "trimestre": trimestre.name,
-                "score": round(trimestre_total, 2),
+                "score": round(float(trimestre_total), 2),
                 "coefficient": coefficient,
-                "normalized_score": round((trimestre_total / coefficient) * 20 if coefficient else 0, 2)
+                "normalized_score": round((float(trimestre_total) / coefficient) * 20 if coefficient else 0, 2)
             })
 
-            subject_total_score += trimestre_total
+            subject_total_score += float(trimestre_total)
             subject_total_coefficient += coefficient
 
-        yearly_score = round((subject_total_score / subject_total_coefficient) * 20 if subject_total_coefficient else 0, 2)
-        total_yearly_score += subject_total_score
+        yearly_score = round((float(subject_total_score) / subject_total_coefficient) * 20 if subject_total_coefficient else 0, 2)
+        total_yearly_score += float(subject_total_score)
         total_coefficient += subject_total_coefficient
 
         subject_result["yearly_score"] = yearly_score
         results.append(subject_result)
 
-    yearly_average = round((total_yearly_score / total_coefficient) * 20 if total_coefficient else 0, 2)
+    yearly_average = round((float(total_yearly_score) / total_coefficient) * 20 if total_coefficient else 0, 2)
 
     context = {
         "student": student,
@@ -156,6 +155,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 def generate_pdf_report_card(request, student_id, trimestre_id):
     student = get_object_or_404(Student, id=student_id)
