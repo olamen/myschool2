@@ -6,6 +6,8 @@ from notes.models import NoteComposition, NoteDevoir
 from students.models import Student, Subject, Trimestre, SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
+from itertools import chain
+
 
 def calculate_cumulative_scores(student, trimestre):
     """
@@ -91,13 +93,19 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
-    trimestres = Trimestre.objects.filter(
-    id__in=NoteDevoir.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
-    ).union(
-        Trimestre.objects.filter(
-            id__in=NoteComposition.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
-        )
-    ).distinct()
+
+    # Récupérer les trimestres liés aux NotesDevoir
+    trimestres_devoirs = Trimestre.objects.filter(
+        id__in=NoteDevoir.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
+    )
+
+    # Récupérer les trimestres liés aux NotesComposition
+    trimestres_compositions = Trimestre.objects.filter(
+        id__in=NoteComposition.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
+    )
+
+    # Fusionner les deux QuerySets en une liste unique et éliminer les doublons
+    trimestres = list(set(chain(trimestres_devoirs, trimestres_compositions)))
     subjects = Subject.objects.filter(grade=student.student_class.grade)
 
     results = []
