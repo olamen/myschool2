@@ -1,39 +1,101 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulletin Final</title>
+    <style>
+        h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-{% block body %}
-<h2>Bulletin Final de {{ student.first_name }} {{ student.last_name }}</h2>
-<p>Année Scolaire : {{ session_year.name }}</p>
+        p {
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>Matière</th>
-            {% for trimestre in trimestres %}
-                <th>{{ trimestre.name }}</th>
-            {% endfor %}
-            <th>Moyenne Annuelle</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in results %}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h3 {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        p.pass {
+            color: green;
+            font-weight: bold;
+        }
+
+        p.fail {
+            color: red;
+            font-weight: bold.
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold.
+        }
+    </style>
+</head>
+<body>
+    <h2>Bulletin Final de {{ student.first_name }} {{ student.last_name }}</h2>
+    <p>Année Scolaire : {{ session_year.name }}</p>
+
+    <table border="1">
+        <thead>
             <tr>
-                <td>{{ result.subject }}</td>
-                {% for trimester in result.trimesters %}
-                    <td>{{ trimester.normalized_score|floatformat:2 }}</td>
+                <th>Matière</th>
+                {% for trimestre in trimestres %}
+                    <th>{{ trimestre.name }}</th>
                 {% endfor %}
-                <td>{{ result.yearly_score|floatformat:2 }}</td>
+                <th>Moyenne Annuelle</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.subject }}</td>
+                    {% for trimester in result.trimesters %}
+                        <td>{{ trimester.normalized_score|floatformat:2 }}</td>
+                    {% endfor %}
+                    <td>{{ result.yearly_score|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<h3>Moyenne Générale Annuelle : {{ yearly_average }}</h3>
+    <h3>Moyenne Générale Annuelle : {{ yearly_average }}</h3>
 
-{% if yearly_average >= 10 %}
-    <p style="color: green; font-weight: bold;">Décision : PASSAGE</p>
-{% else %}
-    <p style="color: red; font-weight: bold;">Décision : REDOUBLEMENT</p>
-{% endif %}
+    {% if yearly_average >= 10 %}
+        <p class="pass">Décision : PASSAGE</p>
+    {% else %}
+        <p class="fail">Décision : REDOUBLEMENT</p>
+    {% endif %}
 
-<a href="{% url 'home' %}">Retour</a>
-{% endblock %}
+    <a href="{% url 'home' %}">Retour</a>
+</body>
+</html>
