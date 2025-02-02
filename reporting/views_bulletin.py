@@ -124,8 +124,8 @@ def generate_final_report_card(request, student_id, sessionyear_id):
             composition = NoteComposition.objects.filter(student=student, subject=subject, trimestre=trimestre).first()
             composition_score = (composition.score * composition.coefficient) if composition else 0
 
-            trimestre_total = devoirs + composition_score
-            coefficient = subject.coefficient if subject.coefficient else 1
+            trimestre_total = float(devoirs) + float(composition_score)
+            coefficient = float(subject.coefficient if subject.coefficient else 1)
 
             subject_result["trimesters"].append({
                 "trimestre": trimestre.name,
@@ -155,6 +155,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 
 def generate_pdf_report_card(request, student_id, trimestre_id):
