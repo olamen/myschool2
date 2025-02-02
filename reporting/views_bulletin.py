@@ -91,7 +91,13 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
-    trimestres = Trimestre.objects.filter(session_year=session_year)
+    trimestres = Trimestre.objects.filter(
+    id__in=NoteDevoir.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
+    ).union(
+        Trimestre.objects.filter(
+            id__in=NoteComposition.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
+        )
+    ).distinct()
     subjects = Subject.objects.filter(grade=student.student_class.grade)
 
     results = []
