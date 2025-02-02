@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Bulletin Final de {{ student.first_name }} {{ student.last_name }}</h2>
+<p>Année Scolaire : {{ session_year.name }}</p>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Matière</th>
+            {% for trimestre in trimestres %}
+                <th>{{ trimestre.name }}</th>
+            {% endfor %}
+            <th>Moyenne Annuelle</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for result in results %}
+            <tr>
+                <td>{{ result.subject }}</td>
+                {% for trimester in result.trimesters %}
+                    <td>{{ trimester.normalized_score|floatformat:2 }}</td>
+                {% endfor %}
+                <td>{{ result.yearly_score|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Moyenne Générale Annuelle : {{ yearly_average }}</h3>
+
+{% if yearly_average >= 10 %}
+    <p style="color: green; font-weight: bold;">Décision : PASSAGE</p>
+{% else %}
+    <p style="color: red; font-weight: bold;">Décision : REDOUBLEMENT</p>
+{% endif %}
+
+<a href="{% url 'home' %}">Retour</a>
+{% endblock %}
