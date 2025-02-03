@@ -53,19 +53,18 @@ INSTALLED_APPS = [
     
     'corsheaders',
     'rest_framework',
-    'compressor',
     
     
 ]
 # Ensure you have 'whitenoise' middleware for serving static files in production
 INSTALLED_APPS += ['whitenoise.runserver_nostatic']
 
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # other finders..
-    'compressor.finders.CompressorFinder',
-)
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     # other finders..
+#     'compressor.finders.CompressorFinder',
+# )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -185,11 +184,11 @@ STATICFILES_DIRS = [
 ]
 
 # Fix Django Compressor settings
-COMPRESS_ROOT = STATIC_ROOT  # Use STATIC_ROOT instead of static
-COMPRESS_URL = STATIC_URL
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True
-COMPRESS_OUTPUT_DIR = 'cache'
+# COMPRESS_ROOT = STATIC_ROOT  # Use STATIC_ROOT instead of static
+# COMPRESS_URL = STATIC_URL
+# COMPRESS_ENABLED = True
+# COMPRESS_OFFLINE = True
+# COMPRESS_OUTPUT_DIR = 'cache'
 
 
 LOGIN_URL = '/auth/login/'

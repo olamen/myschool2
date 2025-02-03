@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress static %}
+{% load  static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,6 +90,6 @@
     </div>
      
 {% endblock %}
-{% compress js %}
+
         <script src="{% static 'js/note-dev-exam.js' %}"></script>
-{% endcompress %}   
+ 
