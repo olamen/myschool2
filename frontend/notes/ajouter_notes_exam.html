@@ -48,14 +48,15 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="subject" class="form-label">Matière</label>
-                    <select class="form-select" id="subject" name="subject">
-                        <option value="">Sélectionnez une matière</option>
-                        {% for subject in subjects %}
-                        <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    <label for="grade" class="form-label">Grade</label>
+                    <select class="form-select" id="grade" name="grade">
+                        <option value="">Sélectionnez un grade</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade.id }}">{{ grade.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                
             </div>
 
             <div class="row mb-3">
@@ -65,6 +66,15 @@
                         <option value="">Sélectionnez une classe</option>
                         {% for classe in classes %}
                         <option value="{{ classe.id }}">{{ classe.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="subject" class="form-label">Matière</label>
+                    <select class="form-select" id="subject" name="subject">
+                        <option value="">Sélectionnez une matière</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
