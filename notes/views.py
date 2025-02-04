@@ -11,9 +11,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
-
-
-
 @login_required
 def ajouter_notes_devoir(request):
     session_years = SessionYearModel.objects.all()
@@ -40,6 +37,7 @@ def get_devoirs_by_trimestre(request, trimestre_id):
         devoirs_data = [{'id': devoir.id, 'name': devoir.name} for devoir in devoirs]
         return JsonResponse({'devoirs': devoirs_data})
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
 @login_required
 def get_exams_by_trimestre(request, trimestre_id):
     if request.method == 'GET':

@@ -1,4 +1,5 @@
-{% load static %}
+{% load compress static %}
+{% load compress %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +12,7 @@
     <title>Mon Ecole</title>
     {% endblock title %}
         
-    
+    {% compress css %}  
     <link rel="shortcut icon" href="favicon.png">
         <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
         <link rel="stylesheet" href="{% static 'bootstrap-icon/bootstrap-icons.css' %}">
@@ -23,6 +24,7 @@
         <link rel="stylesheet" href="{% static 'css/responsive.bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% endcompress %}
        
 
 </head>
@@ -188,6 +190,7 @@
         </div>
 </div>
 </div>
+{% compress js %}
         <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
         <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
         <script src="{% static 'js/chart-init.js' %}"></script>
@@ -200,6 +203,7 @@
         <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
         <script src="{% static 'js/datatables-init.js' %}"></script>
         <script src="{% static 'js/toastr.min.js' %}"></script>
+{% endcompress %}
     
     {% block js %}
         
