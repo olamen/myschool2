@@ -189,6 +189,7 @@ def ajouter_notes_exam(request):
     exams = Composition.objects.all()
     subjects = Subject.objects.all()
     classes = Classe.objects.all()
+    grades = Grade.objects.all().order_by('id')
 
     context = {
         'session_years': session_years,
@@ -196,6 +197,7 @@ def ajouter_notes_exam(request):
         'exams': exams,
         'subjects': subjects,
         'classes': classes,
+        'grades': grades,
     }
     return render(request, 'notes/ajouter_notes_exam.html', context)
 
