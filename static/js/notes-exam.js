@@ -96,7 +96,7 @@ $(document).ready(function () {
             subject_id: $('#subject').val(),
             sessionyear_id: $('#sessionYear').val(),
             trimestre_id: $('#trimestre').val(),
-            composition_id: $('#composition').val()
+            composition_id: $('#exam').val()
         };
 
         if (params.classe_id && params.subject_id && params.sessionyear_id && params.trimestre_id) {
