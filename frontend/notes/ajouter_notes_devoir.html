@@ -91,255 +91,123 @@
 
     <!-- Script JS -->
     <script>
-        $(document).ready(function () {
-            console.log("Script chargé");
-    
+                $(document).ready(function () {
             $('#grade').change(function () {
                 const gradeId = $(this).val();
-                const subjectSelect = $('#subject');
-    
-                console.log("Grade changé:", gradeId);
-    
-                // Reset subject options
-                subjectSelect.empty();
-                subjectSelect.append('<option value="">Sélectionnez une matière</option>');
-    
-                if (gradeId) {
-                    $.ajax({
-                        url: `/notes/get_subjects/${gradeId}/`,
-                        type: 'GET',
-                        success: function (data) {
-                            console.log("Réponse AJAX (subjects):", data);
-                            if (data.success && data.subjects.length > 0) {
-                                data.subjects.forEach(function (subject) {
-                                    subjectSelect.append(`<option value="${subject.id}">${subject.name}</option>`);
-                                });
-                            } else {
-                                alert("Aucune matière trouvée pour cette classe.");
-                            }
-                        },
-                        error: function (xhr) {
-                            console.error("Erreur AJAX (subjects):", xhr.responseText);
-                            alert("Erreur lors du chargement des matières.");
-                        }
-                    });
-                }
+                updateSelectOptions('#subject', `/notes/get_subjects/${gradeId}/`, 'Sélectionnez une matière');
+                updateSelectOptions('#classe', `/notes/get_classes/${gradeId}/`, 'Sélectionnez une classe');
             });
-    
-            $('#grade').change(function () {
-                const gradeId = $(this).val();
-                const classeSelect = $('#classe');
-    
-                console.log("Grade changé pour les classes:", gradeId);
-    
-                // Reset class options
-                classeSelect.empty();
-                classeSelect.append('<option value="">Sélectionnez une classe</option>');
-    
-                if (gradeId) {
-                    $.ajax({
-                        url: `/notes/get_classes/${gradeId}/`,
-                        type: 'GET',
-                        success: function (data) {
-                            console.log("Réponse AJAX (classes):", data);
-                            if (data.success && data.classes.length > 0) {
-                                data.classes.forEach(function (classe) {
-                                    classeSelect.append(`<option value="${classe.id}">${classe.name}</option>`);
-                                });
-                            } else {
-                                alert("Aucune classe trouvée.");
-                            }
-                        },
-                        error: function (xhr) {
-                            console.error("Erreur AJAX (classes):", xhr.responseText);
-                            alert("Erreur lors du chargement des classes.");
-                        }
-                    });
-                }
-            });
-    
-            $('#classe').change(function () {
-                let classeId = $(this).val();
-                let devoirId = $('#devoir').val();
-    
-                console.log("Classe changée:", classeId, "Devoir sélectionné:", devoirId);
-    
-                if (classeId && devoirId) {
-                    $.ajax({
-                        url: `/notes/get_students/${classeId}/${devoirId}/`,
-                        type: "GET",
-                        success: function (data) {
-                            console.log("Réponse AJAX (students):", data);
-                            let studentsTable = $('#studentsTable');
-                            studentsTable.empty();
-    
-                            $.each(data.students, function (index, student) {
-                                studentsTable.append(`
-                                    <tr>
-                                        <td>${index + 1}</td>
-                                        <td>${student.name}</td>
-                                        <td>
-                                            <input type="number" class="form-control student-score" data-student-id="${student.id}" min="0" max="20" step="0.1">
-                                        </td>
-                                    </tr>
-                                `);
-                            });
-                        },
-                        error: function (xhr) {
-                            console.error("Erreur AJAX (students):", xhr.responseText);
-                        }
-                    });
-                }
-            });
-    
-            $('#saveNotes').click(function () {
-                let notes = [];
-                $('.student-score').each(function () {
-                    let studentId = $(this).data('student-id');
-                    let score = $(this).val();
-    
-                    if (score) {
-                        notes.push({
-                            student_id: studentId,
-                            score: score
-                        });
-                    }
-                });
-    
-                console.log("Notes collectées:", notes);
-    
-                if (notes.length > 0) {
-                    let csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-                    let sessionYear = $('#sessionYear').val();
-                    let subjectId = $('#subject').val();
-                    let devoirId = $('#devoir').val();
-                    let trimestreId = $('#trimestre').val();
-    
-                    if (!sessionYear) {
-                        alert("Veuillez sélectionner une année scolaire.");
-                        return;
-                    }
-    
-                    $.ajax({
-                        url: '/notes/notes_devoir/save/',
-                        type: "POST",
-                        contentType: "application/json",
-                        data: JSON.stringify({
-                            notes: notes,
-                            sessionyear: sessionYear,
-                            subject_id: subjectId,
-                            devoir_id: devoirId,
-                            trimestre_id: trimestreId
-                        }),
-                        headers: {
-                            'X-CSRFToken': csrfToken
-                        },
-                        success: function (response) {
-                            console.log("Réponse AJAX (save notes):", response);
-                            alert(response.message);
-                        },
-                        error: function (xhr) {
-                            console.error("Erreur AJAX (save notes):", xhr.responseText);
-                            alert(xhr.responseJSON?.message || "Erreur lors de l'enregistrement des notes.");
-                        }
-                    });
-                } else {
-                    alert("Veuillez entrer des notes pour les étudiants.");
-                }
-            });
-    
-            function resetNotes() {
-                console.log("Réinitialisation des notes");
-                $('.student-score').val('');
-            }
-    
-            function loadNotes() {
-                let classeId = $('#classe').val();
-                let devoirId = $('#devoir').val();
-                let subjectId = $('#subject').val();
-                let sessionYear = $('#sessionYear').val();
-                let trimestre = $('#trimestre').val();
-    
-                console.log("Chargement des notes pour:", { classeId, devoirId, subjectId, sessionYear, trimestre });
-    
-                if (!classeId || !subjectId || !sessionYear || !trimestre || (!devoirId && !$('#composition').val())) {
-                    console.warn("Champs obligatoires manquants.");
-                    return;
-                }
-    
-                $.ajax({
-                    url: '/notes/get_notes/',
-                    type: 'GET',
-                    data: {
-                        classe_id: classeId,
-                        devoir_id: devoirId,
-                        subject_id: subjectId,
-                        sessionyear_id: sessionYear,
-                        trimestre_id: trimestre,
-                        composition_id: $('#composition').val()
-                    },
-                    success: function (response) {
-                        console.log("Réponse AJAX (load notes):", response);
-                        if (response.success) {
-                            let notes = response.notes;
-                            $('.student-score').each(function () {
-                                let studentId = $(this).data('student-id');
-                                let note = notes.find(n => n.student_id == studentId);
-                                if (note) {
-                                    $(this).val(note.score);
-                                }
-                            });
-                        } else {
-                            console.warn(response.message);
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Erreur AJAX (load notes):", xhr.responseText);
-                    }
-                });
-            }
-    
+
             $('#classe, #devoir, #subject, #sessionYear, #trimestre').change(function () {
                 resetNotes();
                 loadNotes();
             });
-        });
-    </script>
-    
-    <script>
-        $(document).ready(function () {
-            console.log("Script de gestion des devoirs chargé");
-    
-            $('#trimestre').change(function () {
-                const trimestreId = $(this).val();
-                const devoirSelect = $('#devoir');
-    
-                console.log("Trimestre changé:", trimestreId);
-    
-                devoirSelect.empty();
-                devoirSelect.append('<option value="">Sélectionnez un devoir</option>');
-    
-                if (trimestreId) {
-                    $.ajax({
-                        url: `/notes/get_devoirs/${trimestreId}/`,
-                        type: 'GET',
-                        success: function (data) {
-                            console.log("Réponse AJAX (devoirs):", data);
-                            if (data.devoirs && data.devoirs.length > 0) {
-                                data.devoirs.forEach(function (devoir) {
-                                    devoirSelect.append(`<option value="${devoir.id}">${devoir.name}</option>`);
-                                });
-                            } else {
-                                alert("Aucun devoir trouvé pour ce trimestre.");
-                            }
-                        },
-                        error: function (xhr) {
-                            console.error("Erreur AJAX (devoirs):", xhr.responseText);
-                            alert("Erreur lors du chargement des devoirs.");
-                        }
-                    });
+
+            $('#classe').change(function () {
+                let classeId = $(this).val();
+                let devoirId = $('#devoir').val();
+                if (classeId && devoirId) {
+                    fetchStudents(classeId, devoirId);
                 }
             });
+
+            $('#saveNotes').click(function () {
+                saveNotes();
+            });
+
+            $('#trimestre').change(function () {
+                const trimestreId = $(this).val();
+                updateSelectOptions('#devoir', `/notes/get_devoirs/${trimestreId}/`, 'Sélectionnez un devoir');
+            });
+
+            function updateSelectOptions(selectId, url, defaultOption) {
+                const selectElement = $(selectId);
+                selectElement.empty().append(`<option value="">${defaultOption}</option>`);
+                if (url.includes('undefined')) return;
+                $.get(url, function (data) {
+                    if (data.success && data[Object.keys(data)[1]].length > 0) {
+                        data[Object.keys(data)[1]].forEach(item => {
+                            selectElement.append(`<option value="${item.id}">${item.name}</option>`);
+                        });
+                    }
+                });
+            }
+
+            function fetchStudents(classeId, devoirId) {
+                $.get(`/notes/get_students/${classeId}/${devoirId}/`, function (data) {
+                    let studentsTable = $('#studentsTable');
+                    studentsTable.empty();
+                    data.students.forEach((student, index) => {
+                        studentsTable.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${student.name}</td>
+                                <td>
+                                    <input type="number" class="form-control student-score" data-student-id="${student.id}" min="0" max="20" step="0.1">
+                                </td>
+                            </tr>
+                        `);
+                    });
+                });
+            }
+
+            function saveNotes() {
+                let notes = [];
+                $('.student-score').each(function () {
+                    let studentId = $(this).data('student-id');
+                    let score = $(this).val();
+                    if (score) notes.push({ student_id: studentId, score: score });
+                });
+                if (notes.length === 0) return alert("Veuillez entrer des notes.");
+                
+                let csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+                let dataToSend = {
+                    notes: notes,
+                    sessionyear: $('#sessionYear').val(),
+                    subject_id: $('#subject').val(),
+                    devoir_id: $('#devoir').val(),
+                    trimestre_id: $('#trimestre').val()
+                };
+                
+                $.ajax({
+                    url: '/notes/notes_devoir/save/',
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(dataToSend),
+                    headers: { 'X-CSRFToken': csrfToken },
+                    success: function (response) {
+                        alert(response.message);
+                    }
+                });
+            }
+
+            function loadNotes() {
+                let params = {
+                    classe_id: $('#classe').val(),
+                    devoir_id: $('#devoir').val(),
+                    subject_id: $('#subject').val(),
+                    sessionyear_id: $('#sessionYear').val(),
+                    trimestre_id: $('#trimestre').val(),
+                    composition_id: $('#composition').val()
+                };
+                if (Object.values(params).some(v => !v)) return;
+                
+                $.get('/notes/get_notes/', params, function (response) {
+                    if (response.success) {
+                        let notes = response.notes;
+                        $('.student-score').each(function () {
+                            let studentId = $(this).data('student-id');
+                            let note = notes.find(n => n.student_id == studentId);
+                            if (note) $(this).val(note.score);
+                        });
+                    }
+                });
+            }
+
+            function resetNotes() {
+                $('.student-score').val('');
+            }
         });
+
     </script>
 {% endblock %}
