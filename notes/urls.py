@@ -19,6 +19,7 @@ urlpatterns = [
 
     path('get_students/<int:classe_id>/<int:devoir_id>/', get_students, name='get_students'),
     path('get_devoirs/<int:trimestre_id>/', get_devoirs_by_trimestre, name='get_devoirs_by_trimestre'),
+    path('get_exams/<int:trimestre_id>/', get_exams_by_trimestre, name='get_exams_by_trimestre'),
     path('notes_devoir/save/', save_note_devoir, name='save_note'),
     path('notes_exam/save/', save_note_exam, name='save_note_exam'),
     path('get_subjects/<int:grade_id>/', get_subjects_by_grade, name='get_subjects_by_grade'),

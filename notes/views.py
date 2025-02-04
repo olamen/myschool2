@@ -40,6 +40,13 @@ def get_devoirs_by_trimestre(request, trimestre_id):
         devoirs_data = [{'id': devoir.id, 'name': devoir.name} for devoir in devoirs]
         return JsonResponse({'devoirs': devoirs_data})
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+@login_required
+def get_exams_by_trimestre(request, trimestre_id):
+    if request.method == 'GET':
+        exams = Composition.objects.filter(trimestre_id=trimestre_id)
+        exams_data = [{'id': composition.id, 'name': composition.name} for composition in exams]
+        return JsonResponse({'exams': exams_data})
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 @login_required
 def get_subjects_by_grade(request, grade_id):
