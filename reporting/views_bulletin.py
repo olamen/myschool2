@@ -101,9 +101,9 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
     for subject in subjects:
         # Récupération des compositions
-        comp1 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=1).first()
-        comp2 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=2).first()
-        comp3 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=3).first()
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__id=2).first()
+        comp2 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__id=3).first()
+        comp3 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__id=4).first()
 
         # Calcul des devoirs pour l'année
         devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
