@@ -7,6 +7,8 @@ from students.models import Student, Subject, Trimestre, SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
 from itertools import chain
+from decimal import Decimal
+
 
 
 def calculate_cumulative_scores(student, trimestre):
@@ -111,16 +113,18 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         )['total'] or 0
 
         # Calcul des notes pondérées avec les coefficients
-        comp1_score = (comp1.score * comp1.coefficient) if comp1 else 0
-        comp2_score = (comp2.score * comp2.coefficient) if comp2 else 0
-        comp3_score = (comp3.score * comp3.coefficient) if comp3 else 0
-        devoirs_score = float(devoirs) * 3  # Pondération pour les devoirs
+        comp1_score = (Decimal(comp1.score) * Decimal(comp1.coefficient)) if comp1 else Decimal('0.0')
+        comp2_score = (Decimal(comp2.score) * Decimal(comp2.coefficient)) if comp2 else Decimal('0.0')
+        comp3_score = (Decimal(comp3.score) * Decimal(comp3.coefficient)) if comp3 else Decimal('0.0')
+
+        devoirs_score = float(devoirs) * Decimal(3)  # Pondération pour les devoirs
 
         # Somme des coefficients fixes
         total_coeff = 1 + 2 + 3 + 3
 
         # Calcul de la moyenne finale de la matière
-        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
+        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / Decimal(total_coeff)
+
 
         # Calcul de la note finale avec le coefficient de la matière
         note_finale = moyenne_finale * subject.coefficient
