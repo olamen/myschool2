@@ -78,14 +78,14 @@
         <div class="header">
             <h1>École XYZ</h1>
             <h2>Bulletin de Notes Annuel</h2>
-            <h2>Année Scolaire : {{ session_year.academic_year }}</h2>
+            <h2>Année Scolaire : {{ session_year.name }}</h2>
         </div>
 
         <!-- Informations de l'élève -->
         <div class="info">
             <p><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}</p>
             <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
-            <p><strong>Année Scolaire :</strong> {{ session_year.academic_year }}</p>
+            <p><strong>Année Scolaire :</strong> {{ session_year.name }}</p>
         </div>
 
         <!-- Tableau des matières et notes -->
