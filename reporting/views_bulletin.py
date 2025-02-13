@@ -117,7 +117,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         comp2_score = (Decimal(comp2.score) * Decimal(comp2.coefficient)) if comp2 else Decimal('0.0')
         comp3_score = (Decimal(comp3.score) * Decimal(comp3.coefficient)) if comp3 else Decimal('0.0')
 
-        devoirs_score = float(devoirs) * Decimal(3)  # Pondération pour les devoirs
+        devoirs_score = Decimal(str(devoirs)) * Decimal(3)  # Conversion en Decimal pour les deux valeurs
 
         # Somme des coefficients fixes
         total_coeff = 1 + 2 + 3 + 3
