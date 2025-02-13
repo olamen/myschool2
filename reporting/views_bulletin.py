@@ -82,29 +82,17 @@ def generate_report_card(request, student_id, trimestre_id, sessionyear_id):
 
     return render(request, "reporting/report_card.html", context)
 
+
+
 @login_required
 def generate_final_report_card(request, student_id, sessionyear_id):
-    """
-    Génère le bulletin final des étudiants (hors primaire).
-    """
     student = get_object_or_404(Student, id=student_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
 
+    # Vérification si c'est un élève du secondaire ou du lycée
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
-    # Récupérer les trimestres liés aux NotesDevoir
-    trimestres_devoirs = Trimestre.objects.filter(
-        id__in=NoteDevoir.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
-    )
-
-    # Récupérer les trimestres liés aux NotesComposition
-    trimestres_compositions = Trimestre.objects.filter(
-        id__in=NoteComposition.objects.filter(sessionyear=session_year).values_list('trimestre', flat=True)
-    )
-
-    # Fusionner les deux QuerySets en une liste unique et éliminer les doublons
-    trimestres = list(set(chain(trimestres_devoirs, trimestres_compositions)))
     subjects = Subject.objects.filter(grade=student.student_class.grade)
 
     results = []
@@ -112,44 +100,50 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     total_coefficient = 0
 
     for subject in subjects:
-        subject_result = {"subject": subject.name, "trimesters": []}
-        subject_total_score = 0
-        subject_total_coefficient = 0
+        # Récupération des compositions
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=1).first()
+        comp2 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=2).first()
+        comp3 = NoteComposition.objects.filter(student=student, subject=subject, trimestre__numero=3).first()
 
-        for trimestre in trimestres:
-            devoirs = NoteDevoir.objects.filter(student=student, subject=subject, trimestre=trimestre).aggregate(
-                total=Sum(F('score') * F('coefficient'), output_field=FloatField())
-            )['total'] or 0
+        # Calcul des devoirs pour l'année
+        devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
+            total=Sum('score')
+        )['total'] or 0
 
-            composition = NoteComposition.objects.filter(student=student, subject=subject, trimestre=trimestre).first()
-            composition_score = (composition.score * composition.coefficient) if composition else 0
+        # Calcul des notes pondérées avec les coefficients
+        comp1_score = (comp1.score * comp1.coefficient) if comp1 else 0
+        comp2_score = (comp2.score * comp2.coefficient) if comp2 else 0
+        comp3_score = (comp3.score * comp3.coefficient) if comp3 else 0
+        devoirs_score = float(devoirs) * 3  # Pondération pour les devoirs
 
-            trimestre_total = float(devoirs) + float(composition_score)
-            coefficient = float(subject.coefficient if subject.coefficient else 1)
+        # Somme des coefficients fixes
+        total_coeff = 1 + 2 + 3 + 3
 
-            subject_result["trimesters"].append({
-                "trimestre": trimestre.name,
-                "score": round(float(trimestre_total), 2),
-                "coefficient": coefficient,
-                "normalized_score": round((float(trimestre_total) / coefficient) * 20 if coefficient else 0, 2)
-            })
+        # Calcul de la moyenne finale de la matière
+        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
 
-            subject_total_score += float(trimestre_total)
-            subject_total_coefficient += coefficient
+        # Calcul de la note finale avec le coefficient de la matière
+        note_finale = moyenne_finale * subject.coefficient
+        
+        results.append({
+            "subject": subject.name,
+            "comp1": round(comp1_score, 2),
+            "comp2": round(comp2_score, 2),
+            "comp3": round(comp3_score, 2),
+            "devoirs": round(devoirs_score, 2),
+            "moyenne_finale": round(moyenne_finale, 2),
+            "note_finale": round(note_finale, 2),
+            "coefficient": subject.coefficient
+        })
 
-        yearly_score = round((float(subject_total_score) / subject_total_coefficient) * 20 if subject_total_coefficient else 0, 2)
-        total_yearly_score += float(subject_total_score)
-        total_coefficient += subject_total_coefficient
+        total_yearly_score += note_finale
+        total_coefficient += subject.coefficient
 
-        subject_result["yearly_score"] = yearly_score
-        results.append(subject_result)
-
-    yearly_average = round((float(total_yearly_score) / total_coefficient) if total_coefficient else 0, 2)
+    yearly_average = round(total_yearly_score / total_coefficient, 2) if total_coefficient else 0
 
     context = {
         "student": student,
         "session_year": session_year,
-        "trimestres": trimestres,
         "results": results,
         "yearly_average": yearly_average
     }
@@ -158,6 +152,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
 
 
+@login_required
 def generate_pdf_report_card(request, student_id, trimestre_id):
     student = get_object_or_404(Student, id=student_id)
     trimestre = get_object_or_404(Trimestre, id=trimestre_id)
