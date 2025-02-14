@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulletin de Notes</title>
     <style>
+        @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 10mm;
+                    }
+
+                    body {
+                        width: 100%;
+                        overflow: hidden;
+                    }
+
+                    .container {
+                        page-break-inside: avoid;
+                    }
+                }
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
