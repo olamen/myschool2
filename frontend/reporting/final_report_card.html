@@ -11,6 +11,10 @@
                             size: A4 landscape;
                             margin: 10mm;
                         }
+                        .header {
+                            padding-bottom: 0;
+                            margin-bottom: 0;
+                        }
 
                         body {
                             width: 100%;
@@ -112,9 +116,9 @@
 
         <!-- Informations de l'élève -->
         <div class="info">
-            <p><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}</p>
-            <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
-            <p><strong>Année Scolaire :</strong> {{ session_year.name }}</p>
+            <span><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}  </span>
+            <span><strong>Classe :</strong> {{ student.student_class.name }}  </span>
+            <span><strong>Année Scolaire :</strong> {{ session_year.name }}</span>
         </div>
 
         <!-- Tableau des matières et notes -->
