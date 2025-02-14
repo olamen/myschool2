@@ -14,6 +14,8 @@
                         .header {
                             padding-bottom: 0;
                             margin-bottom: 0;
+                            padding: 0;
+                            margin: 0;
                         }
 
                         body {
@@ -32,6 +34,7 @@
                         .footer {
                             margin-top: auto;
                             page-break-before: avoid;
+                            display: none;
                         }
 
                         table, th, td {
@@ -117,7 +120,7 @@
         <!-- Informations de l'élève -->
         <div class="info">
             <span><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}  </span>
-            <span><strong>Classe :</strong> {{ student.student_class.name }}  </span>
+            <span><strong>Classe :</strong> {{ student.student_class.name }} </span>
             <span><strong>Année Scolaire :</strong> {{ session_year.name }}</span>
         </div>
 
