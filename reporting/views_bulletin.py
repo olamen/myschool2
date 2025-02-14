@@ -85,49 +85,66 @@ def generate_report_card(request, student_id, trimestre_id, sessionyear_id):
     return render(request, "reporting/report_card.html", context)
 
 
-
 @login_required
 def generate_final_report_card(request, student_id, sessionyear_id):
     student = get_object_or_404(Student, id=student_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
+
+    print("DEBUG: Étudiant -", student)
+    print("DEBUG: Année scolaire -", session_year)
 
     # Vérification si c'est un élève du secondaire ou du lycée
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
     subjects = Subject.objects.filter(grade=student.student_class.grade)
+    print("DEBUG: Matières trouvées -", subjects)
 
     results = []
-    total_yearly_score = 0
-    total_coefficient = 0
+    total_yearly_score = Decimal('0.0')
+    total_coefficient = Decimal('0.0')
 
     for subject in subjects:
+        print("\nDEBUG: Matière en cours -", subject.name)
+
         # Récupération des compositions
-        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=2)
-        comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=3)
-        comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=4)
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=2).first()
+        comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=3).first()
+        comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=4).first()
+
+        print("DEBUG: Comp1 -", comp1)
+        print("DEBUG: Comp2 -", comp2)
+        print("DEBUG: Comp3 -", comp3)
 
         # Calcul des devoirs pour l'année
         devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
             total=Sum('score')
         )['total'] or 0
+        print("DEBUG: Total Devoirs -", devoirs)
 
         # Calcul des notes pondérées avec les coefficients
         comp1_score = (Decimal(comp1.score) * Decimal(comp1.coefficient)) if comp1 else Decimal('0.0')
         comp2_score = (Decimal(comp2.score) * Decimal(comp2.coefficient)) if comp2 else Decimal('0.0')
         comp3_score = (Decimal(comp3.score) * Decimal(comp3.coefficient)) if comp3 else Decimal('0.0')
 
-        devoirs_score = Decimal(str(devoirs)) * Decimal(3)  # Conversion en Decimal pour les deux valeurs
+        print("DEBUG: Comp1 Score -", comp1_score)
+        print("DEBUG: Comp2 Score -", comp2_score)
+        print("DEBUG: Comp3 Score -", comp3_score)
+
+        devoirs_score = Decimal(str(devoirs)) * Decimal(3)
+        print("DEBUG: Devoirs Score -", devoirs_score)
 
         # Somme des coefficients fixes
-        total_coeff = 1 + 2 + 3 + 3
+        total_coeff = Decimal(1 + 2 + 3 + 3)
+        print("DEBUG: Total Coefficient Fixe -", total_coeff)
 
         # Calcul de la moyenne finale de la matière
-        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / Decimal(total_coeff)
-
+        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
+        print("DEBUG: Moyenne Finale -", moyenne_finale)
 
         # Calcul de la note finale avec le coefficient de la matière
         note_finale = moyenne_finale * subject.coefficient
+        print("DEBUG: Note Finale -", note_finale)
         
         results.append({
             "subject": subject.name,
@@ -143,7 +160,11 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         total_yearly_score += note_finale
         total_coefficient += subject.coefficient
 
+    print("DEBUG: Total Yearly Score -", total_yearly_score)
+    print("DEBUG: Total Coefficient -", total_coefficient)
+
     yearly_average = round(total_yearly_score / total_coefficient, 2) if total_coefficient else 0
+    print("DEBUG: Yearly Average -", yearly_average)
 
     context = {
         "student": student,
@@ -153,6 +174,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 
 
