@@ -6,21 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulletin de Notes</title>
     <style>
-        @media print {
-                    @page {
-                        size: A4 landscape;
-                        margin: 10mm;
-                    }
+            @media print {
+                        @page {
+                            size: A4 landscape;
+                            margin: 10mm;
+                        }
 
-                    body {
-                        width: 100%;
-                        overflow: hidden;
-                    }
+                        body {
+                            width: 100%;
+                            overflow: hidden;
+                        }
 
-                    .container {
-                        page-break-inside: avoid;
-                    }
-                }
+                        .container {
+                            page-break-inside: avoid;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            min-height: 95vh;
+                        }
+
+                        .footer {
+                            margin-top: auto;
+                            page-break-before: avoid;
+                        }
+
+                        table, th, td {
+                            font-size: 12px;  /* Ajustez cette valeur si besoin pour tout faire tenir sur une page */
+                        }
+             }
+
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
