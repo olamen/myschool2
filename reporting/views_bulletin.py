@@ -139,7 +139,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Total Coefficient Fixe -", total_coeff)
 
         # Calcul de la moyenne finale de la matière
-        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
+        moyenne_finale = (comp1_score + (comp2_score * 2) + (comp3_score * 3) + devoirs_score) / total_coeff
         print("DEBUG: Moyenne Finale -", moyenne_finale)
 
         # Calcul de la note finale avec le coefficient de la matière
