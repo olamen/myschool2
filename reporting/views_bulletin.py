@@ -123,9 +123,9 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Total Devoirs -", devoirs)
 
         # Calcul des notes pondérées avec les coefficients
-        comp1_score = (Decimal(comp1.score) * Decimal(comp1.coefficient)) if comp1 else Decimal('0.0')
-        comp2_score = (Decimal(comp2.score) * Decimal(comp2.coefficient)) if comp2 else Decimal('0.0')
-        comp3_score = (Decimal(comp3.score) * Decimal(comp3.coefficient)) if comp3 else Decimal('0.0')
+        comp1_score = (Decimal(comp1.score) * Decimal(1)) if comp1 else Decimal('0.0')
+        comp2_score = (Decimal(comp2.score) * Decimal(2)) if comp2 else Decimal('0.0')
+        comp3_score = (Decimal(comp3.score) * Decimal(3)) if comp3 else Decimal('0.0')
 
         print("DEBUG: Comp1 Score -", comp1_score)
         print("DEBUG: Comp2 Score -", comp2_score)
@@ -139,7 +139,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Total Coefficient Fixe -", total_coeff)
 
         # Calcul de la moyenne finale de la matière
-        moyenne_finale = (comp1_score + (comp2_score * 2) + (comp3_score * 3) + devoirs_score) / total_coeff
+        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
         print("DEBUG: Moyenne Finale -", moyenne_finale)
 
         # Calcul de la note finale avec le coefficient de la matière
