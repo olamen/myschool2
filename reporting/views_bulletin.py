@@ -108,7 +108,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("\nDEBUG: Matière en cours -", subject.name)
 
         # Récupération des compositions
-        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=2).first()
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
         comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=3).first()
         comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, trimestre__id=4).first()
 
