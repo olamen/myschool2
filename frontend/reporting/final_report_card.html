@@ -164,19 +164,18 @@
                 </tr>
             </tfoot>
         </table>
-       <div>
-            {% if yearly_average >= 15 %}
-            <p class="pass">Décision : Très Bien</p>
-            {% elif yearly_average >= 13 %}
+        <div>
+            {% if yearly_average <= 20 and yearly_average >= 15 %}
+                <p class="pass">Décision : Très Bien</p>
+            {% elif yearly_average < 15 and yearly_average >= 12 %}
                 <p class="pass">Décision : Bien</p>
-            {% elif yearly_average >= 9 %}
+            {% elif yearly_average < 12 and yearly_average >= 9 %}
                 <p class="pass">Décision : Passable</p>
             {% else %}
                 <p class="fail">Décision : Redoublement</p>
             {% endif %}
-
-            <a href="{% url 'index' %}">Retour</a>
         </div>
+        
         <!-- Signature et Validation -->
         <div class="signature">
             <div>
