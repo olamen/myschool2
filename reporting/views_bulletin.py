@@ -97,7 +97,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     if student.student_class.grade.name.lower() == "primaire":
         return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
 
-    subjects = Subject.objects.filter(grade=student.student_class.gradeو is_active=True)
+    subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
     print("DEBUG: Matières trouvées -", subjects)
 
     results = []
