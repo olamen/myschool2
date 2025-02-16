@@ -40,16 +40,13 @@ urlpatterns = [
     path('grades/add/', add_grade, name='add_grade'),
     path('grades/<int:grade_id>/update/', update_grade, name='update_grade'),
     
-    path('classes/', class_list, name='class_list'),
-    path('classes/create/', class_create, name='class_create'),
-    path('classes/update/<int:class_id>/', class_update, name='class_update'),
-    path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
-    path('classes/archived/', class_archived_list, name='class_archived_list'),
 
 # url pour les classes 2 eme methode
     path('classe/create/', create_or_update_classe, name='create_classe'),
     path('classe/update/<int:classe_id>/', create_or_update_classe, name='update_classe'),
     path('classe/list/', list_classes, name='list_classes'),
+    path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
+    path('classes/archived/', class_archived_list, name='class_archived_list'),
 
 
 
