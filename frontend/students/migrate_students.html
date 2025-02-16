@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Migration des Élèves</title>
+    {% endblock title %}
+</head>
+<body>
+    <h1>Migration des Élèves vers la Classe Suivante</h1>
+    {% if migrated_students %}
+        <h2>Élèves Migrés :</h2>
+        <ul>
+            {% for student in migrated_students %}
+                <li>{{ student.first_name }} {{ student.last_name }} → {{ student.student_class.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun élève n'a été migré cette fois-ci.</p>
+    {% endif %}
+
+    <a href="{% url 'index' %}">Retour à l'accueil</a>
+</body>
+
+{% endblock %}
