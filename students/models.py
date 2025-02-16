@@ -23,6 +23,7 @@ class Classe(models.Model):
     name = models.CharField(max_length=100, unique=True)
     grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='grade', default=1)
     monthly_salary_fee = models.PositiveIntegerField(null=False)
+    order = models.PositiveIntegerField(null=True, blank=True, unique=True)  # 1 pour la première classe, 2 pour la deuxième, etc.
     is_active = models.BooleanField(default=False)
 
 
@@ -47,7 +48,13 @@ class Student(models.Model):
     has_discount = models.BooleanField(default=False)  # Indicates if the student has a discount
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')  # Add gender with default 'Garçon'
     photo = models.ImageField(upload_to='student_photos/', blank=True, null=True)  # Optional photo field
-
+    
+    #calcule moyenne annuelle de l'etudiant
+    def calculate_yearly_average(self):
+        # Calculer la moyenne annuelle
+        from django.db.models import Avg
+        average = self.notecomposition_set.all().aggregate(Avg('score'))['score__avg'] or Decimal('0.0')
+        return round(average, 2)  # Arrondir à 2 décimales
 
 
     def get_final_fee(self):

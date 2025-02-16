@@ -2,7 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from students import views_subject, views_teacher
+from students import views_migration_etudient, views_subject, views_teacher
 from students.views_devoir import composition_create, composition_delete, composition_list, composition_update, devoir_create, devoir_delete, devoir_list, devoir_update
 from students.views_trimestres import trimestre_create, trimestre_delete, trimestre_list, trimestre_update
 
@@ -87,4 +87,7 @@ urlpatterns = [
     path('compositions/create/', composition_create, name='composition_create'),
     path('compositions/<int:pk>/update/', composition_update, name='composition_update'),
     path('compositions/<int:pk>/delete/', composition_delete, name='composition_delete'),
+
+    # URL pour la migration des élèves
+    path('migrate-students/', views_migration_etudient.migrate_students, name='migrate_students'),
 ]
