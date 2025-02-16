@@ -94,8 +94,8 @@ def create_or_update_classe(request, classe_id=None):
         else:
             form = ClasseForm()
     
-    return render(request, 'classe/create_or_update_classe.html', {'form': form, 'classe': classe})
+    return render(request, 'create_or_update_classe.html', {'form': form, 'classe': classe})
 
 def list_classes(request):
     classes = Classe.objects.all()
-    return render(request, 'classe/list_classes.html', {'classes': classes})
+    return render(request, 'list_classes.html', {'classes': classes})
