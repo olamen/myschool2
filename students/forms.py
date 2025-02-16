@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput, Select, DateInput, Textarea
-from accounting import forms
+from django import forms
 from students.models import Classe, Composition, Devoir, Trimestre
 
 class TrimestreForm(ModelForm):
