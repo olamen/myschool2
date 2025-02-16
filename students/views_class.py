@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.db import IntegrityError
 from .forms import ClasseForm
 from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
 
 from .models import Classe
 
@@ -71,7 +73,7 @@ def class_archived_list(request):
 
 
 
-
+@login_required
 def create_or_update_classe(request, classe_id=None):
     if classe_id:
         # Mise à jour
@@ -94,8 +96,8 @@ def create_or_update_classe(request, classe_id=None):
         else:
             form = ClasseForm()
     
-    return render(request, 'create_or_update_classe.html', {'form': form, 'classe': classe})
-
+    return render(request, 'classes/create_or_update_classe.html', {'form': form, 'classe': classe})
+@login_required
 def list_classes(request):
     classes = Classe.objects.all()
-    return render(request, 'list_classes.html', {'classes': classes})
+    return render(request, 'classes/list_classes.html', {'classes': classes})
