@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin de Notes Primaire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>École XYZ</h1>
+            <h2>Bulletin de Notes - Primaire</h2>
+            <h2>Année Scolaire : {{ session_year.name }}</h2>
+        </div>
+
+        <p><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}</p>
+        <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Exam 1</th>
+                    <th>Exam 2</th>
+                    <th>Exam 3</th>
+                    <th>Devoirs</th>
+                    <th>Score Total</th>
+                    <th>Points Max</th>
+                    <th>Pourcentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject }}</td>
+                    <td>{{ result.comp1 }}</td>
+                    <td>{{ result.comp2 }}</td>
+                    <td>{{ result.comp3 }}</td>
+                    <td>{{ result.devoirs }}</td>
+                    <td>{{ result.total_score }}</td>
+                    <td>{{ result.max_points }}</td>
+                    <td>{{ result.percentage }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <h3>Moyenne Générale : {{ yearly_average }}%</h3>
+        </div>
+    </div>
+</body>
+</html>

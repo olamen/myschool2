@@ -1,6 +1,6 @@
 from django.db.models import Sum, F, Case, When, FloatField
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
 from students.models import Student, Subject, Trimestre, SessionYearModel
@@ -84,7 +84,7 @@ def generate_report_card(request, student_id, trimestre_id, sessionyear_id):
 
     return render(request, "reporting/report_card.html", context)
 
-
+#Bulletin pour les élèves du secondaire et lycee
 @login_required
 def generate_final_report_card(request, student_id, sessionyear_id):
     student = get_object_or_404(Student, id=student_id)
@@ -95,7 +95,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
     # Vérification si c'est un élève du secondaire ou du lycée
     if student.student_class.grade.name.lower() == "primaire":
-        return render(request, 'reporting/not_allowed.html', {"message": "Les élèves du primaire ne sont pas concernés."})
+        return redirect('report_card_primaire', student_id=student.id, sessionyear_id=session_year.id)
 
     subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
     print("DEBUG: Matières trouvées -", subjects)
@@ -175,7 +175,72 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
     return render(request, "reporting/final_report_card.html", context)
 
+#bulletin pour les élèves du primaire
+@login_required
+def generate_report_card_primaire(request, student_id, sessionyear_id):
+    student = get_object_or_404(Student, id=student_id)
+    session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
 
+    # Vérifiez si l'élève est en primaire
+    if student.student_class.grade.name.lower() != "primaire":
+        return redirect('final_report_card', student_id=student.id, sessionyear_id=session_year.id)
+
+    # Récupération des matières pour le primaire
+    subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
+
+    results = []
+    total_points = Decimal('0.0')
+    total_max_points = Decimal('0.0')
+
+    for subject in subjects:
+        # Récupération des notes pour chaque composition
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
+        comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=3).first()
+        comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
+
+        # Calcul des devoirs pour l'année
+        devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
+            total=Sum('score')
+        )['total'] or 0
+
+        # Calcul des scores
+        comp1_score = Decimal(comp1.score) if comp1 else Decimal('0.0')
+        comp2_score = Decimal(comp2.score) if comp2 else Decimal('0.0')
+        comp3_score = Decimal(comp3.score) if comp3 else Decimal('0.0')
+        devoirs_score = Decimal(str(devoirs))
+
+        # Somme des points obtenus
+        total_score = comp1_score + comp2_score + comp3_score + devoirs_score
+
+        # Calcul du pourcentage (optionnel)
+        max_points = subject.points or 0  # Utilisation des points du modèle Subject
+        percentage = (total_score / max_points) * 100 if max_points > 0 else 0
+
+        results.append({
+            "subject": subject.name,
+            "comp1": comp1_score,
+            "comp2": comp2_score,
+            "comp3": comp3_score,
+            "devoirs": devoirs_score,
+            "total_score": total_score,
+            "max_points": max_points,
+            "percentage": round(percentage, 2)
+        })
+
+        total_points += total_score
+        total_max_points += max_points
+
+    # Calcul de la moyenne générale en pourcentage
+    yearly_average = (total_points / total_max_points) * 100 if total_max_points > 0 else 0
+
+    context = {
+        "student": student,
+        "session_year": session_year,
+        "results": results,
+        "yearly_average": round(yearly_average, 2)
+    }
+
+    return render(request, "reporting/final_report_card_primaire.html", context)
 
 
 @login_required
