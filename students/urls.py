@@ -6,7 +6,7 @@ from students import views_migration_etudient, views_subject, views_teacher
 from students.views_devoir import composition_create, composition_delete, composition_list, composition_update, devoir_create, devoir_delete, devoir_list, devoir_update
 from students.views_trimestres import trimestre_create, trimestre_delete, trimestre_list, trimestre_update
 
-from .views_class import class_archive, class_archived_list, class_list, class_create, class_update, create_or_update_classe, list_classes 
+from .views_class import class_archive, class_archived_list,create_or_update_classe, list_classes 
 from .views_composition import exam_detail, edit_exam
 from .views_parent import parent_create, parent_detail, parent_list
 
