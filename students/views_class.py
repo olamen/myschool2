@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.db import IntegrityError
+from .forms import ClasseForm
 from django.shortcuts import redirect, render, get_object_or_404
 
 from .models import Classe
@@ -67,3 +68,34 @@ def class_archived_list(request):
     # Fetch all archived classes
     archived_classes = Classe.objects.filter(is_active=False)
     return render(request, 'classes/class_archived_list.html', {'classes': archived_classes})
+
+
+
+
+def create_or_update_classe(request, classe_id=None):
+    if classe_id:
+        # Mise à jour
+        classe = get_object_or_404(Classe, id=classe_id)
+        if request.method == 'POST':
+            form = ClasseForm(request.POST, instance=classe)
+            if form.is_valid():
+                form.save()
+                return redirect('list_classes')
+        else:
+            form = ClasseForm(instance=classe)
+    else:
+        # Création
+        classe = None
+        if request.method == 'POST':
+            form = ClasseForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('list_classes')
+        else:
+            form = ClasseForm()
+    
+    return render(request, 'classe/create_or_update_classe.html', {'form': form, 'classe': classe})
+
+def list_classes(request):
+    classes = Classe.objects.all()
+    return render(request, 'classe/list_classes.html', {'classes': classes})

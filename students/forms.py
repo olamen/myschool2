@@ -1,5 +1,6 @@
 from django.forms import ModelForm, TextInput, Select, DateInput, Textarea
-from students.models import Composition, Devoir, Trimestre
+from accounting import forms
+from students.models import Classe, Composition, Devoir, Trimestre
 
 class TrimestreForm(ModelForm):
     class Meta:
@@ -35,4 +36,16 @@ class CompositionForm(ModelForm):
             'exam_date': DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'remarks': Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter une remarks '}),
             'coefficient': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter coefficient'}),
+        }
+
+class ClasseForm(forms.ModelForm):
+    class Meta:
+        model = Classe
+        fields = ['name', 'grade', 'monthly_salary_fee', 'order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom de la classe'}),
+            'grade': forms.Select(attrs={'class': 'form-select'}),
+            'monthly_salary_fee': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Frais mensuels'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ordre'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

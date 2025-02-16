@@ -6,7 +6,7 @@ from students import views_migration_etudient, views_subject, views_teacher
 from students.views_devoir import composition_create, composition_delete, composition_list, composition_update, devoir_create, devoir_delete, devoir_list, devoir_update
 from students.views_trimestres import trimestre_create, trimestre_delete, trimestre_list, trimestre_update
 
-from .views_class import class_archive, class_archived_list, class_list, class_create, class_update 
+from .views_class import class_archive, class_archived_list, class_list, class_create, class_update, create_or_update_classe, list_classes 
 from .views_composition import exam_detail, edit_exam
 from .views_parent import parent_create, parent_detail, parent_list
 
@@ -45,6 +45,11 @@ urlpatterns = [
     path('classes/update/<int:class_id>/', class_update, name='class_update'),
     path('classes/archive/<int:class_id>/', class_archive, name='class_archive'),
     path('classes/archived/', class_archived_list, name='class_archived_list'),
+
+# url pour les classes 2 eme methode
+    path('classe/create/', create_or_update_classe, name='create_classe'),
+    path('classe/update/<int:classe_id>/', create_or_update_classe, name='update_classe'),
+    path('classe/list/', list_classes, name='list_classes'),
 
 
 

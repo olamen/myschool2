@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load  static %}
+<head>
+    {% block title %}
+    <title>{% if classe %}Modifier{% else %}Ajouter{% endif %} une Classe</title>
+    {% endblock title %}
+</head>
+{% block body %}
+    <div class="container mt-5">
+        <h2>{% if classe %}Modifier{% else %}Ajouter{% endif %} une Classe</h2>
+        <form method="post" class="card p-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label">Nom de la Classe</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-3">
+                <label for="grade" class="form-label">Grade</label>
+                {{ form.grade }}
+            </div>
+            <div class="mb-3">
+                <label for="monthly_salary_fee" class="form-label">Frais Mensuels</label>
+                {{ form.monthly_salary_fee }}
+            </div>
+            <div class="mb-3">
+                <label for="order" class="form-label">Ordre</label>
+                {{ form.order }}
+            </div>
+            <div class="mb-3 form-check">
+                {{ form.is_active }} 
+                <label for="is_active" class="form-check-label">Actif</label>
+            </div>
+            <button type="submit" class="btn btn-primary">{% if classe %}Mettre à jour{% else %}Ajouter{% endif %}</button>
+        </form>
+        <a href="{% url 'list_classes' %}" class="btn btn-secondary mt-3">Voir les Classes</a>
+    </div>
+
+    {% endblock body %}

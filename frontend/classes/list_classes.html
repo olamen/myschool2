@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+{% load  static %}
+    {% block title %}
+    <title>Liste des Classes</title>
+    {% endblock title %}
+
+    {% block body %}
+    <div class="container mt-5">
+        <h2>Liste des Classes</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Grade</th>
+                    <th>Frais Mensuels</th>
+                    <th>Ordre</th>
+                    <th>Actif</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in classes %}
+                <tr>
+                    <td>{{ classe.name }}</td>
+                    <td>{{ classe.grade.name }}</td>
+                    <td>{{ classe.monthly_salary_fee }}</td>
+                    <td>{{ classe.order }}</td>
+                    <td>
+                        {% if classe.is_active %}
+                        <span class="badge bg-success">Oui</span>
+                        {% else %}
+                        <span class="badge bg-danger">Non</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'update_classe' classe.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'create_classe' %}" class="btn btn-success mt-3">Ajouter une Classe</a>
+    </div>
+{% endblock body %}
