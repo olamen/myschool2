@@ -50,43 +50,80 @@ $(document).ready(function () {
                             <td>${index + 1}</td>
                             <td>${student.name}</td>
                             <td><input type="number" class="form-control student-score" data-student-id="${student.id}" min="0" max="20" step="0.1"></td>
+                             <td>
+                                <select class="form-select student-absence">
+                                    <option value="">Présent</option>
+                                    <option value="ABJ">ABJ</option>
+                                    <option value="ABS">ABS</option>
+                                </select>
+                            </td>
                         </tr>
                     `);
                 });
             });
         }
     });
+    // Gestion de l'interaction entre note et absence
+    $('#studentsTable').on('input', '.student-score', function() {
+        $(this).closest('tr').find('.student-absence').val('');
+    });
 
-    // Sauvegarde des notes
-    $('#saveNotes').click(function () {
-        let notes = [];
-        $('.student-score').each(function () {
-            let studentId = $(this).data('student-id');
-            let score = $(this).val();
-            if (score) notes.push({ student_id: studentId, score: score });
-        });
-
-        if (notes.length > 0) {
-            let csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-            $.ajax({
-                url: '/notes/notes_exam/save/',
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    notes: notes,
-                    sessionyear: $('#sessionYear').val(),
-                    subject_id: $('#subject').val(),
-                    exam_id: $('#exam').val(),
-                    trimestre_id: $('#trimestre').val()
-                }),
-                headers: { 'X-CSRFToken': csrfToken },
-                success: function (response) { alert(response.message); },
-                error: function (xhr) { alert(xhr.responseJSON?.message || "Erreur lors de l'enregistrement."); }
-            });
-        } else {
-            alert("Veuillez entrer des notes pour les étudiants.");
+    $('#studentsTable').on('change', '.student-absence', function() {
+        if ($(this).val()) {
+            $(this).closest('tr').find('.student-score').val('');
         }
     });
+        // Sauvegarde des notes avec gestion des absences
+    $('#saveNotes').click(function () {
+            let notes = [];
+            let hasError = false;
+    
+            $('#studentsTable tr[data-student-id]').each(function () {
+                const studentId = $(this).data('student-id');
+                const score = $(this).find('.student-score').val();
+                const absence = $(this).find('.student-absence').val();
+    
+                if (score && absence) {
+                    alert(`Erreur pour ${studentId}: Vous ne pouvez pas saisir une note et une absence`);
+                    hasError = true;
+                    return false; // Break loop
+                }
+    
+                notes.push({
+                    student_id: studentId,
+                    score: score || null,
+                    absence: absence || null
+                });
+            });
+    
+            if (hasError) return;
+    
+            if (notes.length > 0) {
+                const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+                $.ajax({
+                    url: '/notes/notes_exam/save/',
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        notes: notes,
+                        sessionyear: $('#sessionYear').val(),
+                        subject_id: $('#subject').val(),
+                        exam_id: $('#exam').val(),
+                        trimestre_id: $('#trimestre').val()
+                    }),
+                    headers: { 'X-CSRFToken': csrfToken },
+                    success: function (response) { 
+                        alert(response.message);
+                        loadNotes(); // Recharger les données après sauvegarde
+                    },
+                    error: function (xhr) { 
+                        alert(xhr.responseJSON?.message || "Erreur lors de l'enregistrement."); 
+                    }
+                });
+            } else {
+                alert("Veuillez entrer des notes ou sélectionner des absences.");
+            }
+        });
 
     // Charger les notes existantes
     function loadNotes() {
@@ -105,7 +142,10 @@ $(document).ready(function () {
                     $('.student-score').each(function () {
                         let studentId = $(this).data('student-id');
                         let note = response.notes.find(n => n.student_id == studentId);
-                        if (note) $(this).val(note.score);
+                        if (note) {
+                            $(this).find('.student-score').val(note.score || '');
+                            $(this).find('.student-absence').val(note.absence || '');
+                        }
                     });
                 }
             });

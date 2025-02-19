@@ -30,6 +30,11 @@ class NoteDevoir(models.Model):
         return f"{self.student} - {self.subject} - {self.score}"
     
 class NoteComposition(models.Model):
+        ABSENCE_CHOICES = [
+            (None, 'Présent'),
+            ('ABJ', 'Absence Justifiée'),
+            ('ABS', 'Absence Non Justifiée'),
+        ]
         student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='notecompositions')  # L'étudiant
         subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='notecompositions')  # La matière
         composition = models.ForeignKey(Composition, on_delete=models.CASCADE, related_name='notecomposition')
@@ -38,18 +43,30 @@ class NoteComposition(models.Model):
         score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Score de l'examen, peut être null si non évalué
         remarks = models.TextField(null=True, blank=True)  # Commentaires supplémentaires sur la composition (facultatif)
         coefficient = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
+        absence = models.CharField(
+            max_length=3,
+            choices=ABSENCE_CHOICES,
+            null=True,
+            blank=True,
+            verbose_name="Statut de présence"
+        )
 
         def clean(self):
-            if self.score and (self.score < 0 or self.score > 20):
-                raise ValidationError("Le resultat doit etre entre 0 et 20.")
+            if self.score and self.absence:
+                raise ValidationError("Vous ne pouvez pas à la fois saisir une note et une absence.")
+            if not self.score and not self.absence:
+                raise ValidationError("Vous devez saisir soit une note soit un statut d'absence.")
             
+            if self.score and (self.score < 0 or self.score > 20):
+                raise ValidationError("Le résultat doit être entre 0 et 20.")
+
         def get_weighted_score(self):
-            """Calculer le score pondéré basé sur le coefficient du sujet. Le score est sur 20."""
+            """Retourne None si absence justifiée pour exclusion des calculs"""
+            if self.absence == 'ABJ':
+                return None
             if self.score is not None:
-            # Assure-toi que le score est sur 20
-                score_on_20 = (self.score / 20) * self.subject.coefficient
-            return score_on_20  # Score pondéré basé sur le coefficient
-            return None  # Si aucun score, retourne None
+                return (self.score / 20) * self.subject.coefficient
+            return 0 if self.absence == 'ABS' else None  # Gestion des absences non justifiées
 
         def __str__(self):
             return f"{self.composition.name} on {self.sessionyear}"

@@ -171,6 +171,7 @@ def get_notes(request):
             {
                 "student_id": note.student.id,
                 "score": note.score,
+                "absence": note.absence  # Ajout de l'absence pour NoteComposition
             }
             for note in notes
         ]
@@ -226,6 +227,12 @@ def save_note_exam(request):
             for note_data in notes:
                 student_id = note_data.get('student_id')
                 score = note_data.get('score')
+                absence = note_data.get('absence')
+                # Validation
+                if score and absence:
+                    return JsonResponse({'success': False, 'message': 'Note et absence incompatibles'})
+                if not score and not absence:
+                    return JsonResponse({'success': False, 'message': 'Valeur manquante'})
 
                 # Validate student and score
                 try:
@@ -244,7 +251,10 @@ def save_note_exam(request):
                     sessionyear=session_year,
                     trimestre=trimestre,
                     composition= composition,
-                    defaults={'score': score}
+                    defaults={
+                        'score': score if score else None,
+                        'absence': absence if absence else None
+                    }
                 )
 
             return JsonResponse({'success': True, 'message': 'Notes enregistrées avec succès !'})
