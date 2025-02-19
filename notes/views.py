@@ -171,7 +171,7 @@ def get_notes(request):
             {
                 "student_id": note.student.id,
                 "score": note.score,
-                "absence": note.absence  # Ajout de l'absence pour NoteComposition
+                **({"absence": note.absence} if composition_id else {})
             }
             for note in notes
         ]
