@@ -129,7 +129,6 @@ $(document).ready(function () {
     function loadNotes() {
         let params = {
             classe_id: $('#classe').val(),
-            exam_id: $('#exam').val(),
             subject_id: $('#subject').val(),
             sessionyear_id: $('#sessionYear').val(),
             trimestre_id: $('#trimestre').val(),
