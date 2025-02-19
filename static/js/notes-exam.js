@@ -139,15 +139,15 @@ $(document).ready(function () {
         if (params.classe_id && params.subject_id && params.sessionyear_id && params.trimestre_id) {
             $.get('/notes/get_notes/', params, function (response) {
                 if (response.success) {
-                    $('.student-score').each(function () {
-                        let studentId = $(this).data('student-id');
-                        let note = response.notes.find(n => n.student_id == studentId);
+                    $('#studentsTable tr[data-student-id]').each(function () {
+                        const studentId = $(this).data('student-id');
+                        const note = response.notes.find(n => n.student_id == studentId);
+                        
                         if (note) {
                             $(this).find('.student-score').val(note.score || '');
                             $(this).find('.student-absence').val(note.absence || '');
                         }
-                    });
-                }
+                    });}
             });
         }
     }
