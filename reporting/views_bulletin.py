@@ -129,13 +129,14 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
         def get_valid_score(comp):
             """Retourne le score converti en Decimal ou 0.0 si None ou ABJ"""
-            if comp and comp.absence != 'ABJ' and comp.score is not None:
-                return Decimal(comp.score)
-            return Decimal('0.0')  # Score ignoré si absence justifiée
+            if comp and getattr(comp, 'score', None) is not None and getattr(comp, 'absence', '') != 'ABJ':
+                return Decimal(str(comp.score))  # Utilisation de str pour éviter les erreurs
+            return Decimal('0.0')  # Score ignoré si absence justifiée ou None
 
         comp1_score = get_valid_score(comp1) * Decimal(1)
         comp2_score = get_valid_score(comp2) * Decimal(2)
         comp3_score = get_valid_score(comp3) * Decimal(3)
+
 
         devoirs_score = Decimal(str(devoirs)) * Decimal(3)
         print("DEBUG: Devoirs Score -", devoirs_score)
