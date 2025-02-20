@@ -131,27 +131,24 @@ def generate_final_report_card(request, student_id, sessionyear_id):
                     return Decimal(comp.score)
             return Decimal('0.0')  # Score ignoré si absence justifiée
 
-
         # Correction ici (assure que la fonction est bien utilisée)
         comp1_score = get_valid_score(comp1)
         comp2_score = get_valid_score(comp2)
         comp3_score = get_valid_score(comp3)
 
-
-
-
         devoirs_score = Decimal(str(devoirs)) * Decimal(3)
         print("DEBUG: Devoirs Score -", devoirs_score)
 
-        
         # Convertir uniquement les valeurs numériques, ignorer les "ABJ"
         valid_scores = [Decimal(score) for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
 
         # Recalculer total_coeff en ignorant les absences
-        total_coeff = sum([1 if isinstance(comp1_score, Decimal) else 0,
-                        2 if isinstance(comp2_score, Decimal) else 0,
-                        3 if isinstance(comp3_score, Decimal) else 0,
-                        3])  # Devoirs toujours pris en compte
+        total_coeff = sum([
+            1 if isinstance(comp1_score, Decimal) else 0,
+            2 if isinstance(comp2_score, Decimal) else 0,
+            3 if isinstance(comp3_score, Decimal) else 0,
+            3  # Devoirs toujours pris en compte
+        ])
 
         # Éviter la division par zéro
         if total_coeff > 0:
@@ -159,24 +156,24 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         else:
             moyenne_finale = "ABJ"
 
-
         # Calcul de la note finale avec le coefficient de la matière
-        note_finale = moyenne_finale * subject.coefficient
+        note_finale = moyenne_finale * subject.coefficient if isinstance(moyenne_finale, Decimal) else moyenne_finale
         print("DEBUG: Note Finale -", note_finale)
-        
+
         results.append({
             "subject": subject.name,
             "comp1": round(comp1_score, 2) if isinstance(comp1_score, Decimal) else comp1_score,
             "comp2": round(comp2_score, 2) if isinstance(comp2_score, Decimal) else comp2_score,
             "comp3": round(comp3_score, 2) if isinstance(comp3_score, Decimal) else comp3_score,
             "devoirs": round(devoirs_score, 2),
-            "moyenne_finale": round(moyenne_finale, 2),
-            "note_finale": round(note_finale, 2),
+            "moyenne_finale": round(moyenne_finale, 2) if isinstance(moyenne_finale, Decimal) else moyenne_finale,
+            "note_finale": round(note_finale, 2) if isinstance(note_finale, Decimal) else note_finale,
             "coefficient": subject.coefficient
         })
 
-        total_yearly_score += note_finale
-        total_coefficient += subject.coefficient
+        if isinstance(note_finale, Decimal):
+            total_yearly_score += note_finale
+            total_coefficient += subject.coefficient
 
     print("DEBUG: Total Yearly Score -", total_yearly_score)
     print("DEBUG: Total Coefficient -", total_coefficient)
@@ -192,6 +189,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 #bulletin pour les élèves du primaire
 @login_required
