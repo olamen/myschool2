@@ -243,7 +243,7 @@ def save_note_exam(request):
                     return JsonResponse({'success': False, 'message': f"L'étudiant avec l'ID {student_id} n'existe pas."})
 
                 # Ensure score is valid
-                if not (0 <= float(score) <= 20):
+                if score is not None and not (0 <= float(score) <= 20):
                     return JsonResponse({'success': False, 'message': f"Score invalide pour l'étudiant {student.first_name} {student.last_name}."})
 
                 # Create or update the note
