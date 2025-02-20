@@ -148,9 +148,9 @@
                 {% for result in results %}
                 <tr>
                     <td>{{ result.subject }}</td>
-                    <td>{{ result.comp1 }}</td>
-                    <td>{{ result.comp2 }}</td>
-                    <td>{{ result.comp3 }}</td>
+                    <td>{% if result.comp1 == "ABJ" %}ABJ{% else %}{{ result.comp1 }}{% endif %}</td>
+                    <td>{% if result.comp2 == "ABJ" %}ABJ{% else %}{{ result.comp2 }}{% endif %}</td>
+                    <td>{% if result.comp3 == "ABJ" %}ABJ{% else %}{{ result.comp3 }}{% endif %}</td>
                     <td>{{ result.devoirs }}</td>
                     <td>{{ result.moyenne_finale }}</td>
                     <td>{{ result.coefficient }}</td>

@@ -123,19 +123,20 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Total Devoirs -", devoirs)
 
         def get_valid_score(comp):
-            """Retourne le score converti en Decimal ou 0.0 si None ou ABJ"""
-            if comp and getattr(comp, 'score', None) is not None and getattr(comp, 'absence', '') != 'ABJ':
-                try:
-                    return Decimal(str(comp.score))  # Convertir en chaîne pour éviter l'erreur
-                except Exception as e:
-                    print(f"Erreur lors de la conversion du score: {e}")  # Debug
-                    return Decimal('0.0')
-            return Decimal('0.0')  # Score ignoré si absence justifiée ou None
+            """Retourne le score converti en Decimal ou 'ABJ' si absence justifiée"""
+            if comp:
+                if comp.absence == 'ABJ':
+                    return "ABJ"
+                elif comp.score is not None:
+                    return Decimal(comp.score)
+            return Decimal('0.0')  # Score ignoré si absence justifiée
+
 
         # Correction ici (assure que la fonction est bien utilisée)
-        comp1_score = get_valid_score(comp1) * Decimal(1)
-        comp2_score = get_valid_score(comp2) * Decimal(2)
-        comp3_score = get_valid_score(comp3) * Decimal(3)
+        comp1_score = get_valid_score(comp1)
+        comp2_score = get_valid_score(comp2)
+        comp3_score = get_valid_score(comp3)
+
 
 
 
