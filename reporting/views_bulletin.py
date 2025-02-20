@@ -166,9 +166,9 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         
         results.append({
             "subject": subject.name,
-            "comp1": round(comp1_score, 2),
-            "comp2": round(comp2_score, 2),
-            "comp3": round(comp3_score, 2),
+            "comp1": round(comp1_score, 2) if isinstance(comp1_score, Decimal) else comp1_score,
+            "comp2": round(comp2_score, 2) if isinstance(comp2_score, Decimal) else comp2_score,
+            "comp3": round(comp3_score, 2) if isinstance(comp3_score, Decimal) else comp3_score,
             "devoirs": round(devoirs_score, 2),
             "moyenne_finale": round(moyenne_finale, 2),
             "note_finale": round(note_finale, 2),
