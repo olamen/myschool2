@@ -49,7 +49,7 @@ $(document).ready(function () {
                         <tr>
                             <td>${index + 1}</td>
                             <td>${student.name}</td>
-                            <td><input type="number" class="form-control student-score" data-student-id="${student.id}" min="0" max="20" step="0.1"></td>
+                            <td><input type="number" class="form-control student-score" data-student-id="${data.student.id}" min="0" max="20" step="0.1"></td>
                              <td>
                                 <select class="form-select student-absence">
                                     <option value="">Présent</option>
