@@ -144,15 +144,21 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Devoirs Score -", devoirs_score)
 
         
-        total_coeff = sum([1 if comp1 and comp1.absence != 'ABJ' else 0,
-                           2 if comp2 and comp2.absence != 'ABJ' else 0,
-                           3 if comp3 and comp3.absence != 'ABJ' else 0,
-                           3])  # Devoirs toujours pris en compte
-        print("DEBUG: Total Coefficient Fixe -", total_coeff)
+        # Convertir uniquement les valeurs numériques, ignorer les "ABJ"
+        valid_scores = [Decimal(score) for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
 
-        # Calcul de la moyenne finale de la matière
-        moyenne_finale = (comp1_score + comp2_score + comp3_score + devoirs_score) / total_coeff
-        print("DEBUG: Moyenne Finale -", moyenne_finale)
+        # Recalculer total_coeff en ignorant les absences
+        total_coeff = sum([1 if isinstance(comp1_score, Decimal) else 0,
+                        2 if isinstance(comp2_score, Decimal) else 0,
+                        3 if isinstance(comp3_score, Decimal) else 0,
+                        3])  # Devoirs toujours pris en compte
+
+        # Éviter la division par zéro
+        if total_coeff > 0:
+            moyenne_finale = (sum(valid_scores) + devoirs_score) / total_coeff
+        else:
+            moyenne_finale = "ABJ"
+
 
         # Calcul de la note finale avec le coefficient de la matière
         note_finale = moyenne_finale * subject.coefficient
