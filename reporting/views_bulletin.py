@@ -123,12 +123,12 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         print("DEBUG: Total Devoirs -", devoirs)
 
         def get_valid_score(comp):
-            """Retourne le score converti en Decimal ou 'ABJ' si absence justifiée"""
+            """Retourne le score pondéré ou 'ABJ' si absence justifiée"""
             if comp:
                 if comp.absence == 'ABJ':
                     return "ABJ"
                 elif comp.score is not None:
-                    return Decimal(comp.score)
+                    return Decimal(comp.score) * comp.composition.coefficient
             return Decimal('0.0')  # Score ignoré si absence justifiée
 
         # Correction ici (assure que la fonction est bien utilisée)
@@ -144,9 +144,9 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
         # Recalculer total_coeff en ignorant les absences
         total_coeff = sum([
-            1 if isinstance(comp1_score, Decimal) else 0,
-            2 if isinstance(comp2_score, Decimal) else 0,
-            3 if isinstance(comp3_score, Decimal) else 0,
+            comp1.composition.coefficient if isinstance(comp1_score, Decimal) else 0,
+            comp2.composition.coefficient if isinstance(comp2_score, Decimal) else 0,
+            comp3.composition.coefficient if isinstance(comp3_score, Decimal) else 0,
             3  # Devoirs toujours pris en compte
         ])
 
@@ -189,6 +189,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 
 #bulletin pour les élèves du primaire
