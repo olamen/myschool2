@@ -233,6 +233,8 @@ def save_note_exam(request):
                     return JsonResponse({'success': False, 'message': 'Note et absence incompatibles'})
                 if not score and not absence:
                     return JsonResponse({'success': False, 'message': 'Valeur manquante'})
+                # Convertir le score en float seulement s'il est présent
+                score_float = float(score) if score else None
 
                 # Validate student and score
                 try:
@@ -252,7 +254,7 @@ def save_note_exam(request):
                     trimestre=trimestre,
                     composition= composition,
                     defaults={
-                        'score': score if score else None,
+                        'score': score_float,  # Utiliser score_float au lieu de score
                         'absence': absence if absence else None
                     }
                 )
