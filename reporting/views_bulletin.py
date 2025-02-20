@@ -127,9 +127,15 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         comp2_score = (Decimal(comp2.score) * Decimal(2)) if comp2 else Decimal('0.0')
         comp3_score = (Decimal(comp3.score) * Decimal(3)) if comp3 else Decimal('0.0')
 
-        print("DEBUG: Comp1 Score -", comp1_score)
-        print("DEBUG: Comp2 Score -", comp2_score)
-        print("DEBUG: Comp3 Score -", comp3_score)
+        def get_valid_score(comp):
+            """Retourne le score converti en Decimal ou 0.0 si None ou ABJ"""
+            if comp and comp.absence != 'ABJ' and comp.score is not None:
+                return Decimal(comp.score)
+            return Decimal('0.0')  # Score ignoré si absence justifiée
+
+        comp1_score = get_valid_score(comp1) * Decimal(1)
+        comp2_score = get_valid_score(comp2) * Decimal(2)
+        comp3_score = get_valid_score(comp3) * Decimal(3)
 
         devoirs_score = Decimal(str(devoirs)) * Decimal(3)
         print("DEBUG: Devoirs Score -", devoirs_score)
