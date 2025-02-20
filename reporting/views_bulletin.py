@@ -144,9 +144,9 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
         # Recalculer total_coeff en ignorant les absences
         total_coeff = sum([
-            comp1.composition.coefficient if isinstance(comp1_score, Decimal) else 0,
-            comp2.composition.coefficient if isinstance(comp2_score, Decimal) else 0,
-            comp3.composition.coefficient if isinstance(comp3_score, Decimal) else 0,
+            comp1.composition.coefficient if comp1 and isinstance(comp1_score, Decimal) else 0,
+            comp2.composition.coefficient if comp2 and isinstance(comp2_score, Decimal) else 0,
+            comp3.composition.coefficient if comp3 and isinstance(comp3_score, Decimal) else 0,
             3  # Devoirs toujours pris en compte
         ])
 
@@ -189,6 +189,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     }
 
     return render(request, "reporting/final_report_card.html", context)
+
 
 
 
