@@ -134,8 +134,11 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         devoirs_score = Decimal(str(devoirs)) * Decimal(3)
         print("DEBUG: Devoirs Score -", devoirs_score)
 
-        # Somme des coefficients fixes
-        total_coeff = Decimal(1 + 2 + 3 + 3)
+        
+        total_coeff = sum([1 if comp1 and comp1.absence != 'ABJ' else 0,
+                           2 if comp2 and comp2.absence != 'ABJ' else 0,
+                           3 if comp3 and comp3.absence != 'ABJ' else 0,
+                           3])  # Devoirs toujours pris en compte
         print("DEBUG: Total Coefficient Fixe -", total_coeff)
 
         # Calcul de la moyenne finale de la matière
