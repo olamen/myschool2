@@ -122,20 +122,21 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         )['total'] or 0
         print("DEBUG: Total Devoirs -", devoirs)
 
-        # Calcul des notes pondérées avec les coefficients
-        comp1_score = (Decimal(comp1.score) * Decimal(1)) if comp1 else Decimal('0.0')
-        comp2_score = (Decimal(comp2.score) * Decimal(2)) if comp2 else Decimal('0.0')
-        comp3_score = (Decimal(comp3.score) * Decimal(3)) if comp3 else Decimal('0.0')
-
         def get_valid_score(comp):
             """Retourne le score converti en Decimal ou 0.0 si None ou ABJ"""
             if comp and getattr(comp, 'score', None) is not None and getattr(comp, 'absence', '') != 'ABJ':
-                return Decimal(str(comp.score))  # Utilisation de str pour éviter les erreurs
+                try:
+                    return Decimal(str(comp.score))  # Convertir en chaîne pour éviter l'erreur
+                except Exception as e:
+                    print(f"Erreur lors de la conversion du score: {e}")  # Debug
+                    return Decimal('0.0')
             return Decimal('0.0')  # Score ignoré si absence justifiée ou None
 
+        # Correction ici (assure que la fonction est bien utilisée)
         comp1_score = get_valid_score(comp1) * Decimal(1)
         comp2_score = get_valid_score(comp2) * Decimal(2)
         comp3_score = get_valid_score(comp3) * Decimal(3)
+
 
 
         devoirs_score = Decimal(str(devoirs)) * Decimal(3)
