@@ -1,202 +1,60 @@
-{% load compress static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulletin de Notes</title>
-    <style>
-            @media print {
-                        @page {
-                            size: A4 landscape;
-                            margin: 10mm;
-                        }
-                        .header {
-                            padding-bottom: 0;
-                            margin-bottom: 0;
-                            padding: 0;
-                            margin: 0;
-                        }
-
-                        body {
-                            width: 100%;
-                            overflow: hidden;
-                        }
-
-                        .container {
-                            page-break-inside: avoid;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            min-height: 95vh;
-                        }
-
-                        .footer {
-                            margin-top: auto;
-                            page-break-before: avoid;
-                            display: none;
-                        }
-
-                        table, th, td {
-                            font-size: 12px;  /* Ajustez cette valeur si besoin pour tout faire tenir sur une page */
-                        }
-             }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f5f5f5;
-            direction: rtl;
-            text-align: right;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: auto;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 2px;
-            margin-bottom: 4px;
-        }
-        .header h1 {
-            margin: 0;
-            color: #4CAF50;
-            font-size: 18px;
-        }
-        .header h2 {
-            margin: 0;
-            font-size: 15px;
-            color: #302f2f;
-        }
-        .info {
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        .info p {
-            margin: 5px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 4px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            text-align: center;
-            padding: 10px;
-        }
-        th {
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-            color: #777;
-        }
-        .signature {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .signature div {
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
+    <h1>École XYZ</h1>
+    <h2>Bulletin de Notes Annuel</h2>
+    <h2>Année Scolaire : {{ session_year.name }}</h2>
 
-    <div class="container">
-        <!-- Entête du bulletin -->
-        <div class="header">
-            <h1>École XYZ</h1>
-            <h2>Bulletin de Notes Annuel</h2>
-            <h2>Année Scolaire : {{ session_year.name }}</h2>
-        </div>
+    <p><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}</p>
+    <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
+    <p><strong>Année Scolaire :</strong> {{ session_year.name }}</p>
 
-        <!-- Informations de l'élève -->
-        <div class="info">
-            <span><strong>Nom de l'élève :</strong> {{ student.first_name }} {{ student.last_name }}  </span>
-            <span><strong>Classe :</strong> {{ student.student_class.name }} </span>
-            <span><strong>Année Scolaire :</strong> {{ session_year.name }}</span>
-        </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Exam 1(*1)</th>
+                <th>Exam 2(*2)</th>
+                <th>Exam 3(*3)</th>
+                <th>Devoirs(*3)</th>
+                <th>Moy Finale</th>
+                <th>Coef</th>
+                <th>Total</th>
+                <th>Observation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.subject }}</td>
+                <td>{% if result.comp1 == "ABJ" %}ABJ{% else %}{{ result.comp1 }}{% endif %}</td>
+                <td>{% if result.comp2 == "ABJ" %}ABJ{% else %}{{ result.comp2 }}{% endif %}</td>
+                <td>{% if result.comp3 == "ABJ" %}ABJ{% else %}{{ result.comp3 }}{% endif %}</td>
+                <td>{{ result.devoirs }}</td>
+                <td>{{ result.moyenne_finale }}</td>
+                <td>{{ result.coefficient }}</td>
+                <td><strong>{{ result.note_finale }}</strong></td>
+                <td> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <!-- Tableau des matières et notes -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Matière</th>
-                    <th>Exam 1(*1)</th>
-                    <th>Exam 2(*2)</th>
-                    <th>Exam 3(*3)</th>
-                    <th>Devoirs(*3)</th>
-                    <th>Moy Finale</th>
-                    <th>Coef</th>
-                    <th>Total</th>
-                    <th>Observation</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in results %}
-                <tr>
-                    <td>{{ result.subject }}</td>
-                    <td>{% if result.comp1 == "ABJ" %}ABJ{% else %}{{ result.comp1 }}{% endif %}</td>
-                    <td>{% if result.comp2 == "ABJ" %}ABJ{% else %}{{ result.comp2 }}{% endif %}</td>
-                    <td>{% if result.comp3 == "ABJ" %}ABJ{% else %}{{ result.comp3 }}{% endif %}</td>
-                    <td>{{ result.devoirs }}</td>
-                    <td>{{ result.moyenne_finale }}</td>
-                    <td>{{ result.coefficient }}</td>
-                    <td><strong>{{ result.note_finale }}</strong></td>
-                    <td>          </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="4"> المعدل العام للسنة الدراسية</th>
-                    <th><strong>{{ yearly_average }}</strong></th>
-                    <th colspan="4">Moyenne Générale Annuelle</th>
-                </tr>
-            </tfoot>
-        </table>
-        <div>
-            {% if yearly_average <= 20 and yearly_average >= 15 %}
-                <p class="pass">Décision : Très Bien</p>
-            {% elif yearly_average < 15 and yearly_average >= 12 %}
-                <p class="pass">Décision : Bien</p>
-            {% elif yearly_average < 12 and yearly_average >= 9 %}
-                <p class="pass">Décision : Passable</p>
-            {% else %}
-                <p class="fail">Décision : Redoublement</p>
-            {% endif %}
-        </div>
-        
-        <!-- Signature et Validation -->
-        <div class="signature">
-            <div>
-                <p><strong>Signature de l'enseignant</strong></p>
-                <p>_________________________</p>
-            </div>
-            <div>
-                <p><strong>Signature du Directeur</strong></p>
-                <p>_________________________</p>
-            </div>
-        </div>
+    <p><strong>Moyenne Générale Annuelle :</strong> {{ yearly_average }}</p>
 
-        <!-- Footer du bulletin -->
-        <div class="footer">
-            <p>École XYZ - Tous droits réservés</p>
-        </div>
-    </div>
-    
+    {% if yearly_average <= 20 and yearly_average >= 15 %}
+        <p class="pass">Décision : Très Bien</p>
+    {% elif yearly_average < 15 and yearly_average >= 12 %}
+        <p class="pass">Décision : Bien</p>
+    {% elif yearly_average < 12 and yearly_average >= 9 %}
+        <p class="pass">Décision : Passable</p>
+    {% else %}
+        <p class="fail">Décision : Redoublement</p>
+    {% endif %}
 </body>
 </html>
-
