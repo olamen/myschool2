@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load  static %}
+{% block title %}
+    <title>Sélectionner une Classe</title>
+    {% endblock title %}
+
+    {% block body %}
+    <h2>Sélectionner l'année scolaire et la classe</h2>
+    <form method="GET" action="{% url 'generate_class_report_cards' 0 0 %}">
+        <label for="sessionyear">Année Scolaire :</label>
+        <select id="sessionyear" name="sessionyear">
+            {% for year in session_years %}
+                <option value="{{ year.id }}">{{ year.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="class">Classe :</label>
+        <select id="class" name="class">
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Générer les Bulletins</button>
+    </form>
+
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let sessionyear = document.getElementById("sessionyear").value;
+            let classe = document.getElementById("class").value;
+            if (sessionyear && classe) {
+                let url = "{% url 'generate_class_report_cards' 0 0 %}".replace('/0/0/', `/${sessionyear}/${classe}/`);
+                window.location.href = url;
+            }
+        });
+    </script>
+{% endblock %}

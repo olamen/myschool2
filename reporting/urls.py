@@ -21,4 +21,9 @@ urlpatterns = [
     path('bulletin/primaire/<int:student_id>/<int:sessionyear_id>/', generate_report_card_primaire, name='report_card_primaire'),
 
 
+    path('bulletins/', select_class_for_report, name='select_class_for_report'),  # Page de sélection
+    path('bulletins/generate/<int:sessionyear_id>/<int:class_id>/', generate_class_report_cards, name='generate_class_report_cards'),
+
+
+
 ]

@@ -1,13 +1,15 @@
-from django.db.models import Sum, F, Case, When, FloatField
-from django.http import HttpResponse
+import io
+from django.db.models import Sum, F, FloatField
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
-from students.models import Student, Subject, Trimestre, SessionYearModel
+from students.models import Classe, Student, Subject, Trimestre, SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
-from itertools import chain
 from decimal import Decimal
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 
 
@@ -190,7 +192,33 @@ def generate_final_report_card(request, student_id, sessionyear_id):
 
     return render(request, "reporting/final_report_card.html", context)
 
+@login_required
+def select_class_for_report(request):
+    session_years = SessionYearModel.objects.all()
+    classes = Classe.objects.all()
+    
+    context = {
+        'session_years': session_years,
+        'classes': classes
+    }
+    
+    return render(request, 'reporting/bulletinbyclass.html', context)
 
+@login_required
+def generate_class_report_cards(request, sessionyear_id, class_id):
+    session_year = SessionYearModel.objects.get(id=sessionyear_id)
+    students = Student.objects.filter(student_class_id=class_id).order_by('-yearly_average')  # Tri par moyenne décroissante
+    
+    template = get_template('reporting/report_card_pdf.html')
+    context = {'students': students, 'session_year': session_year}
+    
+    html = template.render(context)
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        return FileResponse(result, content_type='application/pdf')
+    return None
 
 
 #bulletin pour les élèves du primaire
