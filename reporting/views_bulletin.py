@@ -207,27 +207,32 @@ def select_class_for_report(request):
 
 @login_required
 def generate_class_report_cards(request, sessionyear_id, class_id):
-    session_year = SessionYearModel.objects.get(id=sessionyear_id)
+    session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class_id=class_id)
-    # Calculer la moyenne annuelle pour chaque étudiant
+
     for student in students:
         notes = NoteComposition.objects.filter(student=student)
         moyenne = notes.aggregate(models.Avg('score'))['score__avg']
         student.yearly_average = moyenne if moyenne else 0
 
-    # Trier par moyenne décroissante
-    students = sorted(students, key=lambda s: s.yearly_average, reverse=True) # Tri par moyenne décroissante
-    
-    template = get_template('reporting/final_report_card.html')
+    students = sorted(students, key=lambda s: s.yearly_average, reverse=True)
+
+    template = get_template('reporting/report_card_pdf.html')
     context = {'students': students, 'session_year': session_year}
-    
+
     html = template.render(context)
+    
+    # Vérification du rendu HTML
+    print("Generated HTML:", html)
+
     result = io.BytesIO()
     pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
-    
-    if not pdf.err:
-        return FileResponse(result, content_type='application/pdf')
-    return None 
+
+    if pdf.err:
+        print("Pisa Errors:", pdf.err)
+        return HttpResponse("Error generating PDF", content_type="text/plain")
+
+    return FileResponse(result, content_type='application/pdf')
 
 
 #bulletin pour les élèves du primaire
