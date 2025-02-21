@@ -8,6 +8,7 @@ from students.models import Classe, Student, Subject, Trimestre, SessionYearMode
 from weasyprint import HTML
 from django.template.loader import render_to_string
 from decimal import Decimal
+from django.db import models
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
@@ -207,7 +208,15 @@ def select_class_for_report(request):
 @login_required
 def generate_class_report_cards(request, sessionyear_id, class_id):
     session_year = SessionYearModel.objects.get(id=sessionyear_id)
-    students = Student.objects.filter(student_class_id=class_id).order_by('-id')  # Tri par moyenne décroissante
+    students = Student.objects.filter(student_class_id=class_id)
+    # Calculer la moyenne annuelle pour chaque étudiant
+    for student in students:
+        notes = NoteComposition.objects.filter(student=student)
+        moyenne = notes.aggregate(models.Avg('score'))['score__avg']
+        student.yearly_average = moyenne if moyenne else 0
+
+    # Trier par moyenne décroissante
+    students = sorted(students, key=lambda s: s.yearly_average, reverse=True) # Tri par moyenne décroissante
     
     template = get_template('reporting/final_report_card.html')
     context = {'students': students, 'session_year': session_year}
