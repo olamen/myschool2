@@ -218,7 +218,7 @@ def generate_class_report_cards(request, sessionyear_id, class_id):
     
     if not pdf.err:
         return FileResponse(result, content_type='application/pdf')
-    return None
+    return None 
 
 
 #bulletin pour les élèves du primaire
