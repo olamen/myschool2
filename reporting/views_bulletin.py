@@ -169,7 +169,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     html = template.render(context, request=request)
     
     response = HttpResponse(content_type='application/pdf')
-    filename = f"report_card_{student.first_name}_{session_year.session_year}.pdf"
+    filename = f"report_card_{student.first_name}_{session_year.name}.pdf"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     # Create PDF
