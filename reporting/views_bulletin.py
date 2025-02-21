@@ -217,7 +217,7 @@ def generate_class_report_cards(request, sessionyear_id, class_id):
 
     students = sorted(students, key=lambda s: s.yearly_average, reverse=True)
 
-    template = get_template('reporting/report_card_pdf.html')
+    template = get_template('reporting/final_report_card.html')
     context = {'students': students, 'session_year': session_year}
 
     html = template.render(context)
@@ -231,6 +231,11 @@ def generate_class_report_cards(request, sessionyear_id, class_id):
     if pdf.err:
         print("Pisa Errors:", pdf.err)
         return HttpResponse("Error generating PDF", content_type="text/plain")
+
+    if result.getvalue().strip() == b'':
+        print("Generated PDF is empty.")
+        return HttpResponse("Generated PDF is empty.", content_type="text/plain")
+        
     with open("debug.pdf", "wb") as f:
         f.write(result.getvalue())
     print("PDF saved as debug.pdf")
