@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { size: A4 landscape; margin: 10mm; }
+        body { font-family: Arial, sans-serif; }
+        .container { width: 100%; page-break-after: always; }
+        .header { text-align: center; border-bottom: 2px solid black; padding-bottom: 5px; }
+        .info { text-align: center; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; font-size: 12px; }
+        th { background-color: #ddd; }
+    </style>
+</head>
+<body>
+
+{% for student in students %}
+    <div class="container">
+        <div class="header">
+            <h2>École XYZ - Bulletin Annuel</h2>
+            <h3>Année Scolaire : {{ session_year.name }}</h3>
+        </div>
+
+        <div class="info">
+            <p><strong>Nom :</strong> {{ student.first_name }} {{ student.last_name }}</p>
+            <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Exam 1(*1)</th>
+                    <th>Exam 2(*2)</th>
+                    <th>Exam 3(*3)</th>
+                    <th>Devoirs(*3)</th>
+                    <th>Moy. Finale</th>
+                    <th>Coef</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in student.subjects.all %}
+                <tr>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.comp1|default:"-" }}</td>
+                    <td>{{ subject.comp2|default:"-" }}</td>
+                    <td>{{ subject.comp3|default:"-" }}</td>
+                    <td>{{ subject.devoirs }}</td>
+                    <td>{{ subject.moyenne_finale }}</td>
+                    <td>{{ subject.coefficient }}</td>
+                    <td><strong>{{ subject.note_finale }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><strong>Moyenne Générale :</strong> {{ student.yearly_average }}</p>
+        
+        {% if student.yearly_average >= 15 %}
+            <p>Décision : Très Bien</p>
+        {% elif student.yearly_average >= 12 %}
+            <p>Décision : Bien</p>
+        {% elif student.yearly_average >= 9 %}
+            <p>Décision : Passable</p>
+        {% else %}
+            <p>Décision : Redoublement</p>
+        {% endif %}
+    </div>
+{% endfor %}
+
+</body>
+</html>
