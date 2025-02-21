@@ -231,7 +231,9 @@ def generate_class_report_cards(request, sessionyear_id, class_id):
     if pdf.err:
         print("Pisa Errors:", pdf.err)
         return HttpResponse("Error generating PDF", content_type="text/plain")
-
+    with open("debug.pdf", "wb") as f:
+        f.write(result.getvalue())
+    print("PDF saved as debug.pdf")
     return FileResponse(result, content_type='application/pdf')
 
 
