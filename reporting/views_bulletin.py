@@ -207,9 +207,9 @@ def select_class_for_report(request):
 @login_required
 def generate_class_report_cards(request, sessionyear_id, class_id):
     session_year = SessionYearModel.objects.get(id=sessionyear_id)
-    students = Student.objects.filter(student_class_id=class_id).order_by('-yearly_average')  # Tri par moyenne décroissante
+    students = Student.objects.filter(student_class_id=class_id).order_by('-id')  # Tri par moyenne décroissante
     
-    template = get_template('reporting/report_card_pdf.html')
+    template = get_template('reporting/final_report_card.html')
     context = {'students': students, 'session_year': session_year}
     
     html = template.render(context)
