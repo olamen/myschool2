@@ -13,10 +13,9 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.contrib.sites.models import Site
 
 @shared_task
-def generate_class_report_cards_task(class_id, sessionyear_id, user_email, site_domain):
+def generate_class_report_cards_task(class_id, sessionyear_id, user_email):
     """Generates class report cards and sends a download link via email."""
     student_class = get_object_or_404(Classe, id=class_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
@@ -109,7 +108,7 @@ def generate_class_report_cards_task(class_id, sessionyear_id, user_email, site_
 
     # Send email with download link
     subject = "Your Report Cards are Ready"
-    message = f"Your class report cards are ready for download: {site_domain}{file_url}"
+    message = f"Your class report cards are ready for download: {file_url}"
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_email])
 
     return file_url
