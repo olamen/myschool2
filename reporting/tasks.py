@@ -4,7 +4,9 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.db.models import Sum
 from decimal import Decimal
-from .models import Student, SessionYearModel, Subject, NoteComposition, NoteDevoir, StudentClass
+from students.models import Student, SessionYearModel, Subject, Classe
+from notes.models import NoteComposition, NoteDevoir
+
 from weasyprint import HTML
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -16,7 +18,7 @@ from django.contrib.sites.models import Site
 @shared_task
 def generate_class_report_cards_task(class_id, sessionyear_id, user_email, site_domain):
     """Generates class report cards and sends a download link via email."""
-    student_class = get_object_or_404(StudentClass, id=class_id)
+    student_class = get_object_or_404(Classe, id=class_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class=student_class)
 
