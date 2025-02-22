@@ -13,6 +13,16 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
+# tasks.py
+from celery import shared_task
+import logging
+
+logger = logging.getLogger(__name__)
+
+@shared_task
+def test_celery_connection():
+    logger.info("Celery connection test successful!")
+    return "Celery test successful"
 
 @shared_task
 def generate_class_report_cards_task(class_id, sessionyear_id, user_email):
