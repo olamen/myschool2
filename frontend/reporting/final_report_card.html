@@ -1,12 +1,23 @@
 {% load compress static %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
     <title>Bulletin de Notes</title>
     <style>
-            @media print {
+        @font-face {
+            font-family: 'Amiri';
+            src: url("{% static 'fonts/Amiri-Regular.ttf' %}");
+        }
+        .arabic-text {
+            font-family: 'Amiri';
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+        @media print {
                         @page {
                             size: A4 landscape;
                             margin: 10mm;
@@ -161,7 +172,9 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="4"> المعدل العام للسنة الدراسية</th>
+                    <div class="signature arabic-text">
+                        <th colspan="4"> المعدل العام للسنة الدراسية</th>
+                    </div>
                     <th><strong>{{ yearly_average }}</strong></th>
                     <th colspan="4">Moyenne Générale Annuelle</th>
                 </tr>

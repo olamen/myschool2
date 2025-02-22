@@ -11,6 +11,15 @@ from decimal import Decimal
 from django.db import models
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+import arabic_reshaper
+from bidi.algorithm import get_display
+
+def process_arabic(text):
+    reshaped_text = arabic_reshaper.reshape(text)
+    return get_display(reshaped_text)
+
+# Process all Arabic fields in context
+
 
 
 
@@ -149,6 +158,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
             "moyenne_finale": round(moyenne_finale, 2) if isinstance(moyenne_finale, Decimal) else moyenne_finale,
             "note_finale": round(note_finale, 2) if isinstance(note_finale, Decimal) else note_finale,
             "coefficient": subject.coefficient
+            
         })
 
         if isinstance(note_finale, Decimal):
@@ -163,6 +173,7 @@ def generate_final_report_card(request, student_id, sessionyear_id):
         "results": results,
         "yearly_average": yearly_average
     }
+
 
     # PDF Generation
     template = get_template("reporting/final_report_card.html")
