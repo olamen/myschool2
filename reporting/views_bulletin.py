@@ -307,41 +307,104 @@ def select_class_for_report(request):
     
     return render(request, 'reporting/bulletinbyclass.html', context)
 
-@login_required
-def generate_class_report_cards(request, sessionyear_id, class_id):
+
+
+def generate_class_final_report_cards(request, sessionyear_id, class_id):
+    student_class = get_object_or_404(Classe, id=class_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
-    students = Student.objects.filter(student_class_id=class_id)
+    students = Student.objects.filter(student_class=student_class)
+
+    pdf_parts = []
 
     for student in students:
-        notes = NoteComposition.objects.filter(student=student)
-        moyenne = notes.aggregate(models.Avg('score'))['score__avg']
-        student.yearly_average = moyenne if moyenne else 0
+        # Redirect primary school students
+        if student.student_class.grade.name.lower() == "primaire":
+            # Handle primary school reports differently (if needed)
+            # Example: return redirect('report_card_primaire', student_id=student.id, sessionyear_id=session_year.id)
+            continue  # Skip to the next student for now
 
-    students = sorted(students, key=lambda s: s.yearly_average, reverse=True)
+        subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
+        results = []
+        total_yearly_score = Decimal('0.0')
+        total_coefficient = Decimal('0.0')
 
-    template = get_template('reporting/final_report_card.html')
-    context = {'students': students, 'session_year': session_year}
+        for subject in subjects:
+            comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
+            comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=3).first()
+            comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
 
-    html = template.render(context)
-    
-    # Vérification du rendu HTML
-    print("Generated HTML:", html)
+            devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
+                total=Sum('score')
+            )['total'] or 0
 
-    result = io.BytesIO()
-    pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+            def get_valid_score(comp):
+                if comp:
+                    if comp.absence == 'ABJ':
+                        return "ABJ"
+                    elif comp.score is not None:
+                        return Decimal(comp.score) * comp.composition.coefficient
+                return Decimal('0.0')
 
-    if pdf.err:
-        print("Pisa Errors:", pdf.err)
-        return HttpResponse("Error generating PDF", content_type="text/plain")
+            comp1_score = get_valid_score(comp1)
+            comp2_score = get_valid_score(comp2)
+            comp3_score = get_valid_score(comp3)
+            devoirs_score = Decimal(str(devoirs)) * Decimal(3)
 
-    if result.getvalue().strip() == b'':
-        print("Generated PDF is empty.")
-        return HttpResponse("Generated PDF is empty.", content_type="text/plain")
-        
-    with open("debug.pdf", "wb") as f:
-        f.write(result.getvalue())
-    print("PDF saved as debug.pdf")
-    return FileResponse(result, content_type='application/pdf')
+            valid_scores = [Decimal(score) for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
+
+            total_coeff = sum([
+                comp1.composition.coefficient if comp1 and isinstance(comp1_score, Decimal) else 0,
+                comp2.composition.coefficient if comp2 and isinstance(comp2_score, Decimal) else 0,
+                comp3.composition.coefficient if comp3 and isinstance(comp3_score, Decimal) else 0,
+                3
+            ])
+
+            if total_coeff > 0:
+                moyenne_finale = (sum(valid_scores) + devoirs_score) / total_coeff
+            else:
+                moyenne_finale = "ABJ"
+
+            note_finale = moyenne_finale * subject.coefficient if isinstance(moyenne_finale, Decimal) else moyenne_finale
+
+            results.append({
+                "subject": subject.name,
+                "comp1": round(comp1_score, 2) if isinstance(comp1_score, Decimal) else comp1_score,
+                "comp2": round(comp2_score, 2) if isinstance(comp2_score, Decimal) else comp2_score,
+                "comp3": round(comp3_score, 2) if isinstance(comp3_score, Decimal) else comp3_score,
+                "devoirs": round(devoirs_score, 2),
+                "moyenne_finale": round(moyenne_finale, 2) if isinstance(moyenne_finale, Decimal) else moyenne_finale,
+                "note_finale": round(note_finale, 2) if isinstance(note_finale, Decimal) else note_finale,
+                "coefficient": subject.coefficient
+            })
+
+            if isinstance(note_finale, Decimal):
+                total_yearly_score += note_finale
+                total_coefficient += subject.coefficient
+
+        yearly_average = round(total_yearly_score / total_coefficient, 2) if total_coefficient else 0
+
+        context = {
+            "student": student,
+            "session_year": session_year,
+            "results": results,
+            "yearly_average": yearly_average
+        }
+
+        template = get_template("reporting/final_report_card.html")
+        html_content = template.render(context, request=request)
+        pdf_parts.append(html_content)
+
+    # Combine all PDFs into one
+    combined_html = "".join(pdf_parts)
+
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"report_cards_{student_class.name}_{session_year.name}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # Use WeasyPrint to generate PDF
+    HTML(string=combined_html, base_url=request.build_absolute_uri()).write_pdf(response)
+
+    return response
 
 
 #bulletin pour les élèves du primaire

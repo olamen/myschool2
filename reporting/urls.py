@@ -23,7 +23,7 @@ urlpatterns = [
 
 
     path('bulletins/', select_class_for_report, name='select_class_for_report'),  # Page de sélection
-    path('bulletins/generate/<int:sessionyear_id>/<int:class_id>/', generate_class_report_cards, name='generate_class_report_cards'),
+    path('bulletins/generate/<int:sessionyear_id>/<int:class_id>/', generate_class_final_report_cards, name='generate_class_report_cards'),
 
 
 
