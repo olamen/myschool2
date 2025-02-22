@@ -4,6 +4,7 @@ from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
+from reporting.tasks import generate_class_report_cards_task
 from students.models import Classe, Student, Subject, Trimestre, SessionYearModel
 from weasyprint import HTML
 from django.template.loader import render_to_string
@@ -13,6 +14,8 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import arabic_reshaper
 from bidi.algorithm import get_display
+from django.contrib.sites.models import Site
+
 
 def process_arabic(text):
     reshaped_text = arabic_reshaper.reshape(text)
@@ -308,8 +311,12 @@ def select_class_for_report(request):
     return render(request, 'reporting/bulletinbyclass.html', context)
 
 
+def generate_class_final_report_cards(request, class_id, sessionyear_id):
+    current_site = Site.objects.get_current()
+    generate_class_report_cards_task.delay(class_id, sessionyear_id, request.user.email, current_site.domain)
+    return HttpResponse("PDF generation started. You will receive an email when it's ready.")
 
-def generate_class_final_report_cards(request, sessionyear_id, class_id):
+def generate_class_final_report_cards2(request, sessionyear_id, class_id):
     student_class = get_object_or_404(Classe, id=class_id)
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class=student_class)
