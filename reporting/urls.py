@@ -18,6 +18,7 @@ urlpatterns = [
     path('report_card/pdf/<int:student_id>/<int:trimestre_id>/', generate_pdf_report_card, name='generate_pdf_report_card'),
 
     path('final_report_card/<int:student_id>/<int:sessionyear_id>/', generate_final_report_card, name='final_report_card'),
+    path('final_report_card_html/<int:student_id>/<int:sessionyear_id>/', generate_final_report_card_html, name='final_report_card_html'),
     path('bulletin/primaire/<int:student_id>/<int:sessionyear_id>/', generate_report_card_primaire, name='report_card_primaire'),
 
 

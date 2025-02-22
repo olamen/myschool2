@@ -191,6 +191,111 @@ def generate_final_report_card(request, student_id, sessionyear_id):
     return response
 
 @login_required
+def generate_final_report_card_html(request, student_id, sessionyear_id):
+    student = get_object_or_404(Student, id=student_id)
+    session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
+
+    print("DEBUG: Étudiant -", student)
+    print("DEBUG: Année scolaire -", session_year)
+
+    # Vérification si c'est un élève du secondaire ou du lycée
+    if student.student_class.grade.name.lower() == "primaire":
+        return redirect('report_card_primaire', student_id=student.id, sessionyear_id=session_year.id)
+
+    subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
+    print("DEBUG: Matières trouvées -", subjects)
+
+    results = []
+    total_yearly_score = Decimal('0.0')
+    total_coefficient = Decimal('0.0')
+
+    for subject in subjects:
+        print("\nDEBUG: Matière en cours -", subject.name)
+
+        # Récupération des compositions
+        comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
+        comp2 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=3).first()
+        comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
+
+        print("DEBUG: Comp1 -", comp1)
+        print("DEBUG: Comp2 -", comp2)
+        print("DEBUG: Comp3 -", comp3)
+
+        # Calcul des devoirs pour l'année
+        devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(
+            total=Sum('score')
+        )['total'] or 0
+        print("DEBUG: Total Devoirs -", devoirs)
+
+        def get_valid_score(comp):
+            """Retourne le score pondéré ou 'ABJ' si absence justifiée"""
+            if comp:
+                if comp.absence == 'ABJ':
+                    return "ABJ"
+                elif comp.score is not None:
+                    return Decimal(comp.score) * comp.composition.coefficient
+            return Decimal('0.0')  # Score ignoré si absence justifiée
+
+        # Correction ici (assure que la fonction est bien utilisée)
+        comp1_score = get_valid_score(comp1)
+        comp2_score = get_valid_score(comp2)
+        comp3_score = get_valid_score(comp3)
+
+        devoirs_score = Decimal(str(devoirs)) * Decimal(3)
+        print("DEBUG: Devoirs Score -", devoirs_score)
+
+        # Convertir uniquement les valeurs numériques, ignorer les "ABJ"
+        valid_scores = [Decimal(score) for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
+
+        # Recalculer total_coeff en ignorant les absences
+        total_coeff = sum([
+            comp1.composition.coefficient if comp1 and isinstance(comp1_score, Decimal) else 0,
+            comp2.composition.coefficient if comp2 and isinstance(comp2_score, Decimal) else 0,
+            comp3.composition.coefficient if comp3 and isinstance(comp3_score, Decimal) else 0,
+            3  # Devoirs toujours pris en compte
+        ])
+
+        # Éviter la division par zéro
+        if total_coeff > 0:
+            moyenne_finale = (sum(valid_scores) + devoirs_score) / total_coeff
+        else:
+            moyenne_finale = "ABJ"
+
+        # Calcul de la note finale avec le coefficient de la matière
+        note_finale = moyenne_finale * subject.coefficient if isinstance(moyenne_finale, Decimal) else moyenne_finale
+        print("DEBUG: Note Finale -", note_finale)
+
+        results.append({
+            "subject": subject.name,
+            "comp1": round(comp1_score, 2) if isinstance(comp1_score, Decimal) else comp1_score,
+            "comp2": round(comp2_score, 2) if isinstance(comp2_score, Decimal) else comp2_score,
+            "comp3": round(comp3_score, 2) if isinstance(comp3_score, Decimal) else comp3_score,
+            "devoirs": round(devoirs_score, 2),
+            "moyenne_finale": round(moyenne_finale, 2) if isinstance(moyenne_finale, Decimal) else moyenne_finale,
+            "note_finale": round(note_finale, 2) if isinstance(note_finale, Decimal) else note_finale,
+            "coefficient": subject.coefficient
+        })
+
+        if isinstance(note_finale, Decimal):
+            total_yearly_score += note_finale
+            total_coefficient += subject.coefficient
+
+    print("DEBUG: Total Yearly Score -", total_yearly_score)
+    print("DEBUG: Total Coefficient -", total_coefficient)
+
+    yearly_average = round(total_yearly_score / total_coefficient, 2) if total_coefficient else 0
+    print("DEBUG: Yearly Average -", yearly_average)
+
+    context = {
+        "student": student,
+        "session_year": session_year,
+        "results": results,
+        "yearly_average": yearly_average
+    }
+
+    return render(request, "reporting/final_report_card.html", context)
+
+@login_required
 def select_class_for_report(request):
     session_years = SessionYearModel.objects.all()
     classes = Classe.objects.all()
