@@ -14,7 +14,6 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import arabic_reshaper
 from bidi.algorithm import get_display
-from django.contrib.sites.models import Site
 
 
 def process_arabic(text):
@@ -312,8 +311,7 @@ def select_class_for_report(request):
 
 
 def generate_class_final_report_cards(request, class_id, sessionyear_id):
-    current_site = Site.objects.get_current()
-    generate_class_report_cards_task.delay(class_id, sessionyear_id, request.user.email, current_site.domain)
+    generate_class_report_cards_task.delay(class_id, sessionyear_id, request.user.email,)
     return HttpResponse("PDF generation started. You will receive an email when it's ready.")
 
 def generate_class_final_report_cards2(request, sessionyear_id, class_id):
