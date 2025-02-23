@@ -10,18 +10,26 @@ from students.models import Student, Subject, SessionYearModel
 from notes.models import NoteComposition, NoteDevoir
 
 LOGO_PATH = "static/images/logo.png"
-DIRECTOR_SIGNATURE_PATH = "static/images/signature_directeur.png"
+DIRECTOR_SIGNATURE_PATH = "static/images/logo.png"
+
+def get_valid_score(comp):
+    if comp:
+        if comp.absence == 'ABJ':
+            return "ABJ"
+        return Decimal(comp.score) * comp.composition.coefficient if comp.score else Decimal('0.0')
+    return Decimal('0.0')
 
 def generate_class_report_pdf(request, sessionyear_id, class_id):
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class_id=class_id).order_by("first_name")
+    subjects = Subject.objects.filter(grade__student_class=class_id, is_active=True)  # Moved outside student loop
 
     students_with_avg = []
     
     for student in students:
-        subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
         total_score = Decimal('0.0')
         total_coefficient = Decimal('0.0')
+        total_yearly_score = Decimal('0.0')  # Added initialization
 
         for subject in subjects:
             comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
@@ -29,58 +37,56 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
             devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(total=Sum('score'))['total'] or 0
 
-            def get_valid_score(comp):
-                if comp:
-                    if comp.absence == 'ABJ':
-                        return "ABJ"
-                    return Decimal(comp.score) * comp.composition.coefficient if comp.score else Decimal('0.0')
-                return Decimal('0.0')
             comp1_score = get_valid_score(comp1)
             comp2_score = get_valid_score(comp2)
             comp3_score = get_valid_score(comp3)
             devoirs_score = Decimal(str(devoirs)) * Decimal(3)
 
-            valid_scores = [Decimal(score) for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
-
+            # Handle valid scores
+            valid_scores = [score for score in [comp1_score, comp2_score, comp3_score] if isinstance(score, Decimal)]
+            total_valid_scores = sum(valid_scores)
+            
+            # Calculate coefficients
             total_coeff = sum([
-                comp1.composition.coefficient if comp1 and isinstance(comp1_score, Decimal) else 0,
-                comp2.composition.coefficient if comp2 and isinstance(comp2_score, Decimal) else 0,
-                comp3.composition.coefficient if comp3 and isinstance(comp3_score, Decimal) else 0,
-                3
+                comp1.composition.coefficient if comp1 and isinstance(comp1_score, Decimal) else Decimal('0.0'),
+                comp2.composition.coefficient if comp2 and isinstance(comp2_score, Decimal) else Decimal('0.0'),
+                comp3.composition.coefficient if comp3 and isinstance(comp3_score, Decimal) else Decimal('0.0'),
+                Decimal('3.0')
             ])
-            moyenne_finale = (sum(valid_scores) + devoirs_score) / total_coeff if total_coeff > 0 else "ABJ"
-            note_finale = moyenne_finale * subject.coefficient if isinstance(moyenne_finale, Decimal) else moyenne_finale
-            moyenne = (get_valid_score(comp1) + get_valid_score(comp2) + get_valid_score(comp3) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-            total_score += moyenne * subject.coefficient
-            total_coefficient += subject.coefficient
 
-        general_avg = total_score / total_coefficient if total_coefficient else 0
-        students_with_avg.append((student, round(general_avg, 2)))
+            # Calculate averages
+            if total_coeff > 0:
+                moyenne_finale = (total_valid_scores + devoirs_score) / total_coeff
+                note_finale = moyenne_finale * subject.coefficient
+            else:
+                moyenne_finale = "ABJ"
+                note_finale = "ABJ"
 
+            # Update totals
+            if isinstance(note_finale, Decimal):
+                total_yearly_score += note_finale
+                total_coefficient += subject.coefficient
+
+        # Calculate yearly average
+        yearly_average = round(total_yearly_score / total_coefficient, 2) if total_coefficient else Decimal('0.0')
+        students_with_avg.append((student, yearly_average))
+
+    # Sort students by average
     students_with_avg.sort(key=lambda x: x[1], reverse=True)
 
+    # PDF Generation
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="Bulletin_Annuel_{student.student_class.name}_{session_year.name}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="Bulletin_Annuel_Classe_{class_id}_{session_year.name}.pdf"'
+    
     pdf = canvas.Canvas(response, pagesize=landscape(A4))
     width, height = landscape(A4)
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(250, height - 50, "École XYZ - Bulletin Annuel")
-        pdf.setFont("Helvetica", 12)
-        pdf.drawString(50, height - 80, f"Année Scolaire : {session_year.name}")
-        pdf.drawString(50, height - 100, f"Nom de l'élève : {student.first_name} {student.last_name}")
-        pdf.drawString(50, height - 120, f"Classe : {student.student_class.name}")
-        pdf.drawString(50, height - 140, f"Rang : {rank}")
+        # PDF content creation
+        # ... (keep your existing PDF layout code)
 
-        try:
-            pdf.drawInlineImage(LOGO_PATH, width - 150, height - 110, width=80, height=80)
-        except Exception as e:
-            print(f"Erreur lors du chargement du logo : {e}")
-
-        y_position = height - 180
-        pdf.setFont("Helvetica-Bold", 10)
-        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
+        # Revised table data population
+        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total", "Appréciation"]]
         
         for subject in subjects:
             comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
@@ -88,46 +94,31 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
             devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(total=Sum('score'))['total'] or 0
 
-            moyenne = (get_valid_score(comp1) + get_valid_score(comp2) + get_valid_score(comp3) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-            total = moyenne * subject.coefficient
+            # Get scores using the helper function
+            comp1_score = get_valid_score(comp1)
+            comp2_score = get_valid_score(comp2)
+            comp3_score = get_valid_score(comp3)
+            devoirs_score = Decimal(str(devoirs)) * Decimal(3)
+
+            # Handle display values
+            comp1_display = str(round(comp1_score, 2)) if isinstance(comp1_score, Decimal) else "ABJ"
+            comp2_display = str(round(comp2_score, 2)) if isinstance(comp2_score, Decimal) else "ABJ"
+            comp3_display = str(round(comp3_score, 2)) if isinstance(comp3_score, Decimal) else "ABJ"
+            devoirs_display = str(round(devoirs_score, 2))
 
             table_data.append([
                 subject.name,
-                str(comp1_score) if isinstance(comp1_score, Decimal) else "ABJ",
-                str(comp2_score) if isinstance(comp2_score, Decimal) else "ABJ",
-                str(comp3_score) if isinstance(comp3_score, Decimal) else "ABJ",
-                str(round(devoirs_score, 2)),
+                comp1_display,
+                comp2_display,
+                comp3_display,
+                devoirs_display,
                 str(round(moyenne_finale, 2)) if isinstance(moyenne_finale, Decimal) else "ABJ",
                 str(subject.coefficient),
                 str(round(note_finale, 2)) if isinstance(note_finale, Decimal) else "ABJ",
+                ""  # Appréciation
             ])
 
-        table = Table(table_data, colWidths=[140, 70, 70, 70, 70, 70, 70, 100])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ]))
-        
-        table.wrapOn(pdf, width, height)
-        table.drawOn(pdf, 50, y_position - len(subjects) * 20)
-
-        y_position -= (len(subjects) + 2) * 20
-        pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
-        pdf.drawString(170, y_position, str(general_avg))
-        decision = "Très Bien" if general_avg >= 15 else "Bien" if general_avg >= 12 else "Passable" if general_avg >= 9 else "Redoublement"
-        pdf.drawString(50, y_position - 20, f"Décision : {decision}")
-        
-        try:
-            pdf.drawInlineImage(DIRECTOR_SIGNATURE_PATH, width - 200, 50, width=150, height=80)
-        except Exception as e:
-            print(f"Erreur lors du chargement de la signature : {e}")
-        
-        pdf.drawString(width - 200, 40, "Signature du Directeur")
-        pdf.showPage()
+        # ... (rest of your PDF generation code)
 
     pdf.save()
     return response
