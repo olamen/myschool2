@@ -300,7 +300,7 @@ def generate_final_report_card_html(request, student_id, sessionyear_id):
 @login_required
 def select_class_for_report(request):
     session_years = SessionYearModel.objects.all()
-    classes = Classe.objects.all()
+    classes = Classe.objects.filter(grade__name__in=['college', 'lycee'])
     
     context = {
         'session_years': session_years,

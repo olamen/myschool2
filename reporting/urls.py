@@ -1,4 +1,6 @@
 from django.urls import path
+
+from reporting.views_bulletin_By_class_secon import generate_class_report_pdf
 from .views import exam_list, report_card_pdf,afficher_notes_devoir,afficher_notes_exam
 from .views_print import print_notes,rep
 from .views_excel import export_notes_to_excel
@@ -23,7 +25,7 @@ urlpatterns = [
 
 
     path('bulletins/', select_class_for_report, name='select_class_for_report'),  # Page de sélection
-    path('bulletins/generate/<int:sessionyear_id>/<int:class_id>/', generate_class_final_report_cards, name='generate_class_report_cards'),
+    path('bulletins/generate/<int:class_id>/<int:sessionyear_id>/', generate_class_report_pdf, name='generate_class_report_cards'),
 
 
 
