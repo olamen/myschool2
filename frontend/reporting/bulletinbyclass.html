@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% load  static %}
 {% block title %}
-<div class="container">
+
     
     <title>bulletin des notes Secondaire</title>
     {% endblock title %}
 
     {% block body %}
+<div class="container mt-5">
     <div class="logo mb-5">
         <a href=" {% url "index" %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
     </div>
     <h2>bulletin des notes Secondaire </h2>
-    <div class="container mt-5">
+    
         <h2>Sélectionner une Classe</h2>
         <form method="GET" action="{% url 'generate_class_report_cards' 0 0 %}">
 

@@ -6,7 +6,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
-from .models import Student, Subject, NoteComposition, NoteDevoir, SessionYearModel
+from students.models import Student, Subject, SessionYearModel
+from notes.models import NoteComposition, NoteDevoir
 
 # Chemin du logo (modifie selon ton projet)
 LOGO_PATH = "static/images/logo.png"
