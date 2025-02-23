@@ -12,8 +12,8 @@ from notes.models import NoteComposition, NoteDevoir
 # Chemin du logo (modifie selon ton projet)
 LOGO_PATH = "static/images/logo.png"
 
-def generate_class_report_pdf(request, session_year_id, class_id):
-    session_year = get_object_or_404(SessionYearModel, id=session_year_id)
+def generate_class_report_pdf(request, sessionyear_id, class_id):
+    session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class_id=class_id).order_by("first_name")
 
     # Calculer les moyennes générales et trier les étudiants
