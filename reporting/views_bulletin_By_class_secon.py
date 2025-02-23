@@ -69,7 +69,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
         y_position = height - 180
         pdf.setFont("Helvetica-Bold", 10)
-        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total"]]
+        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         
         for subject in subjects:
             comp1 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=2).first()
@@ -91,7 +91,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 round(total, 2),
             ])
 
-        table = Table(table_data, colWidths=[100, 60, 60, 60, 60, 60, 60, 60])
+        table = Table(table_data, colWidths=[140, 70, 70, 70, 70, 70, 70, 100])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -106,7 +106,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
         y_position -= (len(subjects) + 2) * 20
         pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
-        pdf.drawString(250, y_position, str(general_avg))
+        pdf.drawString(170, y_position, str(general_avg))
         decision = "Très Bien" if general_avg >= 15 else "Bien" if general_avg >= 12 else "Passable" if general_avg >= 9 else "Redoublement"
         pdf.drawString(50, y_position - 20, f"Décision : {decision}")
         
