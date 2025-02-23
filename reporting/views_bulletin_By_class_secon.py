@@ -22,7 +22,6 @@ def get_valid_score(comp):
 def generate_class_report_pdf(request, sessionyear_id, class_id):
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class=class_id).order_by("first_name")
-    subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)  # Moved outside student loop
 
     students_with_avg = []
     
