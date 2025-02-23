@@ -16,7 +16,7 @@
         <h2>Sélectionner une Classe</h2>
         <form method="GET" action="{% url 'generate_class_report_cards' 0 0 %}">
 
-            <div class="form-group has-icon-left">
+        <div class="form-group mb-20">
 
             <label for="sessionyear">Année Scolaire :</label>
             <select id="sessionyear" name="sessionyear" class="form-select form-control">
@@ -25,7 +25,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="form-group has-icon-left">
+        <div class="form-group mb-20">
             <label for="class">Classe :</label>
             <select id="class" name="class" class="form-select form-control">
                 {% for class in classes %}
