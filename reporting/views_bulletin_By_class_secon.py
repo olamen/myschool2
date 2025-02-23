@@ -27,6 +27,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     students_with_avg = []
     
     for student in students:
+        subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
         total_score = Decimal('0.0')
         total_coefficient = Decimal('0.0')
         total_yearly_score = Decimal('0.0')  # Added initialization
