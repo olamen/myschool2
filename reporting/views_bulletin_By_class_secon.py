@@ -95,8 +95,8 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
             comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
-            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score if comp2 and comp2.score is not None else "-"
-            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score if comp3 and comp3.score is not None else "-"
+            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score * 2 if comp2 and comp2.score is not None else "-"
+            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score * 3 if comp3 and comp3.score is not None else "-"
 
             table_data.append([
                 subject.name,
