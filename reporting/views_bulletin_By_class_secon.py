@@ -111,13 +111,13 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         page_width = landscape(A4)[0] - 80
         col_widths = [
                 page_width * 0.20,  # Matière (30%)
-                page_width * 0.07,  # Exam 1 (9%)
-                page_width * 0.07,  # Exam 2 (9%)
-                page_width * 0.07,  # Exam 3 (9%)
-                page_width * 0.07,  # Devoirs (9%)
-                page_width * 0.04,  # Moyenne (10%)
+                page_width * 0.08,  # Exam 1 (9%)
+                page_width * 0.08,  # Exam 2 (9%)
+                page_width * 0.08,  # Exam 3 (9%)
+                page_width * 0.08,  # Devoirs (9%)
+                page_width * 0.10,  # Moyenne (10%)
                 page_width * 0.04,  # Coefficient (10%)
-                page_width * 0.19,  # Total (14%)
+                page_width * 0.8,  # Total (14%)
             ]
         table = Table(table_data , colWidths=col_widths)
         table.setStyle(TableStyle([
@@ -129,6 +129,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             ('FONTSIZE', (0, 0), (-1, 0), 14),  # En-tête en 12 pt
             ('FONTSIZE', (0, 1), (-1, -1), 12),  # Contenu en 10 pt
             ('BOTTOMPADDING', (0, 0), (-1, 0), 15),
+            ('TOPPADDING', (0, 0), (-1, 0), 15),
             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
