@@ -108,8 +108,18 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 subject.coefficient,
                 round(total, 2) if isinstance(total, Decimal) else total,
             ])
-
-        table = Table(table_data)
+        page_width = landscape(A4)[0] - 80
+        col_widths = [
+                page_width * 0.30,  # Matière (30%)
+                page_width * 0.09,  # Exam 1 (9%)
+                page_width * 0.09,  # Exam 2 (9%)
+                page_width * 0.09,  # Exam 3 (9%)
+                page_width * 0.09,  # Devoirs (9%)
+                page_width * 0.10,  # Moyenne (10%)
+                page_width * 0.10,  # Coefficient (10%)
+                page_width * 0.14,  # Total (14%)
+            ]
+        table = Table(table_data , colWidths=col_widths)
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
