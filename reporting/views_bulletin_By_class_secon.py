@@ -74,7 +74,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
 
-        y_position = height - 220
+        y_position = height - 120
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
