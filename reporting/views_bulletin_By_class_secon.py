@@ -74,7 +74,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
 
-        y_position = height - 120
+        y_position = height - 220
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
@@ -126,7 +126,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         # Adjust the y_position to create space between the table and the next text
         y_position -= (len(subjects) + 2) * 20 + 20  # Add extra space
         pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
-        pdf.drawString(250, y_position, str(general_avg))
+        pdf.drawString(350, y_position, str(general_avg))
 
         decision = "Très Bien" if general_avg >= 15 else "Bien" if general_avg >= 12 else "Passable" if general_avg >= 9 else "Redoublement"
         pdf.drawString(50, y_position - 20, f"Décision : {decision}")
