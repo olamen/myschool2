@@ -103,7 +103,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 comp1_display,
                 comp2_display,
                 comp3_display,
-                devoirs,
+                devoirs * 3,
                 round(moyenne, 2) if isinstance(moyenne, Decimal) else moyenne,
                 subject.coefficient,
                 round(total, 2) if isinstance(total, Decimal) else total,
