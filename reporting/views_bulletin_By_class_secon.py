@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 from students.models import Student, Subject, SessionYearModel
@@ -63,17 +63,17 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="Bulletin_Annuel_{session_year.name}.pdf"'
-    pdf = canvas.Canvas(response, pagesize=A4)
-    width, height = A4
+    pdf = canvas.Canvas(response, pagesize=landscape(A4))
+    width, height = landscape(A4)
 
-    pdf.setFont("Helvetica-Bold", 12)
+    pdf.setFont("Helvetica-Bold", 16)
     pdf.drawImage(LOGO_PATH, 50, height - 100, width=100, height=100)  # Draw logo
 
     pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
     pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        pdf.setFont("Helvetica-Bold", 10)
+        pdf.setFont("Helvetica-Bold", 12)
         pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
@@ -125,11 +125,11 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         table.drawOn(pdf, 50, y_position - 20 * len(subjects) - 40)
 
         y_position -= (len(subjects) + 2) * 20
-        pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
-        pdf.drawString(250, y_position, str(general_avg))
+        pdf.drawString(100, y_position, "Moyenne Générale Annuelle :")
+        pdf.drawString(350, y_position, str(general_avg))
 
         decision = "Très Bien" if general_avg >= 15 else "Bien" if general_avg >= 12 else "Passable" if general_avg >= 9 else "Redoublement"
-        pdf.drawString(50, y_position - 20, f"Décision : {decision}")
+        pdf.drawString(100, y_position - 20, f"Décision : {decision}")
 
         pdf.showPage()
 
