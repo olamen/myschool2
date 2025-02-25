@@ -47,7 +47,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 3  # Coefficient des devoirs
             ])
 
-            scores = [get_valid_score(comp1 * comp1.coefficient), get_valid_score(comp2 * comp2.coefficient), get_valid_score(comp3 * comp3.coefficient)]
+            scores = [get_valid_score(comp1 * Decimal(comp1.composition.coefficient)), get_valid_score(comp2 * Decimal(comp2.composition.coefficient)), get_valid_score(comp3 * Decimal(comp3.composition.coefficient))]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
 
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
@@ -95,9 +95,9 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
             total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
-            comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
-            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score if comp2 and comp2.score is not None else "-"
-            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score if comp3 and comp3.score is not None else "-"
+            comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score * Decimal(comp1.coefficient) if comp1 and comp1.score is not None else "-"
+            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score * Decimal(comp2.coefficient)if comp2 and comp2.score is not None else "-"
+            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score * Decimal(comp3.coefficient) if comp3 and comp3.score is not None else "-"
 
             table_data.append([
                 subject.name,
