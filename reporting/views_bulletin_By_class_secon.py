@@ -31,7 +31,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             def get_valid_score(comp):
                 if comp:
                     if comp.absence == 'ABJ':
-                        return None
+                        return None  # Retourne None pour exclusion du calcul
                     elif comp.absence == 'ABS':
                         return "ABS"
                     elif comp.score is not None:
@@ -50,12 +50,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
 
-            if None in scores:
-                moyenne = "ABJ"
-                total = "ABJ"
-            else:
-                moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-                total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
+            moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
 
             if isinstance(moyenne, Decimal):
                 total_score += moyenne * subject.coefficient
@@ -72,7 +67,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     width, height = A4
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        # ... (your existing PDF header and student info code) ...
+        # ... (votre code d'en-tête PDF et d'informations sur l'étudiant) ...
 
         y_position = height - 180
         pdf.setFont("Helvetica-Bold", 10)
@@ -89,14 +84,10 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
 
-            if None in scores:
-                moyenne = "ABJ"
-                total = "ABJ"
-            else:
-                moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-                total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
+            moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
+            total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
-            # Display absence or score
+            # Afficher l'absence ou le score
             comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
             comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score if comp2 and comp2.score is not None else "-"
             comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score if comp3 and comp3.score is not None else "-"
@@ -112,7 +103,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 round(total, 2) if isinstance(total,Decimal) else total,
             ])
 
-        # ... (your existing table styling and drawing code) ...
+        # ... (votre code de style de tableau et de dessin existant) ...
 
         y_position -= (len(subjects) + 2) * 20
         pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
