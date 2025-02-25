@@ -31,7 +31,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             def get_valid_score(comp):
                 if comp:
                     if comp.absence == 'ABJ':
-                        return None #Return None for Justified absence
+                        return None
                     elif comp.absence == 'ABS':
                         return "ABS"
                     elif comp.score is not None:
@@ -47,8 +47,17 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 3  # Coefficient des devoirs
             ])
 
-            moyenne = (get_valid_score(comp1) + get_valid_score(comp2) + get_valid_score(comp3) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-            if isinstance(moyenne,Decimal):
+            scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
+            valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
+
+            if None in scores:
+                moyenne = "ABJ"
+                total = "ABJ"
+            else:
+                moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
+                total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
+
+            if isinstance(moyenne, Decimal):
                 total_score += moyenne * subject.coefficient
                 total_coefficient += subject.coefficient
 
@@ -77,8 +86,15 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
             devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(total=Sum('score'))['total'] or 0
 
-            moyenne = (get_valid_score(comp1) + get_valid_score(comp2) + get_valid_score(comp3) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
-            total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
+            scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
+            valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
+
+            if None in scores:
+                moyenne = "ABJ"
+                total = "ABJ"
+            else:
+                moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
+                total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
             # Display absence or score
             comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
