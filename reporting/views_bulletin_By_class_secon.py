@@ -76,7 +76,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
         y_position = height - 120
 
-        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total"]]
+        table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
 
         for subject in subjects:
