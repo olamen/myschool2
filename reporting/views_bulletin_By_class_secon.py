@@ -47,7 +47,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 3  # Coefficient des devoirs
             ])
 
-            scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
+            scores = [get_valid_score(comp1 * comp1.coefficient), get_valid_score(comp2 * comp2.coefficient), get_valid_score(comp3 * comp3.coefficient)]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
 
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
@@ -66,19 +66,19 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     pdf = canvas.Canvas(response, pagesize=landscape(A4))
     width, height = landscape(A4)
 
-    pdf.setFont("Helvetica-Bold", 16)
+    pdf.setFont("Helvetica-Bold", 20)
     pdf.drawImage(LOGO_PATH, 50, height - 100, width=100, height=100)  # Draw logo
 
     pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
     pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        pdf.setFont("Helvetica-Bold", 12)
+        pdf.setFont("Helvetica-Bold", 16)
         pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
 
-        y_position = height - 220
+        y_position = height - 120
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
