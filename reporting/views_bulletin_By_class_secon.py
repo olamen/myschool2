@@ -17,6 +17,18 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
     students_with_avg = []
 
+    def get_valid_score(comp):
+        if comp:
+            if comp.absence == 'ABJ':
+                return None  # Retourne None pour exclusion du calcul
+            elif comp.absence == 'ABS':
+                return "ABS"
+            elif comp.score is not None:
+                return Decimal(comp.score) * comp.composition.coefficient
+            else:
+                return Decimal('0.0')
+        return Decimal('0.0')
+
     for student in students:
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
         total_score = Decimal('0.0')
@@ -28,27 +40,11 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             comp3 = NoteComposition.objects.filter(student=student, subject=subject, sessionyear=session_year, composition__id=4).first()
             devoirs = NoteDevoir.objects.filter(student=student, subject=subject, sessionyear=session_year).aggregate(total=Sum('score'))['total'] or 0
 
-            def get_valid_score(comp):
-                if comp:
-                    if comp.absence == 'ABJ':
-                        return None  # Retourne None pour exclusion du calcul
-                    elif comp.absence == 'ABS':
-                        return "ABS"
-                    elif comp.score is not None:
-                        return Decimal(comp.score) * comp.composition.coefficient
-                    else:
-                        return Decimal('0.0')
-                return Decimal('0.0')
-
-            total_coeff = sum([
-                comp1.composition.coefficient if comp1 else 0,
-                comp2.composition.coefficient if comp2 else 0,
-                comp3.composition.coefficient if comp3 else 0,
-                3  # Coefficient des devoirs
-            ])
-
-            scores = [get_valid_score(comp1 * Decimal(comp1.composition.coefficient)), get_valid_score(comp2 * Decimal(comp2.composition.coefficient)), get_valid_score(comp3 * Decimal(comp3.composition.coefficient))]
+            scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
+            valid_coeffs = sum([comp.composition.coefficient for comp in [comp1, comp2, comp3] if comp and comp.absence != 'ABJ'])
+
+            total_coeff = valid_coeffs + 3  # Coefficient des devoirs
 
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
 
@@ -91,13 +87,16 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
             scores = [get_valid_score(comp1), get_valid_score(comp2), get_valid_score(comp3)]
             valid_scores = [score for score in scores if score is not None and isinstance(score, Decimal)]
+            valid_coeffs = sum([comp.composition.coefficient for comp in [comp1, comp2, comp3] if comp and comp.absence != 'ABJ'])
+
+            total_coeff = valid_coeffs + 3  # Coefficient des devoirs
 
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
             total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
-            comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score * Decimal(comp1.coefficient) if comp1 and comp1.score is not None else "-"
-            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score * Decimal(comp2.coefficient)if comp2 and comp2.score is not None else "-"
-            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score * Decimal(comp3.coefficient) if comp3 and comp3.score is not None else "-"
+            comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
+            comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score if comp2 and comp2.score is not None else "-"
+            comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score if comp3 and comp3.score is not None else "-"
 
             table_data.append([
                 subject.name,
