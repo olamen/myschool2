@@ -66,11 +66,19 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     pdf = canvas.Canvas(response, pagesize=A4)
     width, height = A4
 
-    for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        # ... (votre code d'en-tête PDF et d'informations sur l'étudiant) ...
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawImage(LOGO_PATH, 50, height - 100, width=100, height=100)  # Draw logo
 
-        y_position = height - 180
+    pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
+    pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
+
+    for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
         pdf.setFont("Helvetica-Bold", 10)
+        pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
+        pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
+        pdf.drawString(50, height - 180, f"Rang : {rank}")
+
+        y_position = height - 220
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
@@ -87,7 +95,6 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             moyenne = (sum(valid_scores) + Decimal(devoirs) * 3) / total_coeff if total_coeff else 0
             total = moyenne * subject.coefficient if isinstance(moyenne, Decimal) else moyenne
 
-            # Afficher l'absence ou le score
             comp1_display = comp1.absence if comp1 and comp1.absence else comp1.score if comp1 and comp1.score is not None else "-"
             comp2_display = comp2.absence if comp2 and comp2.absence else comp2.score if comp2 and comp2.score is not None else "-"
             comp3_display = comp3.absence if comp3 and comp3.absence else comp3.score if comp3 and comp3.score is not None else "-"
@@ -98,12 +105,24 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 comp2_display,
                 comp3_display,
                 devoirs,
-                round(moyenne, 2) if isinstance(moyenne,Decimal) else moyenne,
+                round(moyenne, 2) if isinstance(moyenne, Decimal) else moyenne,
                 subject.coefficient,
-                round(total, 2) if isinstance(total,Decimal) else total,
+                round(total, 2) if isinstance(total, Decimal) else total,
             ])
 
-        # ... (votre code de style de tableau et de dessin existant) ...
+        table = Table(table_data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+
+        table.wrapOn(pdf, width, height)
+        table.drawOn(pdf, 50, y_position - 20 * len(subjects) - 40)
 
         y_position -= (len(subjects) + 2) * 20
         pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
