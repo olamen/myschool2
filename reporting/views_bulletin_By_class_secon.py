@@ -124,12 +124,13 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         table.wrapOn(pdf, width, height)
         table.drawOn(pdf, 50, y_position - 20 * len(subjects) - 40)
 
-        y_position -= (len(subjects) + 2) * 20
-        pdf.drawString(100, y_position, "Moyenne Générale Annuelle :")
-        pdf.drawString(350, y_position, str(general_avg))
+        # Adjust the y_position to create space between the table and the next text
+        y_position -= (len(subjects) + 2) * 20 + 20  # Add extra space
+        pdf.drawString(50, y_position, "Moyenne Générale Annuelle :")
+        pdf.drawString(250, y_position, str(general_avg))
 
         decision = "Très Bien" if general_avg >= 15 else "Bien" if general_avg >= 12 else "Passable" if general_avg >= 9 else "Redoublement"
-        pdf.drawString(100, y_position - 20, f"Décision : {decision}")
+        pdf.drawString(50, y_position - 20, f"Décision : {decision}")
 
         pdf.showPage()
 
