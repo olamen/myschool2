@@ -85,7 +85,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.setFont("Helvetica", 16)
         pdf.drawString(50, height - 50, "École XYZ - Bulletin Annuel")
         pdf.setFont("Helvetica", 14)
-        pdf.drawString(50, height - 70, f"Année Scolaire : {session_year.name}")
+        pdf.drawString(50, height - 65, f"Année Scolaire : {session_year.name}")
 
         # Center: Logo
         pdf.drawImage(LOGO_PATH, 400, height - 100, width=150, height=100)
@@ -100,12 +100,12 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         # Right-aligned Arabic text
         pdf.setFont("Amiri", 16)
         pdf.drawString(width - 200, height - 90, f"Date : {date.today().strftime('%d/%m/%Y')}")        
-        pdf.drawString(width - 200, height - 110, f"N° Ref: {student.id}")
+        pdf.drawString(width - 200, height - 110, f"N° Ref: E232B{student.id}")
         # Student Information
         pdf.setFont("Helvetica-Bold", 13)
-        pdf.drawString(50, height - 90, f"Nom de l'élève : {student.first_name} {student.last_name}")
-        pdf.drawString(50, height - 110, f"Classe : {student.student_class.name}")
-        pdf.drawString(50, height - 130, f"Rang : {rank}")
+        pdf.drawString(50, height - 80, f"Nom de l'élève : {student.first_name} {student.last_name}")
+        pdf.drawString(50, height - 100, f"Classe : {student.student_class.name}")
+        pdf.drawString(50, height - 110, f"Rang : {rank}")
 
         y_position = height - 120
 
