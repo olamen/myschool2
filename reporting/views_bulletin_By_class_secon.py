@@ -74,7 +74,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
 
-        y_position = height - 120
+        y_position = height - 180
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
@@ -110,15 +110,15 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
             ])
         page_width = landscape(A4)[0] - 80
         col_widths = [
-                page_width * 0.20,  # Matière (30%)
-                page_width * 0.08,  # Exam 1 (9%)
-                page_width * 0.08,  # Exam 2 (9%)
-                page_width * 0.08,  # Exam 3 (9%)
-                page_width * 0.08,  # Devoirs (9%)
+                page_width * 0.20,  # Matière (20%)
+                page_width * 0.08,  # Exam 1 (8%)
+                page_width * 0.08,  # Exam 2 (8%)
+                page_width * 0.08,  # Exam 3 (8%)
+                page_width * 0.08,  # Devoirs (8%)
                 page_width * 0.10,  # Moyenne (10%)
-                page_width * 0.06,  # Coefficient (10%)
-                page_width * 0.08,  # Total (14%)
-                page_width * 0.13,  # Appreciation (10%)
+                page_width * 0.06,  # Coefficient (6%)
+                page_width * 0.08,  # Total (8%)
+                page_width * 0.13,  # Appreciation (13%)
             ]
         table = Table(table_data , colWidths=col_widths)
         table.setStyle(TableStyle([
