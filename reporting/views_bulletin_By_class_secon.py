@@ -116,8 +116,9 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
                 page_width * 0.08,  # Exam 3 (9%)
                 page_width * 0.08,  # Devoirs (9%)
                 page_width * 0.10,  # Moyenne (10%)
-                page_width * 0.04,  # Coefficient (10%)
+                page_width * 0.06,  # Coefficient (10%)
                 page_width * 0.8,  # Total (14%)
+                page_width * 0.1,  # Appreciation (10%)
             ]
         table = Table(table_data , colWidths=col_widths)
         table.setStyle(TableStyle([
