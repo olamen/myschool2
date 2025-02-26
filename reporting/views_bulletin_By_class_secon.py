@@ -62,20 +62,20 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     pdf = canvas.Canvas(response, pagesize=landscape(A4))
     width, height = landscape(A4)
 
-    # Left side: Logo
-    pdf.drawImage(LOGO_PATH, 50, height - 100, width=100, height=100)  
-
-    # Center: School Name and Year
-    pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
-    pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
-
-    # Right side: Custom text (Top Right)
-    pdf.setFont("Helvetica", 14)
-    pdf.drawString(width - 200, height - 70, "Date : 20/02/2025")
-    pdf.drawString(width - 200, height - 90, "N° Ref: 123456")
-
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-        pdf.setFont("Helvetica-Bold", 16)
+            # Left side: Logo
+        pdf.drawImage(LOGO_PATH, 50, height - 100, width=150, height=100)  
+
+        # Center: School Name and Year
+        pdf.setFont("Helvetica", 16)
+        pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
+        pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
+
+        # Right side: Custom text (Top Right)
+        pdf.setFont("Helvetica", 16)
+        pdf.drawString(width - 200, height - 70, "Date : 20/02/2025")
+        pdf.drawString(width - 200, height - 90, "N° Ref: 123456")
+        pdf.setFont("Helvetica-Bold", 14)
         pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 180, f"Rang : {rank}")
