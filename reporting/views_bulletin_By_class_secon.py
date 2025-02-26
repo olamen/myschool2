@@ -1,4 +1,6 @@
 from decimal import Decimal
+import os
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum
@@ -9,10 +11,16 @@ from reportlab.platypus import Table, TableStyle
 from students.models import Student, Subject, SessionYearModel
 from notes.models import NoteComposition, NoteDevoir
 from datetime import date
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 
 LOGO_PATH = "static/images/logo.png"
+# Full path to the font file
+AMIRI_FONT_PATH = os.path.join(settings.BASE_DIR, "static/fonts/Amiri-Regular.ttf")
 
+# Register Amiri Font
+pdfmetrics.registerFont(TTFont('Amiri', AMIRI_FONT_PATH))
 def generate_class_report_pdf(request, sessionyear_id, class_id):
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class_id=class_id).order_by("first_name")
@@ -66,7 +74,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
             # Left side: Logo
-        pdf.drawImage(LOGO_PATH, 50, height - 110, width=150, height=100)  
+        pdf.drawImage(LOGO_PATH, 50, height - 100, width=150, height=100)  
 
         # Center: School Name and Year
         pdf.setFont("Helvetica", 16)
@@ -74,9 +82,12 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
 
         # Right side: Custom text (Top Right)
-        pdf.setFont("Helvetica", 16)
+        pdf.setFont("Amiri", 24)
+        pdf.drawRightString(width - 50, height - 50, "مدرسة الإمتياز")  # Right-aligned Arabic text
+        pdf.setFont("Amiri", 16)
         pdf.drawString(width - 200, height - 70, f"Date : {date.today().strftime('%d/%m/%Y')}")        
         pdf.drawString(width - 200, height - 90, "N° Ref: 123456")
+        # Student Information
         pdf.setFont("Helvetica-Bold", 14)
         pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
         pdf.drawString(50, height - 160, f"Classe : {student.student_class.name}")
