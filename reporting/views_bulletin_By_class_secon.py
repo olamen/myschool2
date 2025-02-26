@@ -93,9 +93,10 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         # Right side: Custom text (Top Right)
         pdf.setFont("Amiri", 24)
         pdf.drawRightString(width - 50, height - 50, fix_arabic_text("مدرسة الإمتياز"))
-        pdf.setFont("Amiri", 20)
+        pdf.setFont("Amiri", 17)
         pdf.drawRightString(width - 50, height - 70, fix_arabic_text("السنة  الدراسية"))
-        pdf.drawString(width - 130, height - 70, f": {session_year.name}")
+        pdf.setFont("Helvetica", 14)
+        pdf.drawString(width - 200, height - 70, f": {session_year.name}")
         # Right-aligned Arabic text
         pdf.setFont("Amiri", 16)
         pdf.drawString(width - 200, height - 90, f"Date : {date.today().strftime('%d/%m/%Y')}")        
