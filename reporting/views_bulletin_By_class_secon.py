@@ -8,6 +8,8 @@ from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 from students.models import Student, Subject, SessionYearModel
 from notes.models import NoteComposition, NoteDevoir
+from datetime import date
+
 
 LOGO_PATH = "static/images/logo.png"
 
@@ -64,7 +66,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
             # Left side: Logo
-        pdf.drawImage(LOGO_PATH, 50, height - 100, width=150, height=100)  
+        pdf.drawImage(LOGO_PATH, 50, height - 1500, width=150, height=100)  
 
         # Center: School Name and Year
         pdf.setFont("Helvetica", 16)
@@ -73,7 +75,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
         # Right side: Custom text (Top Right)
         pdf.setFont("Helvetica", 16)
-        pdf.drawString(width - 200, height - 70, "Date : 20/02/2025")
+        pdf.drawString(width - 200, height - 70, f"Date : {date.today().strftime('%d/%m/%Y')}")        
         pdf.drawString(width - 200, height - 90, "N° Ref: 123456")
         pdf.setFont("Helvetica-Bold", 14)
         pdf.drawString(50, height - 140, f"Nom de l'élève : {student.first_name} {student.last_name}")
