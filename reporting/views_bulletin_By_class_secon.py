@@ -144,14 +144,14 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         page_width = landscape(A4)[0] - 80
         col_widths = [
                 page_width * 0.20,  # Matière (20%)
-                page_width * 0.08,  # Exam 1 (8%)
-                page_width * 0.08,  # Exam 2 (8%)
-                page_width * 0.08,  # Exam 3 (8%)
-                page_width * 0.08,  # Devoirs (8%)
+                page_width * 0.09,  # Exam 1 (8%)
+                page_width * 0.09,  # Exam 2 (8%)
+                page_width * 0.09,  # Exam 3 (8%)
+                page_width * 0.09,  # Devoirs (8%)
                 page_width * 0.10,  # Moyenne (10%)
                 page_width * 0.06,  # Coefficient (6%)
-                page_width * 0.08,  # Total (8%)
-                page_width * 0.13,  # Appreciation (13%)
+                page_width * 0.09,  # Total (8%)
+                page_width * 0.14,  # Appreciation (13%)
             ]
         table = Table(table_data , colWidths=col_widths)
         table.setStyle(TableStyle([
