@@ -5,8 +5,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block title %}
     <title>List des etudients</title>
-
+    {% endblock title %}
     <link rel="shortcut icon" href="favicon.png" />
   </head>
   <body>
@@ -126,6 +127,44 @@
             </div>
           </div>
         </div>
+<script>
+        const translations = {
+          "Show": "Afficher",
+          "entries": "éléments",
+          "Search:": "Rechercher :",
+          "Showing _START_ to _END_ of _TOTAL_ entries": "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments"
+      };
+      
+      function translateText(text) {
+          return translations[text] || text;
+      }
+      
+      $(document).ready(function() {
+          $('#myTable').DataTable({
+              "language": {
+                  "sEmptyTable": translateText("Aucune donnée disponible dans le tableau"),
+                  "sInfo": translateText("Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments"),
+                  "sInfoEmpty": translateText("Affichage de l'élément 0 à 0 sur 0 élément"),
+                  "sInfoFiltered": translateText("(filtré à partir de _MAX_ éléments au total)"),
+                  "sInfoPostFix": translateText(""),
+                  "sInfoThousands": translateText(","),
+                  "sLengthMenu": translateText("Afficher _MENU_ éléments"),
+                  "sLoadingRecords": translateText("Chargement..."),
+                  "sProcessing": translateText("Traitement..."),
+                  "sSearch": translateText("Rechercher :"),
+                  "sZeroRecords": translateText("Aucun élément correspondant trouvé"),
+                  "oPaginate": {
+                      "sFirst": translateText("Premier"),
+                      "sLast": translateText("Dernier"),
+                      "sNext": translateText("Suivant"),
+                      "sPrevious": translateText("Précédent")
+                  },
+                  "oAria": {
+                      "sSortAscending": translateText(": activer pour trier la colonne par ordre croissant"),
+                      "sSortDescending": translateText(": activer pour trier la colonne par ordre décroissant")
+                  }
+              }
+          });
+      });
+      </script>      
     {% endblock body %}
-  </body>
-</html>
