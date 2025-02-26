@@ -66,7 +66,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
             # Left side: Logo
-        pdf.drawImage(LOGO_PATH, 50, height - 150, width=150, height=100)  
+        pdf.drawImage(LOGO_PATH, 50, height - 110, width=150, height=100)  
 
         # Center: School Name and Year
         pdf.setFont("Helvetica", 16)
