@@ -88,7 +88,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(50, height - 90, f"Année Scolaire : {session_year.name}")
 
         # Center: Logo
-        pdf.drawImage(400,LOGO_PATH, 50, height - 100, width=150, height=100)  
+        pdf.drawImage(LOGO_PATH, 400, height - 100, width=150, height=100)
 
         # Right side: Custom text (Top Right)
         pdf.setFont("Amiri", 24)
