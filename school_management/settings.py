@@ -15,6 +15,10 @@ from pathlib import Path
 import dj_database_url
 
 SCHOOL_NAME = "École Excellence"
+SCHOOL_NAME_AR = "مدرسة التميز"
+SCHOOL_ADDRESS = "Rue 123, Quartier 456, Ville 789"
+SCHOOL_PHONE = "+123 456 789"
+SCHOOL_EMAIL = "mail@gmail.com"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR,'frontend')

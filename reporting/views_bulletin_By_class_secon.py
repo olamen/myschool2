@@ -1,5 +1,7 @@
 from decimal import Decimal
 import os
+import arabic_reshaper
+from bidi import get_display
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -21,6 +23,12 @@ AMIRI_FONT_PATH = os.path.join(settings.BASE_DIR, "static/fonts/Amiri-Regular.tt
 
 # Register Amiri Font
 pdfmetrics.registerFont(TTFont('Amiri', AMIRI_FONT_PATH))
+# Function to reshape Arabic text
+def fix_arabic_text(text):
+    reshaped_text = arabic_reshaper.reshape(text)  # Reshape for correct letter joining
+    bidi_text = get_display(reshaped_text)  # Fix direction for RTL
+    return bidi_text
+
 def generate_class_report_pdf(request, sessionyear_id, class_id):
     session_year = get_object_or_404(SessionYearModel, id=sessionyear_id)
     students = Student.objects.filter(student_class_id=class_id).order_by("first_name")
@@ -73,17 +81,17 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
     width, height = landscape(A4)
 
     for rank, (student, general_avg) in enumerate(students_with_avg, start=1):
-            # Left side: Logo
-        pdf.drawImage(LOGO_PATH, 50, height - 100, width=150, height=100)  
-
-        # Center: School Name and Year
+        # Left side: School Name and Year
         pdf.setFont("Helvetica", 16)
-        pdf.drawString(200, height - 70, "École XYZ - Bulletin Annuel")
-        pdf.drawString(200, height - 90, f"Année Scolaire : {session_year.name}")
+        pdf.drawString( height - 50, "École XYZ - Bulletin Annuel")
+        pdf.drawString( height - 90, f"Année Scolaire : {session_year.name}")
+
+        # Center: Logo
+        pdf.drawImage(400,LOGO_PATH, 50, height - 100, width=150, height=100)  
 
         # Right side: Custom text (Top Right)
         pdf.setFont("Amiri", 24)
-        pdf.drawRightString(width - 50, height - 50, "مدرسة الإمتياز")  # Right-aligned Arabic text
+        pdf.drawRightString(width - 50, height - 50, fix_arabic_text("مدرسة الإمتياز"))  # Right-aligned Arabic text
         pdf.setFont("Amiri", 16)
         pdf.drawString(width - 200, height - 70, f"Date : {date.today().strftime('%d/%m/%Y')}")        
         pdf.drawString(width - 200, height - 90, "N° Ref: 123456")
