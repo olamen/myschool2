@@ -96,7 +96,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.setFont("Amiri", 17)
         pdf.drawRightString(width - 50, height - 77, fix_arabic_text("السنة  الدراسية"))
         pdf.setFont("Helvetica", 14)
-        pdf.drawString(width - 205, height - 77, f"{session_year.name} :")
+        pdf.drawString(width - 213, height - 77, f"{session_year.name} :")
         # Right-aligned Arabic text
         pdf.setFont("Amiri", 16)
         pdf.drawString(width - 200, height - 90, f"Date : {date.today().strftime('%d/%m/%Y')}")        
@@ -107,7 +107,7 @@ def generate_class_report_pdf(request, sessionyear_id, class_id):
         pdf.drawString(50, height - 110, f"Classe : {student.student_class.name}")
         pdf.drawString(50, height - 130, f"Rang : {rank}")
 
-        y_position = height - 100
+        y_position = height - 120
 
         table_data = [["Matière", "Exam 1", "Exam 2", "Exam 3", "Devoirs", "Moyenne", "Coef", "Total","Appréciation"]]
         subjects = Subject.objects.filter(grade=student.student_class.grade, is_active=True)
