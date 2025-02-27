@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% load static %}
+{% extends "base.html" %}
+{% load static %}
 <html lang="fr">
 
 <head>
@@ -12,42 +13,50 @@
 
     {% block body %}
     <!-- main sidebar -->
-                    <a href="{% url 'teacher_create' %}" class="btn btn-primary">Ajouter un enseignant</a>
-                    <table id="myTable" class="table table-light data-table table-hover text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Matière</th>
-                                <th>Salaire</th>
-                                <th>Type de salaire</th>
-                                <th>Date d'embauche</th>
-                                <th>Téléphone</th>
-                                <th>Image</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for teacher in teachers %}
-                            <tr>
-                                <td>{{ teacher.name }}</td>
-                                <td>{{ teacher.get_subjects }}</td>
-                                <td>{{ teacher.salary }}</td>
-                                <td>{{ teacher.get_salary_type_display }}</td>
-                                <td>{{ teacher.enrollment_date }}</td>
-                                <td>{{ teacher.telephone }}</td>
-                                <td>
-                                    {% if teacher.user.image %}
-                                    <img src="{{ teacher.user.image.url }}" alt="Profile Picture" class="img-thumbnail" width="50">
-                                    {% else %}
-                                    No Image
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{% url 'teacher_update' teacher.id %}" class="btn btn-warning">Modifier</a>
-                                    <a href="{% url 'teacher_archive' teacher.id %}" class="btn btn-danger">Archiver</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <a href="{% url 'teacher_create' %}" class="btn btn-primary">Ajouter un enseignant</a>
+    <table id="myTable" class="table table-light data-table table-hover text-nowrap">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Matière</th>
+                <th>Salaire</th>
+                <th>Type de salaire</th>
+                <th>Date d'embauche</th>
+                <th>Téléphone</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.get_subjects }}</td>
+                <td>{{ teacher.salary }}</td>
+                <td>{{ teacher.get_salary_type_display }}</td>
+                <td>{{ teacher.enrollment_date }}</td>
+                <td>{{ teacher.telephone }}</td>
+                <td>
+                    {% if teacher.user.image %}
+                    <img src="{{ teacher.user.image.url }}" alt="Profile Picture" class="img-thumbnail" width="50">
+                    {% else %}
+                    No Image
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'teacher_update' teacher.id %}" class="btn btn-warning">Modifier</a>
+                    <a href="{% url 'teacher_archive' teacher.id %}" class="btn btn-danger">Archiver</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Debug Information -->
+    <div>
+        <h3>Debug Information</h3>
+        <pre>
+            {{ teachers }}
+        </pre>
+    </div>
     {% endblock %}

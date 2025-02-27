@@ -5,10 +5,16 @@ from Auth.models import CustomUser, RoleChoices
 from .models import Teacher
 from .forms import TeacherForm
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def teacher_list(request):
     """View to display a list of all active teachers."""
     teachers = Teacher.objects.filter(is_active=True)
+    logger.debug(f'Active teachers: {teachers}')
     return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
+
 
 
 def teacher_create_update_view(request, pk=None):
