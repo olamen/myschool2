@@ -123,9 +123,7 @@ class Teacher(models.Model):
         ('hourly', 'Hourly'),
         ('monthly', 'Monthly'),
     ]
-    subject = models.ManyToManyField('Subject', related_name='teachers',on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, )  # Link to multiple subjects to teacher
+    subject = models.ManyToManyField('Subject', related_name='teachers', null=True, blank=True)  # Link to multiple subjects to teacher
     photo = models.ImageField(upload_to='parent_teacher/', blank=True, null=True)  # Optional photo field
     name = models.CharField(max_length=100)
     nni = models.CharField(
