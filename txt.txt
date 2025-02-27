@@ -5,3 +5,6 @@ import shutil
 shutil.move("debug.pdf", "static/debug.pdf")
 
 Puis, accède à : https://monecole-4jfb.onrender.com/static/debug.pdf
+
+
+rm dm/migrations/000*.py
