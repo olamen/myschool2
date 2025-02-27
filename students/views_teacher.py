@@ -10,12 +10,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from django.http import JsonResponse
+
 def teacher_list(request):
     """View to display a list of all active teachers."""
     teachers = Teacher.objects.filter(is_active=True)
     logger.debug(f'Active teachers: {teachers}')
     print(f'Active teachers: {teachers}')
-    return JsonResponse({"teachers": teachers})
+    teachers_list = list(teachers.values())
+    return JsonResponse({"teachers": teachers_list})
     #return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
 
