@@ -43,7 +43,7 @@ def teacher_create_update_view(request, pk=None):
     else:
         form = TeacherForm(instance=teacher)
 
-    return render(request, 'teacher_form.html', {'form': form})
+    return render(request, 'teachers/teacher_form.html', {'form': form})
 
 
 def teacher_archive(request, pk):

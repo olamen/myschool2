@@ -123,7 +123,7 @@ class Teacher(models.Model):
         ('hourly', 'Hourly'),
         ('monthly', 'Monthly'),
     ]
-    subject = models.ManyToManyField('Subject', related_name='teachers', blank=True)  # Link to multiple subjects to teacher
+    subject = models.ManyToManyField('Subject', through='TeacherSubject', related_name='teachers', blank=True)
     photo = models.ImageField(upload_to='parent_teacher/', blank=True, null=True)  # Optional photo field
     name = models.CharField(max_length=100)
     nni = models.CharField(
@@ -164,7 +164,10 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.name
-
+# teacher_subject relation table
+class TeacherSubject(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendances')  # Étudiant
