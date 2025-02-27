@@ -1,3 +1,5 @@
+# Description: This file contains the model for the CustomUser class which extends the AbstractUser class.
+# Auth models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 

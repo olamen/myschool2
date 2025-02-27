@@ -1,10 +1,9 @@
 # students/models.py
 from decimal import Decimal
 from django.db import models
-from django.core.validators import MinLengthValidator, MinValueValidator
+from django.core.validators import MinLengthValidator,RegexValidator ,MinValueValidator
 from django.core.exceptions import ValidationError
-
-
+from Auth.models import CustomUser  # Update the import to your CustomUser location
 
 class SessionYearModel(models.Model):
     name= models.CharField(max_length=100, unique=True, null=True)
@@ -81,6 +80,7 @@ class Parent(models.Model):
     address = models.TextField(blank=True, null=True)
     children = models.ManyToManyField('Student', related_name='parents')  # Link to multiple students
     photo = models.ImageField(upload_to='parent_photos/', blank=True, null=True)  # Optional photo field
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
 
     def __str__(self):
@@ -123,19 +123,21 @@ class Teacher(models.Model):
         ('hourly', 'Hourly'),
         ('monthly', 'Monthly'),
     ]
-
-    name = models.CharField(max_length=100)
-    subject = models.ForeignKey(
-        Subject, 
-        on_delete=models.SET_NULL, 
+    subject = models.ManyToManyField('Subject', related_name='teachers',on_delete=models.SET_NULL, 
         null=True, 
-        blank=True, 
-        related_name='teachers'
-    )  # Relationship with Subject model,
+        blank=True, )  # Link to multiple subjects to teacher
+    photo = models.ImageField(upload_to='parent_teacher/', blank=True, null=True)  # Optional photo field
+    name = models.CharField(max_length=100)
     nni = models.CharField(
         max_length=10, 
         validators=[MinLengthValidator(10)],
         default="1234567890"
+    )
+    telephone = models.CharField(
+        max_length=15,
+        validators=[RegexValidator(regex=r'^[234]\d{7}$')],
+        blank=True,
+        null=True
     )
     enrollment_date = models.DateField()
     salary = models.PositiveIntegerField(null=False)
@@ -145,6 +147,7 @@ class Teacher(models.Model):
         default='monthly'
     )  # Field to specify salary type
     is_active = models.BooleanField(default=False)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
     def calculate_monthly_salary(self, hours_worked=0):
         """
@@ -157,6 +160,9 @@ class Teacher(models.Model):
             return self.salary * hours_worked
         # If salary type is monthly, return the base salary
         return self.salary
+    
+    def get_subjects(self):
+        return ", ".join([subject.name for subject in self.subject.all()])
 
     def __str__(self):
         return self.name

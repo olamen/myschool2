@@ -1,5 +1,23 @@
 from django.forms import CheckboxInput, ModelForm, NumberInput, TextInput, Select, DateInput, Textarea
 from students.models import Classe, Composition, Devoir, Trimestre
+from django import forms
+from .models import Teacher
+
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = ['subject', 'photo', 'name', 'nni','telephone','enrollment_date', 'salary', 'salary_type', 'is_active']
+        widgets = {
+            'subject': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control-file'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'nni': forms.TextInput(attrs={'class': 'form-control'}),
+            'enrollment_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'salary': forms.NumberInput(attrs={'class': 'form-control'}),
+            'salary_type': forms.Select(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 class TrimestreForm(ModelForm):
     class Meta:

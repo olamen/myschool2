@@ -50,9 +50,9 @@ urlpatterns = [
 
 
 
-    path('teachers/', views_teacher.teacher_list, name='teacher_list'),
-    path('teachers/create/', views_teacher.teacher_create, name='teacher_create'),
-    path('teachers/<int:pk>/update/', views_teacher.teacher_update, name='teacher_update'),
+    path('teachers/', views_teacher.teacher_list, name='teachers_list'),
+    path('teacher/new/', views_teacher.teacher_create_update_view, name='teacher_create'),
+    path('teacher/edit/<int:pk>/', views_teacher.teacher_create_update_view,  name='teacher_update'),
     path('teachers/<int:pk>/archive/', views_teacher.teacher_archive, name='teacher_archive'),
     path('teachers/archived/', views_teacher.teacher_archived_list, name='teacher_archived_list'),
     path('teachers/<int:pk>/restore/', views_teacher.teacher_restore, name='teacher_restore'),
