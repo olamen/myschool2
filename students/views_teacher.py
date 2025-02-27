@@ -13,6 +13,7 @@ def teacher_list(request):
     """View to display a list of all active teachers."""
     teachers = Teacher.objects.filter(is_active=True)
     logger.debug(f'Active teachers: {teachers}')
+    print(f'Active teachers: {teachers}')
     return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
 
