@@ -1,28 +1,29 @@
-from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
 from Auth.models import CustomUser, RoleChoices
 from .models import Teacher
 from .forms import TeacherForm
+from django.contrib.auth.decorators import login_required
 
-import logging
 
-logger = logging.getLogger(__name__)
+# def teacher_list(request):
+#     """View to display a list of all active teachers."""
+#     teachers = Teacher.objects.filter(is_active=True)
+#     logger.debug(f'Active teachers: {teachers}')
+#     print(f'Active teachers: {teachers}')
+#     teachers_list = list(teachers.values())
+#     return JsonResponse({"teachers": teachers_list})
 
-from django.http import JsonResponse
 
+#crude devoir
+@login_required
 def teacher_list(request):
     """View to display a list of all active teachers."""
     teachers = Teacher.objects.filter(is_active=True)
-    logger.debug(f'Active teachers: {teachers}')
-    print(f'Active teachers: {teachers}')
-    teachers_list = list(teachers.values())
-    return JsonResponse({"teachers": teachers_list})
-    #return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
+    return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
-
-
+@login_required
 def teacher_create_update_view(request, pk=None):
     if pk:
         teacher = get_object_or_404(Teacher, pk=pk)
@@ -57,7 +58,7 @@ def teacher_create_update_view(request, pk=None):
 
     return render(request, 'teachers/teacher_form.html', {'form': form})
 
-
+@login_required
 def teacher_archive(request, pk):
     """View to archive a teacher instead of deleting."""
     teacher = get_object_or_404(Teacher, pk=pk)
@@ -66,13 +67,13 @@ def teacher_archive(request, pk):
     messages.success(request, f"L'enseignant {teacher.name} a été archivé avec succès !")
     return redirect('teachers_list')
 
-
+@login_required
 def teacher_archived_list(request):
     """View to display a list of archived teachers."""
     teachers = Teacher.objects.filter(is_active=False)
     return render(request, 'teachers/teacher_archived_list.html', {'teachers': teachers})
 
-
+@login_required
 def teacher_restore(request, pk):
     """View to restore an archived teacher."""
     teacher = get_object_or_404(Teacher, pk=pk)
