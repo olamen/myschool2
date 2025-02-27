@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -14,7 +15,8 @@ def teacher_list(request):
     teachers = Teacher.objects.filter(is_active=True)
     logger.debug(f'Active teachers: {teachers}')
     print(f'Active teachers: {teachers}')
-    return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
+    return JsonResponse({"teachers": teachers})
+    #return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
 
 
