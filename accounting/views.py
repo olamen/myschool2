@@ -134,6 +134,8 @@ def close_cash_register(request, register_id):
 # Vue pour afficher l'état de la caisse
 @login_required
 def cash_register_status(request):
+    if request.user.role != 'Adminf':
+        return render(request, "403.html")
     cash_register = CashRegister.objects.get(user=request.user, is_open=True)
     if not cash_register:
         messages.error(request, "Aucune caisse ouverte actuellement pour se compte.")
@@ -163,6 +165,8 @@ def cash_register_details(request, pk):
 # Vue pour enregistrer une transaction
 @login_required
 def create_transaction(request):
+    if request.user.role != 'Adminf':
+        return render(request, "403.html")
     try:
         cash_register = CashRegister.objects.get(is_open=True)
     except CashRegister.DoesNotExist:
@@ -193,6 +197,8 @@ def transaction_history(request):
 # Vue pour gérer les paiements des frais étudiants
 @login_required
 def manage_student_fees(request):
+    if request.user.role != 'Adminf':
+        return render(request, "403.html")
     try:
         cash_register = CashRegister.objects.get(is_open=True)
     except CashRegister.DoesNotExist:
