@@ -37,7 +37,7 @@
                 <td>{{ teacher.enrollment_date }}</td>
                 <td>{{ teacher.telephone }}</td>
                 <td>
-                    {% if teacher.user.image %}
+                    {% if teacher.photo %}
                     <img src="{{ teacher.photo.url }}" alt="Profile Picture" class="img-thumbnail" width="50">
                     {% else %}
                     No Image
@@ -51,12 +51,4 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <!-- Debug Information -->
-    <div>
-        <h3>Debug Information</h3>
-        <pre>
-            {{ teachers }}
-        </pre>
-    </div>
     {% endblock %}
