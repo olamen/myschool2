@@ -17,7 +17,6 @@ def parent_list_card(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Parent, Student, CustomUser
-from .forms import ParentForm  # Use a custom form for input validation
 
 def parent_create(request):
     """View to create a new parent and link students."""
