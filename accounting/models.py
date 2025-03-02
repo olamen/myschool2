@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from students.models import Classe, Parent, Student, Teacher  # Modèles existants
+from students.models import Classe, Parent, SessionYearModel, Student, Teacher  # Modèles existants
 from django.utils.timezone import now
 
 
@@ -235,7 +235,7 @@ class Expense(models.Model):
     
 class Payment(models.Model):
     """
-    Modèle pour enregistrer les paiements effectués par un étudiant ou un parent.
+    Modèle pour enregistrer les paiements mensuels.
     """
     PAYMENT_METHOD_CHOICES = [
         ('cash', _('Espèces')),
@@ -243,12 +243,36 @@ class Payment(models.Model):
         ('check', _('Chèque')),
         ('other', _('Autre')),
     ]
+    MONTH_CHOICES = [
+        ('oct', _('Octobre')),
+        ('nov', _('Novembre')),
+        ('dec', _('Décembre')),
+        ('jan', _('Janvier')),
+        ('feb', _('Février')),
+        ('mar', _('Mars')),
+        ('apr', _('Avril')),
+        ('may', _('Mai')),
+        ('jun', _('Juin')),
+        ('jul', _('Juillet')),
+    ]
+
+    STATUS_CHOICES = [
+        ('paid', _('Payé')),
+        ('unpaid', _('Non Payé')),
+        ('absent', _('Absent')),
+    ]
+    months_paid = models.JSONField(default=list, verbose_name="Mois payés")
 
     cash_register = models.ForeignKey(
         CashRegister,
         on_delete=models.CASCADE,
         related_name="payments",
         verbose_name=_("Caisse")
+    )
+    session_year = models.ForeignKey(
+        SessionYearModel,
+        on_delete=models.CASCADE,
+        verbose_name="Année académique"
     )
     student = models.ForeignKey(
         Student,
@@ -308,25 +332,25 @@ class Payment(models.Model):
         verbose_name=_("Notes")
     )
 
+    # Ajout du champ de mois avec statut
+    months_paid = models.JSONField(
+        default=dict,
+        verbose_name=_("Mois payés"),
+        help_text="Dictionnaire contenant les mois et leur statut (payé, non payé, absent)"
+    )
+
     def save(self, *args, **kwargs):
         """
-        Méthode personnalisée pour mettre à jour le solde de la caisse et générer un numéro de reçu.
+        Méthode pour générer un numéro de reçu et mettre à jour la caisse.
         """
-        is_new_payment = not self.pk  # Vérifie si c'est une nouvelle instance
+        is_new_payment = not self.pk
         if not self.receipt_number:
             self.receipt_number = f"PAY-{now().strftime('%Y%m%d%H%M%S')}"
-        super().save(*args, **kwargs)  # Sauvegarde l'instance
+        super().save(*args, **kwargs)
 
-        # Mettre à jour la caisse uniquement si c'est un nouveau paiement
         if is_new_payment:
             self.cash_register.current_balance += self.amount
             self.cash_register.save()
 
     def __str__(self):
-        if self.student:
-            return f"Paiement de {self.student.first_name} {self.student.last_name} - {self.amount} MRU"
-        elif self.parent:
-            return f"Paiement de {self.parent.first_name} {self.parent.last_name} - {self.amount} MRU"
-        elif self.classe:
-            return f"Paiement pour la classe {self.classe.name} - {self.amount} MRU"
-        return f"Paiement de {self.amount} MRU"
+        return f"Paiement de {self.student.first_name} {self.student.last_name} - pour {', '.join(self.months_paid)} MRU"

@@ -122,18 +122,29 @@ class FeeForm(forms.ModelForm):
                 else:
                     field.widget.attrs['class'] = 'form-control form-control-lg'  # For other inputs
 
+from django import forms
+from .models import Payment, Student, Parent, Classe, CashRegister
+
 class PaymentForm(forms.ModelForm):
     """
-    Formulaire pour les paiements effectués par un étudiant, un parent, ou une classe.
+    Formulaire pour les paiements effectués par un étudiant, un parent ou une classe.
     """
+
+    months_paid = forms.MultipleChoiceField(
+        choices=Payment.MONTH_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Mois à payer"
+    )
 
     class Meta:
         model = Payment
         fields = [
-            'cash_register',  # This field will be displayed as read-only
+            'cash_register',  # Ce champ est affiché en lecture seule
             'student',
             'parent',
             'classe',
+            'months_paid',  # ✅ Ajouter les mois ici
             'amount',
             'method',
             'notes',
@@ -152,6 +163,7 @@ class PaymentForm(forms.ModelForm):
             'student': 'Étudiant',
             'parent': 'Parent',
             'classe': 'Classe',
+            'months_paid': 'Mois à payer',
             'amount': 'Montant',
             'method': 'Méthode de paiement',
             'notes': 'Notes',
@@ -159,19 +171,32 @@ class PaymentForm(forms.ModelForm):
 
     def __init__(self, *args, user=None, **kwargs):
         """
-        Pass the logged-in user to dynamically set the cash_register field value.
+        Passer l'utilisateur connecté pour définir dynamiquement le champ `cash_register`
+        et filtrer les mois déjà payés.
         """
         super().__init__(*args, **kwargs)
 
-        # Set queryset for student, parent, and classe fields
+        # Définir les querysets pour les champs liés aux modèles
         self.fields['student'].queryset = Student.objects.all().order_by('first_name', 'last_name')
         self.fields['parent'].queryset = Parent.objects.all().order_by('first_name', 'last_name')
         self.fields['classe'].queryset = Classe.objects.filter(is_active=True).order_by('name')
 
-        # Dynamically populate the cash_register field
+        # Dynamiser le champ `cash_register`
         if user:
             try:
                 cash_register = CashRegister.objects.get(user=user, is_open=True)
                 self.fields['cash_register'].initial = f"Caisse ouverte - {cash_register.current_balance} MRU"
             except CashRegister.DoesNotExist:
                 self.fields['cash_register'].initial = "Aucune caisse ouverte"
+
+        # Filtrer les mois déjà payés
+        if 'instance' in kwargs and kwargs['instance']:
+            student = kwargs['instance'].student
+            if student:
+                paid_months = Payment.objects.filter(student=student).values_list('months_paid', flat=True)
+                paid_months = set([month for sublist in paid_months for month in sublist])  # Aplatir la liste
+
+                # Ne proposer que les mois non payés
+                self.fields['months_paid'].choices = [
+                    (code, name) for code, name in Payment.MONTH_CHOICES if code not in paid_months
+                ]

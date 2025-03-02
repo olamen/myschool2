@@ -28,6 +28,7 @@ urlpatterns = [
 
 
     path('add-payment/', add_payment, name='add_payment'),
+    path('calculate_payment_amount/', calculate_payment_amount, name='calculate_payment_amount'),
     path('get-students/<int:parent_id>/', get_students_by_parent, name='get_students_by_parent'),
     path('students/<int:student_id>/details/', get_student_details, name='get_student_details'),
     path('payments/ajax/', payment_list_ajax, name='payment_list_ajax'),

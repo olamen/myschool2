@@ -1,7 +1,8 @@
 {% extends "basef.html" %}
 {% load static %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
-
+{% block title %}
+<title>Ajouter un Paiement</title>
+{% endblock title %}
 {% block body %}
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Ajouter un Paiement</h2>
@@ -10,7 +11,7 @@
       <form id="payment-form" method="post">
         {% csrf_token %}
         
-        <div  class="mb-3">
+        <div class="mb-3">
           <label for="cash_register">Caisse</label>
           {{ form.cash_register }}
         </div> 
@@ -19,7 +20,7 @@
           <label for="parent">Parent</label>
           {{ form.parent }}
         </div>
-        
+
         <div class="mb-3">
           <label for="student">Étudiant</label>
           <select id="student" name="student" class="form-control">
@@ -30,6 +31,18 @@
         <div class="mb-3">
           <label for="classe">Classe</label>
           <input type="text" id="classe" class="form-control" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label for="months_paid">Mois à payer</label>
+          <div id="months-container">
+            {% for value, label in form.months_paid.field.choices %}
+              <div class="form-check">
+                <input class="form-check-input month-checkbox" type="checkbox" value="{{ value }}" id="month_{{ value }}" name="months_paid">
+                <label class="form-check-label" for="month_{{ value }}">{{ label }}</label>
+              </div>
+            {% endfor %}
+          </div>
         </div>
         
         <div class="mb-3">
@@ -53,10 +66,9 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Handle parent change to fetch students
+    // Gérer le changement de parent pour charger les étudiants
     $("#id_parent").change(function() {
         const parentId = $(this).val();
         const studentSelect = $("#student");
@@ -83,7 +95,7 @@ $(document).ready(function() {
         }
     });
 
-    // Handle student change to fetch class and fee details
+    // Gérer le changement d'étudiant pour charger la classe et les frais mensuels
     $("#student").change(function() {
         const studentId = $(this).val();
         if (studentId) {
@@ -93,6 +105,7 @@ $(document).ready(function() {
                 success: function(data) {
                     $("#classe").val(data.class_name);
                     $("#amount").val(data.monthly_fee);
+                    updateAvailableMonths(studentId);
                 },
                 error: function() {
                     alert("Erreur lors du chargement des détails de l'étudiant.");
@@ -105,29 +118,53 @@ $(document).ready(function() {
             $("#amount").val("");
         }
     });
+
+    // Gérer la sélection des mois pour recalculer le montant total
+    $(document).on("change", ".month-checkbox", function() {
+        let selectedMonths = $(".month-checkbox:checked").length;
+        let monthlyFee = parseFloat($("#amount").attr("data-original-amount")) || 0;
+        $("#amount").val(selectedMonths * monthlyFee);
+    });
+
+    // Charger les mois disponibles dynamiquement
+    function updateAvailableMonths(studentId) {
+        $.ajax({
+            url: "{% url 'get_unpaid_months' 0 %}".replace('0', studentId),
+            method: "GET",
+            success: function(data) {
+                $("#months-container").html("");
+                data.forEach(function(month) {
+                    $("#months-container").append(`
+                        <div class="form-check">
+                            <input class="form-check-input month-checkbox" type="checkbox" value="${month.value}" id="month_${month.value}" name="months_paid">
+                            <label class="form-check-label" for="month_${month.value}">${month.label}</label>
+                        </div>
+                    `);
+                });
+            },
+            error: function() {
+                alert("Erreur lors du chargement des mois non payés.");
+            }
+        });
+    }
 });
 </script>
 <script>
   $(document).ready(function () {
-      // Initialize Select2 for parent field
+      // Initialiser Select2 pour le champ parent
       $('.parent-select').select2({
           placeholder: "Recherchez un parent (NNI ou nom)",
           ajax: {
-              url: "{% url 'parent_search_autocomplete' %}", // Define this URL in views
+              url: "{% url 'parent_search_autocomplete' %}",
               dataType: 'json',
               delay: 250,
               data: function (params) {
-                  return {
-                      q: params.term, // Search query
-                  };
+                  return { q: params.term };
               },
               processResults: function (data) {
                   return {
                       results: data.map(function (item) {
-                          return {
-                              id: item.id,
-                              text: `${item.name} (${item.nni})`
-                          };
+                          return { id: item.id, text: `${item.name} (${item.nni})` };
                       })
                   };
               },

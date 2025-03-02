@@ -184,6 +184,18 @@ def add_payment(request):
 
     return render(request, 'accounting/add_payment.html', {'form': form})
 
+def calculate_payment_amount(request):
+    student_id = request.GET.get("student_id")
+    selected_months = request.GET.get("months").split(",")
+
+    student = get_object_or_404(Student, id=student_id)
+    
+    # Suppose que `monthly_fee` est le tarif mensuel de l'étudiant
+    monthly_fee = student.monthly_fee  
+    total_amount = len(selected_months) * monthly_fee
+
+    return JsonResponse({"total_amount": total_amount})
+
 @login_required
 def payment_list_ajax(request):
     """
