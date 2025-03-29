@@ -101,6 +101,7 @@ WSGI_APPLICATION = 'school_management.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# old url postgresql://school_fdvd_user:QVVaPJNIm2HcnAT78zMPIiSusqFpvzt8@dpg-csvtodhopnds73a54s8g-a/school_fdvd
 
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')  # Default to SQLite if not set
 
