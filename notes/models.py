@@ -1,3 +1,4 @@
+# notes models.py
 from django.db import models
 from django.forms import ValidationError
 from students.models import Devoir, Grade, SessionYearModel, Student, Classe, Subject,Composition, Trimestre
