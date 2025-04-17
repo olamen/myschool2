@@ -24,7 +24,7 @@
             <input type="number" id="points" name="points" class="form-control" min="0" value="{{ subject.points|default:'' }}">
         </div>
         <div id="secondary-fields" class="mb-3" style="display: none;">
-            <label for="coefficient" class="form-label">Coefficient (pour secondaire/lycée)</label>
+            <label for="coefficient" class="form-label">Coefficient (pour secondaire)</label>
             <input type="number" id="coefficient" name="coefficient" class="form-control" step="0.1" value="{{ subject.coefficient|default:'' }}">
         </div>
         <button type="submit" class="btn btn-primary">Enregistrer</button>
@@ -56,7 +56,7 @@
             console.log('Displaying primary fields, hiding secondary fields');
             primaryFields.style.display = 'block'; // Show primary fields
             secondaryFields.style.display = 'none'; // Hide secondary fields
-        } else if (selectedGrade === 'College' || selectedGrade === 'Lycee') {
+        } else if (selectedGrade === 'college' || selectedGrade === 'lycee') {
             console.log('Displaying secondary fields, hiding primary fields');
             primaryFields.style.display = 'none'; // Hide primary fields
             secondaryFields.style.display = 'block'; // Show secondary fields
