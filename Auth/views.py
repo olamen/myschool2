@@ -21,12 +21,15 @@ def user_login(request):
         elif request.user.role == 'Professor':
             return redirect('professor_dashboard')
         else:  # Parent/Student
-            # Récupérer l'étudiant lié à ce parent
-            student = Student.objects.filter(parents__user=user).first()
-            if student:
-                return redirect('parent_student_dashboard', student_id=student.id)
-            else:
-                messages.error(request, "Aucun étudiant associé trouvé.")
+            try:
+                student = Student.objects.filter(user=user).first()
+                if student:
+                    return redirect('parent_student_dashboard', student_id=student.id)
+                else:
+                    messages.error(request, "Aucun étudiant lié à ce compte.")
+                    return redirect('login')
+            except Student.DoesNotExist:
+                messages.error(request, "Aucun étudiant trouvé.")
                 return redirect('login')
 
     if request.method == 'POST':
@@ -46,7 +49,16 @@ def user_login(request):
             elif user.role == 'Professor':
                 return redirect('professor_dashboard')
             else:  # Parent/Student
-                return redirect('parent_student_dashboard')
+                try:
+                    student = Student.objects.filter(user=user).first()
+                    if student:
+                        return redirect('parent_student_dashboard', student_id=student.id)
+                    else:
+                        messages.error(request, "Aucun étudiant lié à ce compte.")
+                        return redirect('login')
+                except Student.DoesNotExist:
+                    messages.error(request, "Aucun étudiant trouvé.")
+                    return redirect('login')
         else:
             messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
     return render(request, 'auth/login.html')
