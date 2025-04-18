@@ -21,7 +21,13 @@ def user_login(request):
         elif request.user.role == 'Professor':
             return redirect('professor_dashboard')
         else:  # Parent/Student
-            return redirect('parent_student_dashboard')
+            # Récupérer l'étudiant lié à ce parent
+            student = Student.objects.filter(parents__user=user).first()
+            if student:
+                return redirect('parent_student_dashboard', student_id=student.id)
+            else:
+                messages.error(request, "Aucun étudiant associé trouvé.")
+                return redirect('login')
 
     if request.method == 'POST':
         username = request.POST.get('username')
