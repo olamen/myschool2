@@ -1,83 +1,58 @@
-{% extends "basep.html" %}
-{% load static %}
+{% extends 'basep.html' %}
+{% block body %}
 
-{% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Tableau de bord de l'élève</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Tableau de Bord des Étudiants</h2>
 
-    <!-- Informations de l'étudiant -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ student.first_name }} {{ student.last_name }}</h5>
-            <p><strong>Classe :</strong> {{ student.student_class.name }}</p>
+    {% for item in students_data %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>{{ item.student.first_name }} {{ item.student.last_name }}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Classe :</strong> {{ item.student.student_class.name }}</p>
+
+                <h6>Frères et Sœurs :</h6>
+                <ul>
+                    {% for sibling in item.siblings %}
+                        <li>{{ sibling.first_name }} {{ sibling.last_name }} ({{ sibling.student_class.name }})</li>
+                    {% empty %}
+                        <li>Aucun frère ou sœur enregistré</li>
+                    {% endfor %}
+                </ul>
+
+                <h6>Frais Scolaires :</h6>
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Montant</th>
+                            <th>Date limite</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in item.payments %}
+                            <tr>
+                                <td>{{ payment.amount_due }} MRU</td>
+                                <td>{{ payment.due_date }}</td>
+                                <td>
+                                    {% if payment.paid %}
+                                        <span class="badge bg-success">Payé</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Non payé</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">Aucun paiement trouvé</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-
-    <!-- Parents -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Parents</h5>
-        </div>
-        <ul class="list-group list-group-flush">
-            {% for parent in parents %}
-                <li class="list-group-item">
-                    {{ parent.first_name }} {{ parent.last_name }} - {{ parent.phone }}
-                </li>
-            {% empty %}
-                <li class="list-group-item text-muted">Aucun parent trouvé.</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Frères et sœurs -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Frères et sœurs</h5>
-        </div>
-        <ul class="list-group list-group-flush">
-            {% for sibling in siblings %}
-                <li class="list-group-item">
-                    {{ sibling.first_name }} {{ sibling.last_name }} - {{ sibling.student_class.name }}
-                </li>
-            {% empty %}
-                <li class="list-group-item text-muted">Aucun frère ou sœur inscrit.</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Paiements -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Historique des paiements</h5>
-        </div>
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Montant dû</th>
-                    <th>Date d'échéance</th>
-                    <th>Statut</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for fee in payments %}
-                <tr>
-                    <td>{{ fee.amount_due }} MRU</td>
-                    <td>{{ fee.due_date }}</td>
-                    <td>
-                        {% if fee.paid %}
-                            <span class="badge bg-success">Payé</span>
-                        {% else %}
-                            <span class="badge bg-danger">Non payé</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-muted">Aucun frais trouvé.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% endfor %}
 </div>
+
 {% endblock %}
