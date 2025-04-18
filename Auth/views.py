@@ -1,6 +1,6 @@
 # views authentification
 from django.contrib.auth import login, logout, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -64,21 +64,20 @@ def professor_dashboard(request):
     return render(request, 'dashboard/professor.html')
 
 @login_required
-def parent_student_dashboard(self,request):
-    student = self.get_object()
-    # Retrieve siblings (students with the same parent accounts)
+def parent_student_dashboard(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+
     siblings = Student.objects.filter(parents__in=student.parents.all()).exclude(pk=student.pk)
-    # Retrieve all parents of the student
     parents = student.parents.all()
     payments = Fee.objects.filter(student=student).order_by('-due_date')
+
     context = {
         'student': student,
         'siblings': siblings,
         'parents': parents,
         'payments': payments,
-
     }
-    return render(request, 'dash/dashp.html', context)
+    return render(request, 'dashboard/parent_student.html', context)
 
 
 @role_required('Super Admin')
