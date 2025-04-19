@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from accounting.models import Fee
-from students.models import Student
+from students.models import Parent, Student
 from .decorators import role_required
 
 
@@ -22,9 +22,10 @@ def user_login(request):
             return redirect('professor_dashboard')
         else:  # Parent/Student
             try:
-                student = Student.objects.filter(user=user).first()
+                parent = get_object_or_404(Parent, user=user)
+                student = parent.children.first()  # Get the first linked student
                 if student:
-                    return redirect('parent_student_dashboard', student_id=student.id)
+                    return redirect('parent_student_dashboard', parent_id=parent.id)
                 else:
                     messages.error(request, "Aucun étudiant lié à ce compte.")
                     return redirect('login')
@@ -50,7 +51,8 @@ def user_login(request):
                 return redirect('professor_dashboard')
             else:  # Parent/Student
                 try:
-                    student = Student.objects.filter(user=user).first()
+                    parent = get_object_or_404(Parent, user=user)
+                    student = parent.children.first()  # Get the first linked student
                     if student:
                         return redirect('parent_student_dashboard', student_id=student.id)
                     else:
