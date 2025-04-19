@@ -98,7 +98,7 @@ def parent_student_dashboard(request,parent_id):
     ]
 
     context = {'students_data': students_data}
-    return render(request, 'dashboard/dashp.html', context)
+    return render(request, 'dash/dashp.html', context)
 
 
 @role_required('Super Admin')
