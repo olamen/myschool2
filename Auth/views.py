@@ -84,25 +84,20 @@ def professor_dashboard(request):
     return render(request, 'dashboard/professor.html')
 
 @login_required
-def parent_student_dashboard(request):
-    parent = request.user  # L'utilisateur connecté doit être un parent
-    students = Student.objects.filter(parents=parent)
+def parent_student_dashboard(request,parent_id):
+    parent = get_object_or_404(Parent, id=parent_id)
+    students = parent.children.all()
 
-    students_data = []
-
-    for student in students:
-        siblings = Student.objects.filter(parents__in=student.parents.all()).exclude(pk=student.pk)
-        payments = Fee.objects.filter(student=student).order_by('-due_date')
-
-        students_data.append({
+    students_data = [
+        {
             'student': student,
-            'siblings': siblings,
-            'payments': payments,
-        })
+            'siblings': Student.objects.filter(parents__in=student.parents.all()).exclude(pk=student.pk),
+            'payments': Fee.objects.filter(student=student).order_by('-due_date'),
+        }
+        for student in students
+    ]
 
-    context = {
-        'students_data': students_data,
-    }
+    context = {'students_data': students_data}
     return render(request, 'dashboard/parent_student.html', context)
 
 
