@@ -54,7 +54,7 @@ def user_login(request):
                     parent = get_object_or_404(Parent, user=user)
                     student = parent.children.first()  # Get the first linked student
                     if student:
-                        return redirect('parent_student_dashboard', student_id=student.id)
+                        return redirect('parent_student_dashboard', parent_id=parent.id)
                     else:
                         messages.error(request, "Aucun étudiant lié à ce compte.")
                         return redirect('login')
