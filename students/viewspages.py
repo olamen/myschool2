@@ -13,7 +13,7 @@ def dashs(request):
 def dashf(request):
     """Dashboard for Adminf."""
 
-    cash_register = CashRegister.objects.get(user=request.user, is_open=True)
+    cash_register = CashRegister.objects.get(user=request.user )
     context = {
         'cash_register' : cash_register
     }
