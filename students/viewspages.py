@@ -18,7 +18,7 @@ def dashf(request):
 
     if not cash_register:
         messages.error(request, "Aucun registre de caisse trouvé pour cet utilisateur.")
-        return redirect('some_other_page')  # Redirect to a fallback page
+        return redirect('login')  # Redirect to a fallback page
 
     context = {'cash_register': cash_register}
     return render(request, 'dash/dashf.html', context)
