@@ -1,8 +1,72 @@
 {% extends "basef.html" %} {% load static %}
 
 {% block body %}
-        <h1>Admin finance Dashboard</h1>
-        <p>Welcome to the Adminf dashboard, {{ request.user.first_name}} {{ request.user.last_name}}!</p>
-        <p class="fs-4 text-success">{{ cash_register.current_balance|floatformat:2 }} MRU</p>
+
+    
+    {% block title %}
+    <title>Admin Finance Dashboard</title>
+    {% endblock title %}
+        
+
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold">Finance Dashboard</a>
+            <div class="d-flex align-items-center">
+                <img src="{{ request.user.photo.url }}" class="rounded-circle" width="40" height="40" alt="Profile">
+                <span class="ms-2 text-white">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Balance Card -->
+            <div class="col-md-4">
+                <div class="card shadow p-3 text-center">
+                    <h5>Balance</h5>
+                    <p class="fs-4 text-success fw-bold">{{ cash_register.current_balance|floatformat:2 }} MRU</p>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="col-md-8">
+                <div class="card shadow p-3">
+                    <h5>Recent Transactions</h5>
+                    <ul class="list-group">
+                        {% for transaction in transactions %}
+                            <li class="list-group-item">{{ transaction.description }} - <span class="fw-bold">{{ transaction.amount }} MRU</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Graph -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card shadow p-3">
+                    <h5>Financial Trends</h5>
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        const financeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Monthly Earnings',
+                    data: {{ data|safe }},
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            }
+        });
+    </script>
+
 
 {% endblock body %}
