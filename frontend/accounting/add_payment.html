@@ -129,7 +129,7 @@ $(document).ready(function() {
     // Charger les mois disponibles dynamiquement
     function updateAvailableMonths(studentId) {
         $.ajax({
-            url: "{% url 'get_unpaid_months' 0 %}".replace('0', studentId),
+          url: "{% url 'get_unpaid_months' 12345 %}".replace('12345', studentId),
             method: "GET",
             success: function(data) {
                 $("#months-container").html("");

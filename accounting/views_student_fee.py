@@ -184,6 +184,32 @@ def add_payment(request):
 
     return render(request, 'accounting/add_payment.html', {'form': form})
 
+@login_required
+def get_unpaid_months(request, student_id):
+    try:
+        student = Student.objects.get(pk=student_id)
+        paid_months = Payment.objects.filter(
+            student=student
+        ).values_list('months_paid', flat=True)
+        
+        # Aplatir la liste des mois payés
+        all_paid = set()
+        for month_list in paid_months:
+            if isinstance(month_list, list):
+                all_paid.update(month_list)
+        
+        # Générer la liste des mois non payés
+        unpaid_months = [
+            {'value': code, 'label': name} 
+            for code, name in Payment.MONTH_CHOICES 
+            if code not in all_paid
+        ]
+        
+        return JsonResponse(unpaid_months, safe=False)
+    
+    except Student.DoesNotExist:
+        return JsonResponse([], safe=False)
+@login_required    
 def calculate_payment_amount(request):
     student_id = request.GET.get("student_id")
     selected_months = request.GET.get("months").split(",")
