@@ -126,78 +126,110 @@ class FeeForm(forms.ModelForm):
 from django import forms
 from .models import Payment, Student, Parent, Classe, CashRegister
 
-class PaymentForm(forms.ModelForm):
-    """
-    Formulaire pour les paiements effectués par un étudiant, un parent ou une classe.
-    """
+from django import forms
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
+class PaymentForm(forms.ModelForm):
     months_paid = forms.MultipleChoiceField(
-        choices=Payment.MONTH_CHOICES,
+        choices=[],
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label="Mois à payer"
+        label=_("Mois à payer")
     )
 
     class Meta:
         model = Payment
         fields = [
-            'cash_register',  # Ce champ est affiché en lecture seule
+            'cash_register',
             'student',
             'parent',
             'classe',
-            'months_paid',  # ✅ Ajouter les mois ici
+            'months_paid',
             'amount',
             'method',
             'notes',
         ]
         widgets = {
-            'cash_register': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-            'student': forms.Select(attrs={'class': 'form-control'}),
-            'parent': forms.Select(attrs={'class': 'form-control parent-select','data-ajax-url': reverse_lazy('get_students_by_parent')}),  # Ajouter l'URL AJAX
-            'classe': forms.Select(attrs={'class': 'form-control'}),
-            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Montant'}),
+            'cash_register': forms.TextInput(attrs={
+                'class': 'form-control',
+                'readonly': 'readonly'
+            }),
+            'student': forms.Select(attrs={
+                'class': 'form-control',
+                'disabled': 'disabled'
+            }),
+            'parent': forms.Select(attrs={
+                'class': 'form-control parent-select',
+                'data-ajax-url': reverse_lazy('parent_search_autocomplete')
+            }),
+            'classe': forms.Select(attrs={
+                'class': 'form-control',
+                'disabled': 'disabled'
+            }),
+            'amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': _('Montant')
+            }),
             'method': forms.Select(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Notes (facultatif)'}),
+            'notes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': _('Notes (facultatif)')
+            }),
         }
         labels = {
-            'cash_register': 'Caisse',
-            'student': 'Étudiant',
-            'parent': 'Parent',
-            'classe': 'Classe',
-            'months_paid': 'Mois à payer',
-            'amount': 'Montant',
-            'method': 'Méthode de paiement',
-            'notes': 'Notes',
+            'cash_register': _('Caisse'),
+            'student': _('Étudiant'),
+            'parent': _('Parent'),
+            'classe': _('Classe'),
+            'amount': _('Montant'),
+            'method': _('Méthode de paiement'),
+            'notes': _('Notes'),
         }
 
     def __init__(self, *args, user=None, **kwargs):
-        """
-        Passer l'utilisateur connecté pour définir dynamiquement le champ `cash_register`
-        et filtrer les mois déjà payés.
-        """
         super().__init__(*args, **kwargs)
-
-        # Définir les querysets pour les champs liés aux modèles
-        self.fields['student'].queryset = Student.objects.all().order_by('first_name', 'last_name')
-        self.fields['parent'].queryset = Parent.objects.all().order_by('first_name', 'last_name')
-        self.fields['classe'].queryset = Classe.objects.filter(is_active=True).order_by('name')
-
-        # Dynamiser le champ `cash_register`
+        self.fields['parent'].queryset = Parent.objects.none()
+        self.fields['student'].queryset = Student.objects.none()
+        
+        # Initialisation dynamique de la caisse
         if user:
             try:
                 cash_register = CashRegister.objects.get(user=user, is_open=True)
-                self.fields['cash_register'].initial = f"Caisse ouverte - {cash_register.current_balance} MRU"
+                self.fields['cash_register'].initial = _("Caisse ouverte - %(balance)s MRU") % {
+                    'balance': cash_register.current_balance
+                }
             except CashRegister.DoesNotExist:
-                self.fields['cash_register'].initial = "Aucune caisse ouverte"
+                self.fields['cash_register'].initial = _("Aucune caisse ouverte")
 
-        # Filtrer les mois déjà payés
-        if 'instance' in kwargs and kwargs['instance']:
-            student = kwargs['instance'].student
+        # Initialisation des mois payés
+        if self.instance and self.instance.pk:
+            student = self.instance.student
             if student:
-                paid_months = Payment.objects.filter(student=student).values_list('months_paid', flat=True)
-                paid_months = set([month for sublist in paid_months for month in sublist])  # Aplatir la liste
-
-                # Ne proposer que les mois non payés
+                paid_months = Payment.objects.filter(student=student)\
+                    .exclude(pk=self.instance.pk)\
+                    .values_list('months_paid', flat=True)
+                
+                paid_months = {month for sublist in paid_months for month in sublist}
                 self.fields['months_paid'].choices = [
-                    (code, name) for code, name in Payment.MONTH_CHOICES if code not in paid_months
+                    (code, name) 
+                    for code, name in Payment.MONTH_CHOICES 
+                    if code not in paid_months
                 ]
+        else:
+            self.fields['months_paid'].choices = Payment.MONTH_CHOICES
+
+    def clean(self):
+        cleaned_data = super().clean()
+        student = cleaned_data.get('student')
+        parent = cleaned_data.get('parent')
+        classe = cleaned_data.get('classe')
+
+        # Validation: Au moins un des trois champs doit être rempli
+        if not any([student, parent, classe]):
+            raise forms.ValidationError(
+                _("Vous devez sélectionner au moins un étudiant, un parent ou une classe.")
+            )
+
+        return cleaned_data
