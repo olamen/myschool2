@@ -1,4 +1,5 @@
 from django import forms
+from django.urls import reverse_lazy
 from .models import CashRegister, Fee, Payment, Transaction, StudentFee
 from students.models import Classe, Parent, Student
 
@@ -152,7 +153,7 @@ class PaymentForm(forms.ModelForm):
         widgets = {
             'cash_register': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'student': forms.Select(attrs={'class': 'form-control'}),
-            'parent': forms.Select(attrs={'class': 'form-control parent-select'}),
+            'parent': forms.Select(attrs={'class': 'form-control parent-select','data-ajax-url': reverse_lazy('get_students_by_parent')}),  # Ajouter l'URL AJAX
             'classe': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Montant'}),
             'method': forms.Select(attrs={'class': 'form-control'}),

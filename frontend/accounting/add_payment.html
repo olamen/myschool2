@@ -18,7 +18,20 @@
         
         <div class="mb-3">
           <label for="parent">Parent</label>
-          {{ form.parent }}
+          <select 
+        id="id_parent" 
+        name="parent" 
+        class="form-control parent-select"
+        data-ajax-url="{% url 'get_students_by_parent' %}"
+    >
+        {% if form.parent.value %}
+            <option value="{{ form.parent.value }}" selected>
+                {{ form.parent.selected_label }}
+            </option>
+        {% endif %}
+    </select>
+          <small class="form-text text-muted">Sélectionnez un parent pour voir les étudiants associés.</small>
+          
         </div>
 
         <div class="mb-3">
