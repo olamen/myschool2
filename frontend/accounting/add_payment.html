@@ -69,29 +69,31 @@
 <script>
 $(document).ready(function() {
     // Gérer le changement de parent pour charger les étudiants
-    $("#id_parent").change(function() {
+    // Remplacer la section du changement de parent par :
+$("#id_parent").change(function() {
         const parentId = $(this).val();
         const studentSelect = $("#student");
+        
         studentSelect.html('<option value="">Chargement...</option>');
-
+        
         if (parentId) {
             $.ajax({
-                url: "{% url 'get_students_by_parent' 0 %}".replace('0', parentId),
+                url: `/accounting/get-students/${parentId}/`,
                 method: "GET",
                 success: function(data) {
                     studentSelect.html('<option value="">Sélectionnez un étudiant</option>');
                     data.forEach(function(student) {
                         studentSelect.append(
-                            `<option value="${student.id}">${student.first_name} ${student.last_name}</option>`
+                            $(`<option></option>`)
+                                .val(student.id)
+                                .text(`${student.first_name} ${student.last_name}`)
                         );
                     });
-                }, 
+                },
                 error: function() {
-                    studentSelect.html('<option value="">Erreur lors du chargement</option>');
+                    studentSelect.html('<option value="">Erreur de chargement</option>');
                 }
             });
-        } else {
-            studentSelect.html('<option value="">Sélectionnez un parent d\'abord</option>');
         }
     });
 
