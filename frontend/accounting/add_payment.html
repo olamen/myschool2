@@ -17,22 +17,21 @@
         </div> 
         
         <div class="mb-3">
-          <label for="parent">Parent</label>
+          <label for="id_parent">Parent</label>
           <select 
-        id="id_parent" 
-        name="parent" 
-        class="form-control parent-select"
-        data-ajax-url="{% url 'get_students_by_parent' %}"
-    >
-        {% if form.parent.value %}
-            <option value="{{ form.parent.value }}" selected>
-                {{ form.parent.selected_label }}
-            </option>
-        {% endif %}
-    </select>
+              id="id_parent" 
+              name="parent" 
+              class="form-control parent-select"
+              data-ajax-url="{% url 'get_students_by_parent' 0 %}"
+          >
+              {% if form.parent.value %}
+                  <option value="{{ form.parent.value }}" selected>
+                      {{ form.parent.selected_label }}
+                  </option>
+              {% endif %}
+          </select>
           <small class="form-text text-muted">Sélectionnez un parent pour voir les étudiants associés.</small>
-          
-        </div>
+      </div>
 
         <div class="mb-3">
           <label for="student">Étudiant</label>
@@ -189,4 +188,50 @@ $("#id_parent").change(function() {
   });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+  // Initialiser Select2 pour le parent
+  $('#id_parent').select2({
+      placeholder: "Rechercher un parent...",
+      minimumInputLength: 2,
+      ajax: {
+          url: $('#id_parent').data('ajax-url'),
+          dataType: 'json',
+          delay: 250,
+          data: function(params) {
+              return {
+                  q: params.term,
+                  page: params.page
+              };
+          },
+          processResults: function(data) {
+              return {
+                  results: data.map(function(item) {
+                      return {
+                          id: item.id,
+                          text: `${item.first_name} ${item.last_name} (${item.nni})`
+                      };
+                  })
+              };
+          }
+      }
+  });
+
+  // Charger les étudiants quand un parent est sélectionné
+  $('#id_parent').on('select2:select', function(e) {
+      const parentId = e.params.data.id;
+      $.ajax({
+          url: `/accounting/get-students/${parentId}/`,
+          success: function(data) {
+              const studentSelect = $('#student');
+              studentSelect.empty().append(
+                  data.map(student => 
+                      `<option value="${student.id}">${student.first_name} ${student.last_name}</option>`
+                  )
+              );
+          }
+      });
+  });
+});
+</script>
 {% endblock %}
