@@ -2,6 +2,8 @@ from django import forms
 from django.urls import reverse_lazy
 from .models import CashRegister, Fee, Payment, Transaction, StudentFee
 from students.models import Classe, Parent, Student
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 class CashRegisterForm(forms.ModelForm):
     """
@@ -123,12 +125,8 @@ class FeeForm(forms.ModelForm):
                 else:
                     field.widget.attrs['class'] = 'form-control form-control-lg'  # For other inputs
 
-from django import forms
-from .models import Payment, Student, Parent, Classe, CashRegister
 
-from django import forms
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
+
 
 class PaymentForm(forms.ModelForm):
     months_paid = forms.MultipleChoiceField(
