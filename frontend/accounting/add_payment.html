@@ -10,33 +10,88 @@
     <div class="card-body">
       <form id="payment-form" method="post">
         {% csrf_token %}
+        
+        <!-- Section Caisse -->
+        <div class="mb-3">
+          <label for="cash_register">Caisse</label>
+          {{ form.cash_register }}
+        </div> 
+        
+        <!-- Section Parent avec Select2 -->
+        <div class="mb-3">
+          <label for="id_parent">Parent</label>
+          <select 
+              id="id_parent" 
+              name="parent" 
+              class="form-control parent-select"
+              data-ajax-url="{% url 'parent_search_autocomplete' %}"
+          >
+              {% if form.parent.value %}
+                  <option value="{{ form.parent.value }}" selected>
+                      {{ form.parent.selected_label }}
+                  </option>
+              {% endif %}
+          </select>
+          <small class="form-text text-muted">Commencez à taper un nom, prénom ou NNI de parent</small>
+        </div>
 
-        </form>
+        <!-- Section Étudiant -->
+        <div class="mb-3">
+          <label for="student">Étudiant</label>
+          <select id="student" name="student" class="form-control" disabled>
+            <option value="">Sélectionnez un parent d'abord</option>
+          </select>
+        </div>
+        
+        <!-- Section Classe (lecture seule) -->
+        <div class="mb-3">
+          <label for="classe">Classe</label>
+          <input type="text" id="classe" class="form-control" readonly>
+        </div>
+
+        <!-- Section Mois à payer -->
+        <div class="mb-3">
+          <label for="months_paid">Mois à payer</label>
+          <div id="months-container" class="border p-3">
+            {% for value, label in form.months_paid.field.choices %}
+              <div class="form-check form-check-inline">
+                <input class="form-check-input month-checkbox" type="checkbox" 
+                       value="{{ value }}" id="month_{{ value }}" name="months_paid">
+                <label class="form-check-label" for="month_{{ value }}">{{ label }}</label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <!-- Section Montant -->
+        <div class="mb-3">
+          <label for="amount">Montant</label>
+          <input type="text" id="amount" class="form-control" readonly>
+        </div>
+        
+        <!-- Section Méthode de paiement -->
+        <div class="mb-3">
+          <label for="method">Méthode de Paiement</label>
+          {{ form.method }}
+        </div>
+        
+        <!-- Section Notes -->
+        <div class="mb-3">
+          <label for="notes">Notes</label>
+          {{ form.notes }}
+        </div>
+        
+        <!-- Bouton de soumission -->
+        <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+      </form>
     </div>
   </div>
 </div>
 
-<style>
-/* Personnalisation de Select2 */
-.select2-container--default .select2-selection--single {
-    border: 1px solid #ced4da;
-    height: 38px;
-    border-radius: 4px;
-}
+<!-- Intégration de Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
-}
-
-/* Style des mois */
-#months-container {
-    max-height: 200px;
-    overflow-y: auto;
-}
-</style>
-{% endblock body %}
-
-{% block extra_scripts %}
 <script>
 $(document).ready(function() {
     // Initialisation de Select2 pour la recherche de parents
@@ -69,10 +124,10 @@ $(document).ready(function() {
     $('#id_parent').on('select2:select', function(e) {
         const parentId = e.params.data.id;
         const studentSelect = $('#student');
-
+        
         studentSelect.prop('disabled', false)
             .html('<option value="">Chargement...</option>');
-
+        
         $.ajax({
             url: "{% url 'get_students_by_parent' 0 %}".replace('0', parentId),
             method: "GET",
@@ -127,8 +182,8 @@ $(document).ready(function() {
                 data.forEach(month => {
                     $('#months-container').append(`
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input month-checkbox" type="checkbox"
-                                   value="${month.value}" id="month_${month.value}"
+                            <input class="form-check-input month-checkbox" type="checkbox" 
+                                   value="${month.value}" id="month_${month.value}" 
                                    name="months_paid">
                             <label class="form-check-label" for="month_${month.value}">
                                 ${month.label}
@@ -154,4 +209,23 @@ $(document).ready(function() {
     }
 });
 </script>
-{% endblock extra_scripts %}
+
+<style>
+/* Personnalisation de Select2 */
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ced4da;
+    height: 38px;
+    border-radius: 4px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+
+/* Style des mois */
+#months-container {
+    max-height: 200px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
