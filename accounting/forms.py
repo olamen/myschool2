@@ -1,7 +1,7 @@
 from django import forms
 from django.urls import reverse_lazy
 from .models import CashRegister, Fee, Payment, Transaction, StudentFee
-from students.models import Classe, Parent, Student
+from students.models import  Parent, Student
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
