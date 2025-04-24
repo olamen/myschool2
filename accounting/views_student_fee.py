@@ -7,7 +7,6 @@ from django.db.models import Sum
 from students.models import Parent, Student
 from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
-from accounting import models
 from django.db.models import Q
 
 
@@ -272,6 +271,10 @@ def parent_search_autocomplete(request):
             Q(last_name__icontains=query) |
             Q(nni__icontains=query)
         )[:10]
+        
+        # DEBUG: Print the query and matching parents to logs
+        print(f"Query: {query}")
+        print(f"Parents Found: {parents}")
 
         results = [
             {
@@ -281,4 +284,6 @@ def parent_search_autocomplete(request):
             for parent in parents
         ]
 
+    # DEBUG: Print the final results being returned
+    print(f"Results: {results}")
     return JsonResponse({'results': results})
