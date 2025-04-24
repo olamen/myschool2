@@ -8,6 +8,8 @@ from students.models import Parent, Student
 from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm
 from accounting import models
+from django.db.models import Q
+
 
 
 @login_required
@@ -258,22 +260,25 @@ def get_student_details(request, student_id):
     except Student.DoesNotExist:
         return JsonResponse({"error": "Étudiant introuvable."}, status=404)
     
+@login_required
 def parent_search_autocomplete(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
+    results = []
+
     if query:
         parents = Parent.objects.filter(
-            models.Q(first_name__icontains=query) |
-            models.Q(last_name__icontains=query) |
-            models.Q(nni__icontains=query)
-        ).values('id', 'first_name', 'last_name', 'nni')[:10]
+            Q(phone_number__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(nni__icontains=query)
+        )[:10]
+
         results = [
             {
-                'id': parent['id'],
-                'name': f"{parent['first_name']} {parent['last_name']}",
-                'nni': parent['nni']
+                'id': parent.id,
+                'text': f"{parent.first_name} {parent.last_name} (NNI: {parent.nni})",
             }
             for parent in parents
         ]
-    else:
-        results = []
-    return JsonResponse(results, safe=False)
+
+    return JsonResponse({'results': results})
