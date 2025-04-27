@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center">
             <img src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}" 
                  class="card-img-top img-fluid rounded-start"
-                 alt="Photo du Parent" width="80" height="80" />
+                 alt="Photo du Parent" style="width: 80px; height: 80px;" />
 
             <div class="ms-3">
                 <h4>Bienvenue, {{ parent.first_name }} {{ parent.last_name }}</h4>
