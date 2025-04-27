@@ -84,8 +84,13 @@ def professor_dashboard(request):
     return render(request, 'dashboard/professor.html')
 
 @login_required
-def parent_student_dashboard(request,parent_id):
-    parent = get_object_or_404(Parent, id=parent_id)
+def parent_student_dashboard(request):
+    try:
+        parent = request.user.parent  # Assuming you have a OneToOneField from CustomUser to Parent
+    except Parent.DoesNotExist:
+        # Handle the case where the user is not a parent
+        return render(request, 'error_template.html', {'message': 'You are not a parent.'})
+
     students = parent.children.all()
 
     students_data = [
