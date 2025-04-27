@@ -1,5 +1,10 @@
 {% load static %}
+{% extends "basef.html" %}
+{% block title %}
+<title>Créer un Étudiant</title>
+{% endblock title %}
 
+{% block body %}
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
@@ -23,3 +28,4 @@
     });
   });
 </script>
+{% endblock %}
