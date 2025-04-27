@@ -3,7 +3,7 @@ from django.contrib import messages
 
 from Auth.models import CustomUser, RoleChoices
 from .models import Teacher
-from .forms import TeacherForm
+from .forms import AssignmentForm, TeacherForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -81,3 +81,17 @@ def teacher_restore(request, pk):
     teacher.save()
     messages.success(request, f"L'enseignant {teacher.name} a été restauré avec succès !")
     return redirect('teacher_archived_list')
+
+
+@login_required
+def upload_assignment(request):
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            assignment.teacher = request.user  # Set the teacher to the current user
+            assignment.save()
+            return redirect('teacher_dashboard')  # Redirect to the teacher dashboard
+    else:
+        form = AssignmentForm()
+    return render(request, 'upload_assignment.html', {'form': form})

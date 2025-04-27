@@ -92,4 +92,8 @@ urlpatterns = [
 
     # URL pour la migration des élèves
     path('migrate-students/', views_migration_etudient.migrate_students, name='migrate_students'),
+
+    #assignment
+    path('upload_assignment/', views_teacher.upload_assignment, name='upload_assignment'),
+
 ]

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Tableau de Bord du Professeur</h2>
+
+    <div class="row">
+        <!-- Left Sidebar (Subjects and Class Management) -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Matières
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for subject in subjects %}
+                            <li class="list-group-item">
+                                <a href="{% url 'teacher_dashboard' %}?subject={{ subject.id }}">{{ subject.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    Gestion des Classes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for classroom in classrooms %}
+                            <li class="list-group-item">
+                                <a href="{% url 'class_management' classroom.id %}">{{ classroom.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area (Assignments, Reports, Activity) -->
+        <div class="col-md-9">
+            <!-- Assignments -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    Devoirs
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'upload_assignment' %}" class="btn btn-success mb-3">Télécharger un Devoir</a>
+                    <!-- Display existing assignments -->
+                    <ul class="list-group">
+                        {% for assignment in assignments %}
+                            <li class="list-group-item">
+                                {{ assignment.title }} - <a href="{{ assignment.file.url }}">Télécharger</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    Rapports
+                </div>
+                <div class="card-body">
+                    <!-- Display student reports -->
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Étudiant</th>
+                                <th>Classe</th>
+                                <th>Réponse</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.student.first_name }} {{ report.student.last_name }}</td>
+                                    <td>{{ report.student.classroom.name }}</td>
+                                    <td>{{ report.response }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Activity Area -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    Zone d'Activité
+                </div>
+                <div class="card-body">
+                    <!-- Chat/Discussion Area -->
+                    <p>Espace de discussion entre professeurs et étudiants.</p>
+                    <!-- Implement a chat/discussion feature here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

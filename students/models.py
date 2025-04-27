@@ -3,7 +3,8 @@ from decimal import Decimal
 from django.db import models
 from django.core.validators import MinLengthValidator,RegexValidator ,MinValueValidator
 from django.core.exceptions import ValidationError
-from Auth.models import CustomUser  # Update the import to your CustomUser location
+from Auth.models import CustomUser
+from school_management import settings  # Update the import to your CustomUser location
 
 class SessionYearModel(models.Model):
     name= models.CharField(max_length=100, unique=True, null=True)
@@ -236,3 +237,14 @@ class Composition(models.Model):
 
         
         
+class Assignment(models.Model):
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Link to the teacher (User model)
+    classroom = models.ForeignKey(Classe, on_delete=models.CASCADE)  # Link to the classroom
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)  # Optional description
+    file = models.FileField(upload_to='assignments/')  # File upload field
+    upload_date = models.DateTimeField(auto_now_add=True)  # Automatically set the upload date
+    due_date = models.DateField(blank=True, null=True)  # Optional due date
+
+    def __str__(self):
+        return self.title

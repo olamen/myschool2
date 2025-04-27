@@ -2,6 +2,12 @@ from django.forms import CheckboxInput, ModelForm, NumberInput, TextInput, Selec
 from students.models import Classe, Composition, Devoir, Trimestre
 from django import forms
 from .models import Teacher
+from .models import Assignment
+
+class AssignmentForm(forms.ModelForm):
+    class Meta:
+        model = Assignment
+        fields = ['classroom', 'title', 'description', 'file', 'due_date']
 
 class TeacherForm(forms.ModelForm):
     class Meta:
@@ -67,4 +73,3 @@ class ClasseForm(ModelForm):
             'is_active': CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-        
