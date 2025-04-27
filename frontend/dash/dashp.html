@@ -25,6 +25,7 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
+                            <th>transaction id</th>
                             <th>Montant</th>
                             <th>Date limite</th>
                             <th>Status</th>
@@ -33,6 +34,7 @@
                     <tbody>
                         {% for payment in item.payments %}
                             <tr>
+                                <td>{{ payment.id }} MRU</td>
                                 <td>{{ payment.amount_due }} MRU</td>
                                 <td>{{ payment.due_date }}</td>
                                 <td>
