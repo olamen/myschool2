@@ -93,7 +93,7 @@ def parent_student_dashboard(request,parent_id):
             'student': student,
             'siblings': Student.objects.filter(parents__in=student.parents.all()).exclude(pk=student.pk),
             'payments': Fee.objects.filter(student=student).order_by('-due_date'),
-            'total_paid': Fee.objects.filter(student=student, is_paid=True).count(),
+            'total_paid': Fee.objects.filter(student=student, paid=True).count(),
             'parent': parent,
         }
         for student in students
