@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib import messages
 from django.utils import timezone
-from Auth.models import CustomUser
+from Auth.models import CustomUser, RoleChoices
 from rest_framework.permissions import BasePermission
 from .models import AppConfig, Grade, Devoir, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer , StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
@@ -270,7 +270,17 @@ class StudentViewSet(viewsets.ModelViewSet):
                 student_class = Classe.objects.get(id=student_class_id)
             except Classe.DoesNotExist:
                 return Response({"error": "Classe introuvable"}, status=404)
-            
+            # Create a user for the parent
+            user = CustomUser.objects.create_user(
+                username=nni,
+                password='defaultpassword',  # Replace this with a secure password
+                first_name=first_name,
+                last_name = last_name,
+                email='',
+            )
+            user.is_approved = True
+            user.role = RoleChoices.STUDENT
+            user.save()
             # Créer un nouvel étudiant
             Student.objects.create(
                 first_name=first_name,
