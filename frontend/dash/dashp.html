@@ -27,14 +27,14 @@
                 <p><strong>Classe :</strong> {{ item.student.student_class.name }}</p>
 
                 <h6>Frères et Sœurs :</h6>
-                <ul>
+                <ul class="list-group ">
                     {% for sibling in item.siblings %}
-                        <li>
+                        <li class="list-group-item">
                             <img src="{{ sibling.photo.url }}" alt="Photo de {{ sibling.first_name }}" class="rounded-circle me-2" width="40" height="40">
                             {{ sibling.first_name }} {{ sibling.last_name }} ({{ sibling.student_class.name }})
                         </li>
                     {% empty %}
-                        <li>Aucun frère ou sœur enregistré</li>
+                        <li class="list-group-item">Aucun frère ou sœur enregistré</li>
                     {% endfor %}
                 </ul>
 
