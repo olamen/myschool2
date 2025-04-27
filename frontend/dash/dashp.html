@@ -4,7 +4,10 @@
     <!-- Parent Photo and Welcome Message -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <img src="{{ parent.photo_url }}" alt="Photo du parent" class="rounded-circle" width="80" height="80">
+            <img src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}" class="card-img-top img-fluid rounded-start"
+            alt="Photo du Parent" width="80" height="80"
+          />
+
             <div class="ms-3">
                 <h4>Bienvenue, {{ parent.first_name }} {{ parent.last_name }}</h4>
             </div>
@@ -26,7 +29,7 @@
                 <ul>
                     {% for sibling in item.siblings %}
                         <li>
-                            <img src="{{ sibling.photo_url }}" alt="Photo de {{ sibling.first_name }}" class="rounded-circle me-2" width="40" height="40">
+                            <img src="{{ sibling.photo.url }}" alt="Photo de {{ sibling.first_name }}" class="rounded-circle me-2" width="40" height="40">
                             {{ sibling.first_name }} {{ sibling.last_name }} ({{ sibling.student_class.name }})
                         </li>
                     {% empty %}
