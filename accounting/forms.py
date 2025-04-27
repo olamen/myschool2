@@ -1,10 +1,26 @@
 from django import forms
 from django.urls import reverse_lazy
 from .models import CashRegister, Fee, Payment, Transaction, StudentFee
-from students.models import  Parent, Student
+from students.models import  Classe, Parent, Student
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['first_name', 'last_name', 'nni', 'mobile', 'student_class', 'has_discount', 'gender', 'photo']
+
+    parent = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search Parent...'}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['student_class'].queryset = Classe.objects.all() # Assuming you have a Classe model
+        
 class CashRegisterForm(forms.ModelForm):
     """
     Formulaire pour ouvrir une caisse avec un solde initial.
@@ -231,3 +247,5 @@ class PaymentForm(forms.ModelForm):
             )
 
         return cleaned_data
+    
+

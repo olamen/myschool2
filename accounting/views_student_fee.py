@@ -6,10 +6,44 @@ from django.contrib import messages
 from django.db.models import Sum
 from students.models import Parent, Student
 from .models import CashRegister, Fee, Payment
-from .forms import FeeForm, PaymentForm
+from .forms import FeeForm, PaymentForm, StudentForm
 from django.db.models import Q
 
+# views.py
 
+def create_student(request):
+    if request.method == 'POST':
+        form = StudentForm(request.POST, request.FILES)
+        if form.is_valid():
+            student = form.save()
+            parent_name = form.cleaned_data.get('parent')
+            if parent_name:
+                # Logic to find the parent and associate with the student
+                # You might search by name, NNI, or email depending on your needs
+                parents = Parent.objects.filter(first_name__icontains=parent_name) | Parent.objects.filter(last_name__icontains=parent_name)
+                # Handle cases where multiple parents match or no parent is found
+                if parents.count() == 1:
+                    student.parents.add(parents.first())
+                elif parents.count() > 1:
+                    # You might want to provide a way for the user to select the correct parent
+                    # For simplicity, we'll just associate all matching parents for now
+                    student.parents.add(*parents)
+                # If no parent is found, you might want to create a new parent or handle it differently
+
+            return redirect('student_list') # Redirect to a list view
+    else:
+        form = StudentForm()
+    return render(request, 'create_student.html', {'form': form})
+
+def autocomplete_parent(request):
+    if 'term' in request.GET:
+        query = request.GET['term']
+        # Search parents by first name, last name, or NNI (adjust as needed)
+        parents = Parent.objects.filter(first_name__icontains=query) | Parent.objects.filter(last_name__icontains=query) | Parent.objects.filter(nni__startswith=query)
+        results = [{'id': parent.id, 'label': f'{parent.first_name} {parent.last_name} ({parent.nni})'} for parent in parents[:10]] # Limit results
+        return JsonResponse(results, safe=False)
+    return JsonResponse([], safe=False)
+#old
 
 @login_required
 def student_fee_list(request):

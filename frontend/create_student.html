@@ -1,0 +1,25 @@
+{% load static %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Student</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script>
+  $(function() {
+    $("#id_parent").autocomplete({
+      source: "{% url 'autocomplete_parent' %}",
+      minLength: 2, // Minimum characters to trigger autocomplete
+      select: function(event, ui) {
+        // You can optionally do something when a parent is selected
+        console.log("Selected Parent ID: " + ui.item.id);
+        console.log("Selected Parent Label: " + ui.item.label);
+      }
+    });
+  });
+</script>

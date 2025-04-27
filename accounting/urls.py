@@ -46,6 +46,10 @@ urlpatterns = [
     path('get-student-fee-amount/<int:student_id>/', get_student_fee_amount, name='get_student_fee_amount'),
     path('get-unpaid-months/<int:student_id>/', get_unpaid_months, name='get_unpaid_months'),
 
+    path('students/create/', create_student, name='create_student'),
+    path('parents/autocomplete/', autocomplete_parent, name='autocomplete_parent'),
+    
+
     #path('student-fees/<int:pk>/edit/',edit_student_fee, name='edit_student_fee'),
     #path('student-fees/<int:pk>/delete/',delete_student_fee, name='delete_student_fee'),
 

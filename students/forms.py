@@ -66,3 +66,5 @@ class ClasseForm(ModelForm):
             'order': NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ordre'}),
             'is_active': CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+        
