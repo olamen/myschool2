@@ -99,7 +99,9 @@ def parent_student_dashboard(request,parent_id):
         for student in students
     ]
 
-    context = {'students_data': students_data}
+    context = {'students_data': students_data,
+               'parent': parent,
+               }
     return render(request, 'dash/dashp.html', context)
 
 
