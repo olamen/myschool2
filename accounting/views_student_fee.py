@@ -16,20 +16,15 @@ def create_student(request):
         form = StudentForm(request.POST, request.FILES)
         if form.is_valid():
             student = form.save()
-            parent_name = form.cleaned_data.get('parent')
-            if parent_name:
-                # Logic to find the parent and associate with the student
-                # You might search by name, NNI, or email depending on your needs
-                parents = Parent.objects.filter(first_name__icontains=parent_name) | Parent.objects.filter(last_name__icontains=parent_name)
-                # Handle cases where multiple parents match or no parent is found
-                if parents.count() == 1:
-                    student.parents.add(parents.first())
-                elif parents.count() > 1:
-                    # You might want to provide a way for the user to select the correct parent
-                    # For simplicity, we'll just associate all matching parents for now
-                    student.parents.add(*parents)
-                # If no parent is found, you might want to create a new parent or handle it differently
-
+            parent_nni = form.cleaned_data.get('parent') # Assuming the user types the NNI in the parent field
+            if parent_nni:
+                try:
+                    parent = Parent.objects.get(nni=parent_nni)
+                    student.parents.add(parent)
+                except Parent.DoesNotExist:
+                    # Handle the case where no parent with that NNI is found
+                    form.add_error('parent', 'No parent found with that NNI.')
+                    return render(request, 'create_student.html', {'form': form})
             return redirect('student_list') # Redirect to a list view
     else:
         form = StudentForm()
@@ -38,8 +33,12 @@ def create_student(request):
 def autocomplete_parent(request):
     if 'term' in request.GET:
         query = request.GET['term']
-        # Search parents by first name, last name, or NNI (adjust as needed)
-        parents = Parent.objects.filter(first_name__icontains=query) | Parent.objects.filter(last_name__icontains=query) | Parent.objects.filter(nni__startswith=query)
+        # Primarily search by NNI
+        parents = Parent.objects.filter(nni__startswith=query)
+        # You can optionally include name search as a fallback if no NNI matches
+        if not parents.exists():
+            parents = Parent.objects.filter(first_name__icontains=query) | Parent.objects.filter(last_name__icontains=query)
+
         results = [{'id': parent.id, 'label': f'{parent.first_name} {parent.last_name} ({parent.nni})'} for parent in parents[:10]] # Limit results
         return JsonResponse(results, safe=False)
     return JsonResponse([], safe=False)
