@@ -3,11 +3,11 @@
 {% block body %}
 <div class="container mt-4">
     <!-- Parent Photo and Welcome Message -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-success text-white">
         <div class="d-flex align-items-center">
             <img src="{% if parent.photo %}{{ parent.photo.url }}{% else %}{% static 'images/parent-placeholder.png' %}{% endif %}" 
                  class="card-img-top img-fluid rounded-start"
-                 alt="Photo du Parent" style="width: 80px; height: 80px;" />
+                 alt="Photo du Parent" style="width: 130px; height: 100px;" />
 
             <div class="ms-3">
                 <h4>Bienvenue, {{ parent.first_name }} {{ parent.last_name }}</h4>
