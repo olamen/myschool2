@@ -53,19 +53,7 @@
     </div>
 
     <script>
-        const ctx = document.getElementById('financeChart').getContext('2d');
-        const financeChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ labels|safe }},
-                datasets: [{
-                    label: 'Monthly Earnings',
-                    data: {{ data|safe }},
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            }
-        });
+        
     </script>
 
 
