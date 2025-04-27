@@ -121,6 +121,11 @@ class FeeForm(forms.ModelForm):
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
+        parent = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search Parent...'}),
+        required=False,
+    )
         labels = {
             'student': 'Étudiant',
             'amount_due': 'Montant dû',
@@ -128,6 +133,10 @@ class FeeForm(forms.ModelForm):
             'paid': 'Payé',
         }
         widgets = {
+            'parent': forms.Select(attrs={
+                'class': 'form-control parent-select',
+                'data-ajax-url': reverse_lazy('parent_search_autocomplete')
+            }),
             'student': forms.Select(attrs={'class': 'form-control form-control-lg'}),
             'amount_due': forms.NumberInput(attrs={'class': 'form-control form-control-lg'}),
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-lg'}),
