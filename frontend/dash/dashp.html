@@ -1,7 +1,17 @@
 {% extends 'basep.html' %}
 {% block body %}
-
 <div class="container mt-4">
+    <!-- Parent Photo and Welcome Message -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <img src="{{ parent.photo_url }}" alt="Photo du parent" class="rounded-circle" width="80" height="80">
+            <div class="ms-3">
+                <h4>Bienvenue, {{ parent.first_name }} {{ parent.last_name }}</h4>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="btn btn-danger">Déconnexion</a>
+    </div>
+
     <h2 class="text-center mb-4">Tableau de Bord des Étudiants</h2>
 
     {% for item in students_data %}
@@ -15,7 +25,10 @@
                 <h6>Frères et Sœurs :</h6>
                 <ul>
                     {% for sibling in item.siblings %}
-                        <li>{{ sibling.first_name }} {{ sibling.last_name }} ({{ sibling.student_class.name }})</li>
+                        <li>
+                            <img src="{{ sibling.photo_url }}" alt="Photo de {{ sibling.first_name }}" class="rounded-circle me-2" width="40" height="40">
+                            {{ sibling.first_name }} {{ sibling.last_name }} ({{ sibling.student_class.name }})
+                        </li>
                     {% empty %}
                         <li>Aucun frère ou sœur enregistré</li>
                     {% endfor %}
@@ -25,7 +38,7 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th>transaction id</th>
+                            <th>Transaction ID</th>
                             <th>Montant</th>
                             <th>Date limite</th>
                             <th>Status</th>
@@ -34,7 +47,7 @@
                     <tbody>
                         {% for payment in item.payments %}
                             <tr>
-                                <td>{{ payment.id }} MRU</td>
+                                <td>{{ payment.id }}</td>
                                 <td>{{ payment.amount_due }} MRU</td>
                                 <td>{{ payment.due_date }}</td>
                                 <td>
@@ -47,7 +60,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="3">Aucun paiement trouvé</td>
+                                <td colspan="4">Aucun paiement trouvé</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -56,5 +69,4 @@
         </div>
     {% endfor %}
 </div>
-
 {% endblock %}
