@@ -6,6 +6,28 @@
     <form id="add-fee-form" method="post">
         {% csrf_token %}
         <div class="mb-3">
+            <label for="cash_register">Caisse</label>
+            {{ form.cash_register }}
+        </div>
+        <!-- Section Parent avec Select2 -->
+        <div class="mb-3">
+            <label for="id_parent">Parent</label>
+            <select 
+                id="id_parent" 
+                name="parent" 
+                class="form-control parent-select"
+                data-ajax-url="{% url 'parent_search_autocomplete' %}"
+            >
+                {% if form.parent.value %}
+                    <option value="{{ form.parent.value }}" selected>
+                        {{ form.parent.selected_label }}
+                    </option>
+                {% endif %}
+            </select>
+            <small class="form-text text-muted">Commencez à taper un nom, prénom ou NNI de parent</small>
+          </div>
+        <!-- Section Étudiant -->
+        <div class="mb-3">
             {{ form.student.label_tag }}
             {{ form.student }}
         </div>
@@ -68,5 +90,19 @@ $(document).ready(function() {
         });
     });
 });
+
 </script>
+<script>
+    $(function() {
+      $("#id_parent").autocomplete({
+        source: "{% url 'autocomplete_parent' %}",
+        minLength: 2, // Minimum characters to trigger autocomplete
+        select: function(event, ui) {
+          // You can optionally do something when a parent is selected
+          console.log("Selected Parent ID: " + ui.item.id);
+          console.log("Selected Parent Label: " + ui.item.label);
+        }
+      });
+    });
+  </script>
 {% endblock %}
