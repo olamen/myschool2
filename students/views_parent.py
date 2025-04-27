@@ -36,6 +36,7 @@ def parent_create(request):
             username=nni,
             password='defaultpassword',  # Replace this with a secure password
             first_name=first_name,
+            last_name = request.POST.get('last_name'),
             email=email,
         )
         user.is_approved = True

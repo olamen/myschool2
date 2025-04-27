@@ -8,6 +8,8 @@ class RoleChoices(models.TextChoices):
     ADMINF = 'Adminf', 'Adminf'
     PROFESSOR = 'Professor', 'Professor'
     PARENT_OR_STUDENT = 'Parent/Student', 'Parent/Student'
+    STUDENT = 'Student', 'Student'
+
 
 class CustomUser(AbstractUser):
     is_approved = models.BooleanField(default=False)

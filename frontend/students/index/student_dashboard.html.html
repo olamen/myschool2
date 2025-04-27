@@ -1,0 +1,73 @@
+{% extends 'basestudent.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Tableau de Bord de l'Étudiant</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Informations de l'Étudiant
+                </div>
+                <div class="card-body">
+                    <img src="{{ student.photo.url }}" alt="Photo de l'Étudiant" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
+                    <p><strong>Nom:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+                    <p><strong>Classe:</strong> {{ student.student_class.name }}</p>
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Assignments -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    Devoirs
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for assignment in assignments %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ assignment.title }}
+                                <div>
+                                    <a href="{{ assignment.file.url }}" class="btn btn-sm btn-primary">Télécharger</a>
+                                    {% if assignment.due_date %}
+                                        <span class="badge badge-secondary">Due: {{ assignment.due_date }}</span>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Grades -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    Notes
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Matière</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                                <tr>
+                                    <td>{{ grade.subject.name }}</td>
+                                    <td>{{ grade.score }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

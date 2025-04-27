@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from accounting.models import Fee
-from students.models import Parent, Student
+from students.models import Assignment, Grade, Parent, Student
 from .decorators import role_required
 
 
@@ -20,6 +20,8 @@ def user_login(request):
             return redirect('dashf')
         elif request.user.role == 'Professor':
             return redirect('professor_dashboard')
+        elif request.user.role == 'Student':
+            return redirect('Student_dashboard')
         else:  # Parent/Student
             try:
                 parent = get_object_or_404(Parent, user=user)
@@ -109,6 +111,19 @@ def parent_student_dashboard(request):
                }
     return render(request, 'dash/dashp.html', context)
 
+#students dashboard
+@login_required
+def student_dashboard(request):
+    student = get_object_or_404(Student, user=request.user)  # Get the student based on the logged-in user
+    assignments = Assignment.objects.filter(classroom=student.student_class)  # Get assignments for the student's class
+    grades = Grade.objects.filter(student=student)  # Get the student's grades
+
+    context = {
+        'student': student,
+        'assignments': assignments,
+        'grades': grades,
+    }
+    return render(request, 'students/index/student_dashboard.html.html', context)
 
 @role_required('Super Admin')
 def super_admin_dashboard(request):
