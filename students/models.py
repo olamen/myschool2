@@ -242,7 +242,7 @@ class Assignment(models.Model):
     classroom = models.ForeignKey(Classe, on_delete=models.CASCADE)  # Link to the classroom
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)  # Optional description
-    file = models.FileField(upload_to='assignments/')  # File upload field
+    file = models.FileField(upload_to='assignmentsstudents/')  # File upload field
     upload_date = models.DateTimeField(auto_now_add=True)  # Automatically set the upload date
     due_date = models.DateField(blank=True, null=True)  # Optional due date
 
