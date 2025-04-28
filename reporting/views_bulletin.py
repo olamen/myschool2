@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from notes.models import NoteComposition, NoteDevoir
 from reporting.tasks import generate_class_report_cards_task
 from students.models import Classe, Student, Subject, Trimestre, SessionYearModel
-from weasyprint import HTML
 from django.template.loader import render_to_string
 from decimal import Decimal
 from django.db import models

@@ -1,5 +1,4 @@
 # tasks.py
-from celery import shared_task
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.db.models import Sum
@@ -7,7 +6,6 @@ from decimal import Decimal
 from students.models import Student, SessionYearModel, Subject, Classe
 from notes.models import NoteComposition, NoteDevoir
 
-from weasyprint import HTML
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
@@ -110,7 +108,6 @@ def generate_class_report_cards_task(class_id, sessionyear_id, user_email):
         pdf_parts.append(html_content)
 
     combined_html = "".join(pdf_parts)
-    pdf_file = HTML(string=combined_html, base_url=settings.STATIC_ROOT).write_pdf()
 
     filename = f"report_cards_{student_class.name}_{session_year.name}.pdf"
     file_path = default_storage.save(f"reports/{filename}", ContentFile(pdf_file))
