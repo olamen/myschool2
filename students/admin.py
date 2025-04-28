@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig, SessionYearModel
+from .models import Assignment, Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig, SessionYearModel
 
 # Register your models here.
 class HomeworkAdmin(admin.ModelAdmin):
@@ -15,6 +15,11 @@ admin.site.register(AppConfig)
 admin.site.register(SessionYearModel)
 
 
+@admin.register(Assignment)
+class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ['classroom', 'title', 'description', 'file', 'due_date']
+    search_fields = ['classroom__name', 'title']
+    list_filter = ['classroom', 'due_date']
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
