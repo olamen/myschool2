@@ -1,5 +1,5 @@
 # students/urls.py
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from students import views_migration_etudient, views_subject, views_teacher
@@ -8,10 +8,18 @@ from students.views_trimestres import trimestre_create, trimestre_delete, trimes
 
 from .views_class import class_archive, class_archived_list,create_or_update_classe, list_classes 
 from .views_composition import exam_detail, edit_exam
-from .views_parent import parent_create, parent_detail, parent_list
+from .views_parent import  delete_parent, parent_create_or_update, parent_detail, parent_list
 
 from .views2 import BulkUploadStudentsView, GenerateExcelTemplateView, ListStudentPDFView
-from .views import AppConfigViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_fees_by_month,update_student, grades_list, add_grade, update_grade
+from .views import AppConfigViewSet, StudentViewSet, SubjectViewSet, TeacherViewSet, ClassViewSet, SessionYearViewSet, AttendanceViewSet, indexview, student_create_update_view, student_fees_by_month,update_student, grades_list, add_grade, update_grade
+from django.conf.urls.i18n import i18n_patterns
+
+
+#shedule
+from students.shedulviews import (
+    createorupdateschedule, print_schedule_by_day, print_schedule_by_month, print_schedule_by_week, print_schedule_options, schedule_list, schedule_detail, 
+    delete_schedule, get_subjects_by_grade_ajax, get_teachers_by_subject_ajax
+)
 
 router = DefaultRouter()
 router.register(r'session-years', SessionYearViewSet)
@@ -27,7 +35,7 @@ urlpatterns = [
     path('', indexview, name='index'),
     #path('', IndexViewSet.as_view({'get': 'index'}), name='index'),
     path('students/student_list/', StudentViewSet.as_view({'get': 'student_list'}), name='students_list'),
-    path('students/add/', StudentViewSet.as_view({'get': 'add_student', 'post': 'add_student'}), name='add_student'),
+    path('students/add/', student_create_update_view, name='add_student'),
     path('students/student/<int:pk>/', StudentViewSet.as_view({'get': 'student_detail'}), name='student_detail'),
     path('students/download_template/', GenerateExcelTemplateView.as_view(), name='generate_excel_template'),
     path('students/bulk_upload/', BulkUploadStudentsView.as_view(), name='bulk_upload_students'),
@@ -61,8 +69,9 @@ urlpatterns = [
     path('parents/', parent_list, name='parent_list'),
     path('parentscard/', parent_list, name='parent_list_card'),
 
-    path('parents/add/', parent_create, name='add_parent'),
+    path('parents/add/<int:parent_id>/', parent_create_or_update, name='add_edit_parent'),
     path('parents/<int:parent_id>/', parent_detail, name='parent_detail'),
+    path('parents/delete/<int:parent_id>/', delete_parent, name='delete_parent'),
     
 #subject
     path('subjects/', views_subject.subject_list, name='subject_list'),
@@ -94,6 +103,41 @@ urlpatterns = [
     path('migrate-students/', views_migration_etudient.migrate_students, name='migrate_students'),
 
     #assignment
-    path('upload_assignment/', views_teacher.upload_assignment, name='upload_assignment'),
+    path('assignment/', views_teacher.assignment_list, name='assignments_list'),
+    path('assignment/<int:pk>/', views_teacher.assignment_detail, name='assignment_detail'),
+    path('upload_assignment/', views_teacher.assignment_create_update_view, name='upload_assignment'),
+    path('assignment/<int:pk>/update/', views_teacher.assignment_create_update_view, name='assignment_update'),
+    path('assignment/<int:pk>/delete/', views_teacher.assignment_delete, name='assignment_delete'),
+    path('assignment/<int:pk>/archive/', views_teacher.archive_or_restore_assignment, name='archive_assignment'),
+    
+
+    #check nni
+    path('check_nni/', views_teacher.check_nni, name='check_nni'),
+
+    
+
+
+
+    # ... existing URLs ...
+    
+    # Schedule URLs
+    path('schedules/', schedule_list, name='schedule_list'),
+    path('schedules/create/', createorupdateschedule, name='create_schedule'),
+    path('schedules/<int:schedule_id>/edit/', createorupdateschedule, name='edit_schedule'),
+    path('schedules/<int:schedule_id>/', schedule_detail, name='schedule_detail'),
+    path('schedules/<int:schedule_id>/delete/', delete_schedule, name='delete_schedule'),
+    
+    #shedule print
+        # Print URLs
+    path('schedules/print/', print_schedule_options, name='print_schedule_options'),
+    path('schedules/print/day/', print_schedule_by_day, name='print_schedule_by_day'),
+    path('schedules/print/week/', print_schedule_by_week, name='print_schedule_by_week'),
+    path('schedules/print/month/', print_schedule_by_month, name='print_schedule_by_month'),
+    
+    # AJAX URLs
+    path('ajax/subjects/<int:grade_id>/', get_subjects_by_grade_ajax, name='get_subjects_by_grade_ajax'),
+    path('ajax/teachers/<int:subject_id>/', get_teachers_by_subject_ajax, name='get_teachers_by_subject_ajax'),
+
 
 ]
+

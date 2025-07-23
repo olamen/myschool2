@@ -1,0 +1,46 @@
+@startuml
+class Fee {
+    __str__()
+    is_due()
+        __init__()
+}
+class CashRegister {
+    __str__()
+    save()
+    open_register()
+    close_register()
+    update_current_balance()
+        initial_balance
+    current_balance
+    is_open
+    user
+    closed_balance
+    is_open
+    user
+    __init__()
+}
+class ChargeType {
+    __str__()
+        __init__()
+}
+class Transaction {
+    __str__()
+    update_cash_register()
+        __init__()
+}
+class StudentFee {
+    save()
+    __str__()
+        __init__()
+}
+class Expense {
+    __str__()
+        __init__()
+}
+class Payment {
+    save()
+    __str__()
+        receipt_number
+    __init__()
+}
+@enduml

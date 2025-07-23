@@ -18,7 +18,8 @@
         <thead>
             <tr>
                 <th>Nom</th>
-                <th>Matière</th>
+                <th>Matières</th>
+                <th>Classes</th>
                 <th>Salaire</th>
                 <th>Type de salaire</th>
                 <th>Date d'embauche</th>
@@ -32,6 +33,7 @@
             <tr>
                 <td>{{ teacher.name }}</td>
                 <td>{{ teacher.get_subjects }}</td>
+                <td>{{ teacher.get_classes }}</td>
                 <td>{{ teacher.salary }}</td>
                 <td>{{ teacher.get_salary_type_display }}</td>
                 <td>{{ teacher.enrollment_date }}</td>

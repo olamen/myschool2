@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 {% load compress static %}
+{% load i18n %}
 {% load compress %}
 {% block body %}
     {{ block.super }}
         <!-- main sidebar -->
             <div class="top-boxes mb-10">
                 <div class="row g-10">
-                    <div class="col-xl-3 col-lg-3 col-sm-6">
+                     <div class="col-xl-3 col-lg-3 col-sm-6">
                         <div class="panel">
                             <div class="panel-body">
                                 <div class="part-icon bg-primary">
                                     <i class="bi-person-badge-fill"></i>
                                 </div>
-                                <div class="part-txt">
-                                    <p><span>Total des Etudients</span>{{ total_students }}</p>
+                                <div class="part-txt p-2">
+                                    <p><span> {% trans 'Total des Etudients' %} </span>{{ total_students }}</p>
                                 </div>
                             </div>
                         </div>
@@ -24,8 +25,8 @@
                                 <div class="part-icon bg-info">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
-                                <div class="part-txt">
-                                    <p><span>Total des Classes</span>{{ clsses_counts }}</p>
+                                <div class="part-txt p-2">
+                                    <p><span> {% trans 'Total des Classes' %} </span>{{ clsses_counts }}</p>
                                 </div>
                             </div>
                         </div>
@@ -34,10 +35,10 @@
                         <div class="panel">
                             <div class="panel-body">
                                 <div class="part-icon bg-success">
-                                    <i class="bi bi-home"></i>
+                                    <i class="bi bi-person-fill"></i>
                                 </div>
-                                <div class="part-txt">
-                                    <p><span>Total des Professeurs</span>{{ total_teachers }}</p>
+                                <div class="part-txt p-2">
+                                    <p><span> {% trans 'Total des Professeurs' %} </span>{{ total_teachers }}</p>
                                 </div>
                             </div>
                         </div>
@@ -48,8 +49,8 @@
                                 <div class="part-icon bg-danger">
                                     <i class="bi bi-bookmark-dash-fill"></i>
                                 </div>
-                                <div class="part-txt">
-                                    <p><span>Total des Matiéres</span>{{ total_subjects }}</p>
+                                <div class="part-txt p-2">
+                                    <p><span> {% trans 'Total des Matiéres' %} </span>{{ total_subjects }}</p>
                                 </div>
                             </div>
                         </div>
@@ -60,7 +61,7 @@
                 <div class="col-xl-6 col-lg-6">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Les entres des eleves par Mois</span>
+                            <span> {% trans 'Les entres des eleves par Mois' %} </span>
                         </div>
                         <div class="panel-body">
                             <div id="student-fees-chart"></div>
@@ -70,7 +71,7 @@
                 <div class="col-xl-6 col-lg-6">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Les etudient recent</span>
+                            <span> {% trans 'Les etudient recent' %} </span>
                         </div>
                         <div class="panel-body">
                             <div class="recent-message">
@@ -106,78 +107,111 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row g-10">
-                <div class="col-xl-6 col-lg-6">
+                <div class="col-lg-6">
                     <div class="panel mb-10">
                         <div class="panel-heading">
-                            <span>Le Nombres d'Éleves Par Classe</span>
+                            <span> {% trans 'Les Transactions Recents' %} </span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="transaction-history">
+                                <ul>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th> {% trans 'Description' %} </th>
+                                                <th class="btn-warning"> {% trans 'Montant' %} </th>
+                                                <th> {% trans 'Date' %} </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for transaction in transactions %}
+                                            <tr>
+                                                <td><a href="{% url 'transaction_details' transaction.id %}">{{ transaction.description }}</a></td>
+                                                <td class="btn-warning">{{ transaction.amount }} {{ transaction.currency }}</td>
+                                                <td>{{ transaction.date|date:"d M Y" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="panel mb-10">
+                        <div class="panel-heading">
+                            <div class="left"><span> {% trans "Le Nombres d'Éleves Par Classe" %} </span></div>
                             <div class="right">
                                 <a href="#" class="action-btn">Show All</a>
                             </div>
                         </div>
                         <div class="panel-body">
-                            <div class="transaction-history">
+                            <div class="">
                                 <ul>
                                     {% for class in class_counts %}
-                                        <li>
-                                            <div class="left">
-                                                <span class="transaction-badge">C</span>
-                                                <span class="transaction-with">Class : {{ class.name }}</span>
-                                            </div>
-                                            <div class="right">
-                                                <span class="badge bg-secondary rounded-pill">{{ class.student_count }}</span>
-                                                <span class="text-success">| Éleves</span>
-                                            </div>
-                                             </li>
+                                    <table class="table table-bordered" >
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th> {% trans "Nombre d'Éleves" %} </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Classe : {{ class.name }}</td>
+                                                <td>{{ class.student_count }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     {% endfor %}
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // Fetch data for the student fees chart
-                    fetch("{% url 'student_fees_by_month' %}")
-                        .then(response => response.json())
-                        .then(data => {
-                            const options = {
-                                annotations: { position: 'back' },
-                                dataLabels: { enabled: false },
-                                chart: { type: 'bar', height: 450 },
-                                fill: { opacity: 1 },
-                                series: [{ name: 'Frais', data: data.series }],
-                                colors: ['#9cd02d'],
-                                xaxis: {
-                                    categories: ["Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                                },
-                                fill: {
-                                    type: 'gradient',
-                                    gradient: {
-                                        shade: 'light',
-                                        type: "vertical",
-                                        shadeIntensity: 0.5,
-                                        gradientToColors: ['#D2E34A'],
-                                        inverseColors: true,
-                                        opacityFrom: 1,
-                                        opacityTo: 1,
-                                        stops: [0, 100],
-                                        colorStops: []
-                                    }
-                                },
-                                responsive: [
-                                    { breakpoint: 576, options: { chart: { height: 250 } } },
-                                    { breakpoint: 1700, options: { chart: { height: 350 } } }
-                                ]
-                            };
-                
-                            const chart = new ApexCharts(document.querySelector("#student-fees-chart"), options);
-                            chart.render();
-                        })
-                        .catch(error => console.error('Error fetching chart data:', error));
-                });
-                </script>
+        
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+        // Fetch data for the student fees chart
+        fetch("{% url 'student_fees_by_month' %}")
+            .then(response => response.json())
+            .then(data => {
+                const options = {
+                    annotations: { position: 'back' },
+                    dataLabels: { enabled: false },
+                    chart: { type: 'bar', height: 450 },
+                    fill: { opacity: 1 },
+                    series: [{ name: 'Paiements', data: data.series }],
+                    colors: ['#9cd02d'],
+                    xaxis: {
+                        categories: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"], // Updated labels
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'light',
+                            type: "vertical",
+                            shadeIntensity: 0.5,
+                            gradientToColors: ['#D2E34A'],
+                            inverseColors: true,
+                            opacityFrom: 1,
+                            opacityTo: 1,
+                            stops: [0, 100],
+                            colorStops: []
+                        }
+                    },
+                    responsive: [
+                        { breakpoint: 576, options: { chart: { height: 250 } } },
+                        { breakpoint: 1700, options: { chart: { height: 350 } } }
+                    ]
+                };
+
+                const chart = new ApexCharts(document.querySelector("#student-fees-chart"), options);
+                chart.render();
+            })
+            .catch(error => console.error('Error fetching chart data:', error));
+    });
+</script>
 {% endblock body %}

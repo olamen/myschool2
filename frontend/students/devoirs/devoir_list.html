@@ -9,15 +9,13 @@
 
 {% block body %}    
     <h1>Liste des Devoirs</h1>
-    <a href="{% url 'devoir_create' %}">Ajouter un Devoir</a>
+    <a href="{% url 'devoir_create' %}" class="btn btn-success">Ajouter un Devoir</a>
     <table class="table">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Nom</th>
                 <th>Trimestre</th>
-                <th>Classe</th>
-                <th>Sujet</th>
                 <th>Coefficient</th>
                 <th>Actions</th>
             </tr>
@@ -28,8 +26,6 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ devoir.name }}</td>
                 <td>{{ devoir.trimestre.name }}</td>
-                <td>{{ devoir.classe.name }}</td>
-                <td>{{ devoir.subject.name }}</td>
                 <td>{{ devoir.coefficient }}</td>
                 <td>
                     <a href="{% url 'devoir_update' devoir.id %}" class="btn btn-warning">Modifier</a> |

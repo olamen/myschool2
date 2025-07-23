@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets
 
 from Auth.models import CustomUser
-from students.models import Classe, Parent
+from students.models import Classe, Parent, Student
 from .models import  Expense, Fee, Payment
 from accounting import models
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import CashRegister, Transaction, StudentFee
-from .forms import CashRegisterForm, TransactionForm, StudentFeeForm
+from .forms import  StudentForm, TransactionForm, StudentFeeForm
 
 
 def calculate_parent_fees(parent_id, classe_id):
@@ -86,7 +86,14 @@ def open_cash_register(request):
     # Ensure only users with the 'Adminf' role can access this functionality
     if request.user.role != 'Adminf':
         messages.error(request, "Seuls les administrateurs financiers (Adminf) peuvent ouvrir une caisse.")
-        return redirect("home")  # Replace 'home' with the appropriate redirect URL
+        return redirect("login")  # Replace 'home' with the appropriate redirect URL
+    # Check if the user already has an open cash register
+    try:
+        existing_register = CashRegister.objects.get(user=request.user, is_open=True)
+        messages.error(request, "already have an open cash register please close the last one.")
+        return redirect("login")  # Replace with the correct URL name
+    except CashRegister.DoesNotExist:
+        pass
 
     if request.method == "POST":
         opening_balance = float(request.POST.get("initial_balance", 0.0))
@@ -221,6 +228,23 @@ def manage_student_fees(request):
     return render(request, "fees/manage.html", {"form": form, "student_fees": student_fees})
 
 
+@login_required
+def student_create_update(request, student_id=None):
+    student = get_object_or_404(Student, id=student_id) if student_id else None
 
+    if request.method == "POST":
+        form = StudentForm(request.POST, request.FILES, instance=student)
+        if form.is_valid():
+            form.save()
+            return redirect('student_list')  # Redirect after successful submission
+        else:
+            # Debugging: Print errors in console
+            print("Form submission failed. Errors:")
+            for field, errors in form.errors.items():
+                print(f"{field}: {errors}")
 
+    else:
+        form = StudentForm(instance=student)
+
+    return render(request, 'students/student_form.html', {'form': form})
 

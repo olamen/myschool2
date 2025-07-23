@@ -1,10 +1,14 @@
+import logging
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
 from Auth.models import CustomUser, RoleChoices
-from .models import Teacher
+from .models import Assignment, Teacher
 from .forms import AssignmentForm, TeacherForm
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
+
 
 
 # def teacher_list(request):
@@ -64,7 +68,7 @@ def teacher_archive(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     teacher.is_active = False
     teacher.save()
-    messages.success(request, f"L'enseignant {teacher.name} a été archivé avec succès !")
+    messages.success(request, _("The teacher %(teacher_name)s has been successfully archived!") % {'teacher_name': teacher.name})
     return redirect('teachers_list')
 
 @login_required
@@ -79,19 +83,80 @@ def teacher_restore(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     teacher.is_active = True
     teacher.save()
-    messages.success(request, f"L'enseignant {teacher.name} a été restauré avec succès !")
+    messages.success(request, _("The teacher %(teacher_name)s has been successfully restored!") % {'teacher_name': teacher.name})
     return redirect('teacher_archived_list')
 
+@login_required
+def assignment_list(request):
+    """View to display a list of all assignments."""
+    assignments = Assignment.objects.filter(teacher=request.user,is_active=True)  # Filter assignments by the logged-in teacher
+    print(f"Assignments for teacher {request.user.username}: {assignments}")  # Debugging line
+    return render(request, 'teachers/assignments/assigment_list.html', {'assignments': assignments})
 
 @login_required
-def upload_assignment(request):
-    if request.method == 'POST':
-        form = AssignmentForm(request.POST, request.FILES)
-        if form.is_valid():
-            assignment = form.save(commit=False)
-            assignment.teacher = request.user  # Set the teacher to the current user
-            assignment.save()
-            return redirect('teacher_dashboard')  # Redirect to the teacher dashboard
+def assignment_create_update_view(request,pk=None):
+    if pk:
+        assignment = get_object_or_404(Assignment, pk=pk)
     else:
-        form = AssignmentForm()
-    return render(request, 'upload_assignment.html', {'form': form})
+        assignment = None
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST, request.FILES, instance=assignment)
+        if form.is_valid():
+            new_assignment = form.save(commit=False)
+            new_assignment.teacher = request.user
+            new_assignment.save()
+            messages.success(request, _("Operation Finished with success!"))
+            return redirect('assignments_list')
+    else:
+        form = AssignmentForm(instance=assignment)
+    return render(request, 'teachers/assignments/assignment_form.html', {'form': form})
+def assignment_delete(request, pk):
+    """View to delete an assignment."""
+    assignment = get_object_or_404(Assignment, pk=pk)
+    if request.method == 'POST':
+        assignment.delete()
+        messages.success(request, _("Assignment deleted successfully!"))
+        return redirect('assignments_list')
+    return render(request, 'teachers/assignments/assignment_confirm_delete.html', {'assignment': assignment})
+
+@login_required
+def assignment_detail(request, pk):
+    """View to display the details of an assignment."""
+    assignment = get_object_or_404(Assignment, pk=pk)
+    return render(request, 'teachers/assignments/assignment_detail.html', {'assignment': assignment})
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def archive_or_restore_assignment(request, pk):
+    """View to archive or restore an assignment with debug logging."""
+    logger.debug(f"Received request to toggle assignment {pk}")
+
+    if not request.user.is_authenticated:
+        logger.warning("Unauthorized attempt to toggle assignment")
+        return JsonResponse({'status': 'error', 'message': _("Authentication required")}, status=403)
+
+    assignment = get_object_or_404(Assignment, pk=pk)
+    print(f"Assignment before toggle: {assignment.is_active}")  # Debugging line
+
+    if request.method == 'POST':
+        assignment.is_active = not assignment.is_active  # Toggle status
+        assignment.save()
+        
+        status_message = _("Assignment restored successfully!") if assignment.is_active else _("Assignment archived successfully!")
+        logger.info(f"Assignment {pk} status changed: {status_message}")
+
+        return JsonResponse({'status': 'success', 'message': status_message})  # Explicitly return JSON response
+
+    logger.error("Invalid request method for toggling assignment")
+    return JsonResponse({'status': 'error', 'message': _("Invalid request")}, status=400)
+
+@login_required
+def check_nni(request):
+    """Check if the NNI already exists in the database."""
+    nni = request.GET.get('nni', '')
+    exists = CustomUser.objects.filter(nni=nni).exists()
+    print(f"NNI check: {nni}, exists: {exists}")
+    return JsonResponse(as_crypsyfied={'nni': exists})
+
+

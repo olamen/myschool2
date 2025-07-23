@@ -1,0 +1,128 @@
+{% extends "basef.html" %}
+{% load static i18n %}
+
+{% block title %}
+    <title>Charge Form</title>
+{% endblock %}
+
+{% block body %}
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h4 id="title" class="text-center">
+            {% if charge %}
+                Modifier la Charge
+            {% else %}
+                Ajouter une Charge
+            {% endif %}
+        </h4>
+        <hr />
+        
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+
+            <!-- Removed handling of `charge.id` via URL -->
+            <input type="hidden" name="charge_id" value="{% if charge %}{{ charge.id }}{% endif %}">
+
+            <button type="submit" class="btn btn-success">
+                {% if charge %}Mettre à jour{% else %}Enregistrer{% endif %}
+            </button>
+        </form>
+
+        <a href="{% url 'index' %}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+
+    <div class="col-md-8">
+        <h4 class="text-center">Liste des Charges</h4>
+        <hr />
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Montant</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for charge in charges %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ charge.name }}</td>
+                    <td>{{ charge.amount }}</td>
+                    <td>{{ charge.description }}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editCharge('{{ charge.id }}', '{{ charge.name }}', '{{ charge.amount }}', '{{ charge.description }}')">Modifier</button>
+
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ charge.id }}">Supprimer</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal delette -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">Confirm</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+              <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Supprimer</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+</div>
+
+<script>
+function editCharge(id, name, amount, description) {
+    document.querySelector("[name='charge_id']").value = id;
+    document.querySelector("[name='name']").value = name;
+    document.querySelector("[name='amount']").value = amount;
+    document.querySelector("[name='description']").value = description;
+    document.getElementById("title").innerText = "Modifier la Charge";
+    document.getElementById("title").classList.add("btn", "btn-danger");
+}
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let deleteModal = document.getElementById("deleteModal");
+        let confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    
+        deleteModal.addEventListener("show.bs.modal", function (event) {
+            let button = event.relatedTarget;  // Button that triggered the modal
+            let chargeId = button.getAttribute("data-id");  // Get charge ID from button
+            confirmDeleteBtn.href = `/accounting/charges/${chargeId}/delete/`;  // Update delete URL dynamically
+        });
+    });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let deleteModal = document.getElementById("deleteModal");
+            let confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+            let modalBody = deleteModal.querySelector(".modal-body");
+
+            deleteModal.addEventListener("show.bs.modal", function (event) {
+                let button = event.relatedTarget;  // Button that triggered the modal
+                let chargeId = button.getAttribute("data-id");  // Get charge ID from button
+                let chargeName = button.closest("tr").querySelector("td:nth-child(2)").innerText; // Get the charge name from the table
+                
+                modalBody.innerHTML = `<p>Are you sure you want to delete the charge <strong>${chargeName}</strong>?</p>`;
+                confirmDeleteBtn.href = `/accounting/charges/${chargeId}/delete/`;  // Update delete URL dynamically
+            });
+        });
+    </script>
+
+    
+
+{% endblock %}

@@ -110,6 +110,13 @@ class CashRegister(models.Model):
             raise ValueError("Type de transaction invalide.")
         self.save()
 
+class ChargeType(models.Model):
+    name = models.CharField(max_length=100, unique=True, null=True, verbose_name=_("Name"))
+    amount = models.DecimalField(_("Montant"), max_digits=10, decimal_places=2)
+    description = models.TextField(_("Description"), blank=True, null=True)
+    is_fix = models.BooleanField(_("FIXED Charge"), default=False)
+    def __str__(self):
+        return f"{self.name} - {self.amount} {'(Fixed)' if self.is_fix else '(Variable)'}"
 
 class Transaction(models.Model):
     cash_register = models.ForeignKey(
@@ -117,17 +124,19 @@ class Transaction(models.Model):
         on_delete=models.CASCADE, 
         related_name="transactions"
     )
+    chargetype = models.ForeignKey(ChargeType,on_delete=models.SET_NULL ,null=True,blank=True, related_name="charge",default=1)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(
         max_length=20,
         choices=[
-            ('Credit', 'Credite'),  # Entrée d'argent
-            ('Debit', 'Debite')    # Sortie d'argent
+            ('Credit', 'Income'),  # Entrée d'argent
+            ('Debit', 'Expence')    # Sortie d'argent
         ],
         default='Credit'
     )
     description = models.TextField(blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True, null=True, blank=True)
     user = models.ForeignKey(
         CustomUser, 
         on_delete=models.CASCADE, 
@@ -151,13 +160,17 @@ def update_cash_register(sender, instance, created, **kwargs):
             instance.cash_register.current_balance -= instance.amount
         instance.cash_register.save()
 
+
+
 class StudentFee(models.Model):
     """
     Paiements pour les frais scolaires des élèves.
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="fees")
     amount = models.DecimalField(_("Montant"), max_digits=10, decimal_places=2)
-    due_date = models.DateField(_("Date limite"))
+    due_date = models.DateField(_("Date"))
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_paid = models.BooleanField(_("Payé"), default=False)
     payment_date = models.DateField(_("Date de paiement"), null=True, blank=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="transactionsstudentuser")
@@ -169,10 +182,14 @@ class StudentFee(models.Model):
         """
         if self.is_paid and self.payment_date:
             # Crée une transaction pour ce paiement
+            description = _("Fee payment for %(first_name)s %(last_name)s") % {
+                'first_name': self.student.first_name,
+                'last_name': self.student.last_name,
+            }
             transaction = Transaction(
                 amount=self.amount,
                 transaction_type="Credit",
-                description=f"Paiement des frais pour {self.student.first_name} {self.student.last_name}",
+                description=description,
                 user=self.cash_register.user,
                 cash_register=self.cash_register,
             )
@@ -191,9 +208,9 @@ class Expense(models.Model):
     CATEGORY_CHOICES = [
         ('maintenance', _('Maintenance')),
         ('utilities', _('Services publics')),
-        ('salary', _('Salaire')),
+        ('salary', _('Salary')),
         ('supplies', _('Fournitures')),
-        ('other', _('Autre')),
+        ('other', _('Other')),
     ]
 
     cash_register = models.ForeignKey(
@@ -207,13 +224,13 @@ class Expense(models.Model):
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,
-        verbose_name=_("Utilisateur")
+        verbose_name=_("User")
     )
     category = models.CharField(
         max_length=50,
         choices=CATEGORY_CHOICES,
         default='other',
-        verbose_name=_("Catégorie")
+        verbose_name=_("category")
     )
     description = models.TextField(
         verbose_name=_("Description"),
@@ -223,7 +240,7 @@ class Expense(models.Model):
     amount = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        verbose_name=_("Montant")
+        verbose_name=_("Amount")
     )
     date = models.DateField(
         auto_now_add=True,
@@ -244,16 +261,19 @@ class Payment(models.Model):
         ('other', _('Autre')),
     ]
     MONTH_CHOICES = [
-        ('oct', _('Octobre')),
-        ('nov', _('Novembre')),
-        ('dec', _('Décembre')),
-        ('jan', _('Janvier')),
-        ('feb', _('Février')),
-        ('mar', _('Mars')),
-        ('apr', _('Avril')),
-        ('may', _('Mai')),
-        ('jun', _('Juin')),
-        ('jul', _('Juillet')),
+        ('jul', _('July')),
+        ('aug', _('August')),
+        ('sep', _('September')),
+        ('oct', _('October')),
+        ('nov', _('November')),
+        ('dec', _('December')),
+        ('jan', _('January')),
+        ('feb', _('February')),
+        ('mar', _('March')),
+        ('apr', _('April')),
+        ('may', _('May')),
+        ('jun', _('June')),
+        
     ]
 
     STATUS_CHOICES = [
@@ -261,7 +281,7 @@ class Payment(models.Model):
         ('unpaid', _('Non Payé')),
         ('absent', _('Absent')),
     ]
-    months_paid = models.JSONField(default=list, verbose_name="Mois payés")
+    
 
     cash_register = models.ForeignKey(
         CashRegister,
@@ -351,6 +371,7 @@ class Payment(models.Model):
         if is_new_payment:
             self.cash_register.current_balance += self.amount
             self.cash_register.save()
+    
 
     def __str__(self):
         return f"Paiement de {self.student.first_name} {self.student.last_name} - pour {', '.join(self.months_paid)} MRU"

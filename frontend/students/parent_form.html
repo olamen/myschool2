@@ -1,6 +1,13 @@
 {% extends "base.html" %}
-<!DOCTYPE html>
 {% load static %}
+
+{% block title %}
+    {% if parent %}
+        <title>Edit Parent</title>
+    {% else %}
+        <title>Add New Parent</title>
+    {% endif %}
+{% endblock title %}
 
 {% block body %}
     <div class="container-fluid">
@@ -8,47 +15,56 @@
             <div class="form-row">
                 <div class="form-panel">
                     <div class="logo mb-5">
-                        <p class="text-center mt-20"><span class="d-block fw-bold mb-10 fs-6">Ajouter un Parent</span> formulaire d'Inscription d'un Nouveau Parent</p>                        
+                        <p class="text-center mt-20">
+                            {% if parent %}
+                                <span class="d-block fw-bold mb-10 fs-6">Modifier un Parent</span> Formulaire de modification d'un parent existant
+                            {% else %}
+                                <span class="d-block fw-bold mb-10 fs-6">Ajouter un Parent</span> Formulaire d'inscription d'un nouveau parent
+                            {% endif %}
+                        </p>                        
                     </div>
-                        <form method="post" enctype="multipart/form-data"  method="post">
-                            {% csrf_token %}
-                            <div class="mb-4">
-                                <div class="form-group has-icon-left">
-                                    <label for="photo">Photo du Parent :</label>
-                                    <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
-                                </div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <div class="form-group has-icon-left">
+                                <label for="photo">Photo du Parent :</label>
+                                <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
                             </div>
-                            <label for="first_name">Nom:</label>
-                            <input class="form-control form-control-lg" type="text" id="first_name" name="first_name" required><br>
+                        </div>
+                        <label for="first_name">First name:</label>
+                        <input class="form-control form-control-lg" type="text" id="first_name" name="first_name" value="{{ parent.first_name|default_if_none:'' }}" required><br>
 
-                            <label for="address">NNI:</label>
-                            <input type="number" class="form-control form-control-lg" id="nni" name="nni" placeholder=" NNI 10 chiffres" required><br>
+                        <label for="last_name">Last name:</label>
+                        <input class="form-control form-control-lg" type="text" id="last_name" name="last_name" value="{{ parent.last_name|default_if_none:'' }}" required><br>
+                        
+                        <label for="nni">NNI:</label>
+                        <input type="number" class="form-control form-control-lg" id="nni" name="nni" placeholder="NNI 10 chiffres" value="{{ parent.nni|default_if_none:'' }}" required><br>
 
-                            <label for="last_name">Prenom:</label>
-                            <input class="form-control form-control-lg" type="text" id="last_name" name="last_name" required><br>
+                        <label for="email">Email:</label>
+                        <input class="form-control form-control-lg" type="email" id="email" name="email" value="{{ parent.email|default_if_none:'' }}" required><br>
 
-                            <label for="email">Email:</label>
-                            <input class="form-control form-control-lg" type="email" id="email" name="email" required><br>
+                        <label for="phone_number">Telephone:</label>
+                        <input class="form-control form-control-lg" type="text" id="phone_number" name="phone_number" value="{{ parent.phone_number|default_if_none:'' }}" required><br>
 
-                            <label for="phone_number">Telephone:</label>
-                            <input class="form-control form-control-lg" type="text" id="phone_number" name="phone_number" required><br>
+                        <label for="address">Address:</label>
+                        <textarea class="form-control form-control-lg" id="address" name="address">{{ parent.address|default_if_none:'' }}</textarea><br>
 
-                            <label for="address">Address:</label>
-                            <textarea class="form-control form-control-lg" id="address" name="address"></textarea><br>
-                            
+                        <label for="children">Enfants:</label>
+                        <select class="form-select form-control multiple-select" id="children" name="children" multiple>
+                            {% for student in students %}
+                            <option value="{{ student.id }}"
+                            {% if student.id in parent_children_ids %}selected{% endif %}>
+                            {{ student.first_name }} {{ student.last_name }} | {{ student.id }}
+                        </option>
+                            {% endfor %}
+                        </select><br>
 
-                            <label for="children">Enfants:</label>
-                            <select class= "form-select form-control multiple-select" id="children" name="children" multiple>
-                                {% for student in students %}
-                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }} | {{ student.id}}</option>
-                                {% endfor %}
-                            </select><br>
-
-                            <button type="submit" class="btn btn-success" >Enregistrer</button>
-                        </form>
-                    </div>
+                        <button type="submit" class="btn btn-success">
+                            {% if parent %}Mettre à jour{% else %}Enregistrer{% endif %}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 {% endblock body %}
-</html>

@@ -22,15 +22,19 @@ urlpatterns = [
     # URLs pour les transactions
     path('transactions/',transaction_list, name='transaction_list'),
     path('transactionslist/',transaction_list_adminf, name='transaction_list_adminf'),
-    path('transactions/add/',add_transaction, name='add_transaction'),
+    path('transactions/add-or-update',add_or_update_transaction, name='add_or_update_transaction'),
     path('transactions/<int:pk>/details/',transaction_details, name='transaction_details'),
     path('transactions/<int:transaction_id>/print/', print_transaction_receipt, name='print_transaction_receipt'),
+    #charges types
+    path("chages/", charge_form, name="charge_form"),
+    path('charges/<int:charge_id>/delete/', charge_delete, name='delete_charge'),
 
 
     path('add-payment/', add_payment, name='add_payment'),
     path('calculate_payment_amount/', calculate_payment_amount, name='calculate_payment_amount'),
     path('get-students/<int:parent_id>/', get_students_by_parent, name='get_students_by_parent'),
     path('students/<int:student_id>/details/', get_student_details, name='get_student_details'),
+    path('get_paid_months/<int:student_id>/', get_paid_months, name='get_paid_months'),
     path('payments/ajax/', payment_list_ajax, name='payment_list_ajax'),
 
     # URLs pour les frais étudiants
@@ -49,7 +53,7 @@ urlpatterns = [
     path('students/create/', create_student, name='create_student'),
     path('parents/autocomplete/', autocomplete_parent, name='autocomplete_parent'),
     
-
+    path('transactions-by-month/', transactions_by_month, name='transactions_by_month'),
     #path('student-fees/<int:pk>/edit/',edit_student_fee, name='edit_student_fee'),
     #path('student-fees/<int:pk>/delete/',delete_student_fee, name='delete_student_fee'),
 

@@ -1,6 +1,8 @@
 {% load static %}
+{% load compress static i18n %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
 <head>
     <meta charset="UTF-8">
@@ -11,10 +13,12 @@
     <title>Mon Ecole</title>
     {% endblock title %}
          
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+         {% block extjs %}
+            
+         {% endblock extjs %}
+            
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-
+   
     <link rel="stylesheet" href=" {% static '/css/animate.min.css' %} ">
     <link rel="stylesheet" href=" {% static 'bootstrap-icon/bootstrap-icons.css' %} ">
     <link rel="stylesheet" href=" {% static 'css/jquery.mCustomScrollbar.min.css' %}">
@@ -36,15 +40,46 @@
 
 <body>
 
+    <div class="fixed-top-section bg-success text-white">
+        <div class="profile-info">
+            <img src="
+            {% if user.image %}{{ user.image.url }}{% else %}{% static 'images/default-profile.png' %}{% endif %}
+            "
+                 alt="{% trans 'Profile Picture' %}" class="profile-photo">
+            <h4>{% trans "Welcome, " %} {{ user.first_name }} {{ user.last_name }}</h4>
+        </div>
+        <div class="profile-actions">
+            <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+    <input name="next" type="hidden" value="{{ request.get_full_path|slice:'3:' }}">
+    <select name="language">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                {{ language.name_local }} ({{ language.code }})
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Go">
+</form>
+        </div>
+        {% block time %}
+                
+            {% endblock time %}
+        <a href="{% url 'logout' %}" class="btn btn-danger">{% trans "Logout" %}</a>
+    </div>
+
+
 {% block sidebar %}
     
 
     
     <!-- main sidebar -->
-    <div class="fixed-sidebar sidebar-mini">
+    <div class="fixed-sidebar sidebar-mini" style="margin-top: 40px;">
         <div class="logo">
             <button class="sidebar-collapse"><i class="bi bi-list"></i></button>
-            <a href=" {% url 'index' %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+            <a href=" {% url 'dashf' %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
         </div>
         <!-- sidebar menu -->
         <div class="menu">
@@ -53,17 +88,37 @@
                     <ul>
                         <li class="sidebar-title"><span>Menu</span>
                         </li>
-                        <li class="sidebar-item"><a href=" {% url 'index' %} " class=" sidebar-link active"
-                                data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
-                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a></li> 
-
-                        <li class="sidebar-item"><a role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>LaComptabilité</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'open_cash_register' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Ouvrir la Caisse</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'add_payment' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Ajouter un Paiement</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'get_cash_register_status_by_user' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Liste des Caisses</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'cash_register_status' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Le Status De La Caisses</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'transaction_list_adminf' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Les Transaction</span></a>
-                        <li  class="sidebar-item"><a href=" {% url 'student_fee_list' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Frais Etudient</span></a></li>
+                        <li class="sidebar-item has-sub" name="Students">
+                            <a role="button" class=" sidebar-link active" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="{% trans 'Students' %}" tabindex="0"><i class="bi bi-person"></i><span>{% trans "Students" %}</span></a>
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'add_student' %} " class="sub-menu-item">{% trans "Add Student" %}</a>
+                                <li><a href=" {% url 'students_list' %} " class="sub-menu-item">{% trans "Students List" %}</a>
+                                </li>
+                                </li>
+                                <li><a href=" {% url 'add_edit_parent' 0 %} " class="sub-menu-item">{% trans "Add Parent" %}</a></li>
+                                <li><a href=" {% url 'parent_list' %} " class="sub-menu-item">{% trans "Parent List" %}</a></li>
+                                <li><a href=" {% url 'parent_list_card' %} " class="sub-menu-item">{% trans "Parent List Card" %}</a></li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub" name="Accounting">
+                            <a role="button" class="sidebar-link">  <i
+                                class="bi bi-list"></i> <span>{% trans 'Accounting' %}</span></a>
+                            <ul class="sub-menu">
+                                <li><a href=" {% url 'add_payment' %} " class="sub-menu-item"> {% trans 'Add un Payement' %} </a></li>
+                                <li  class="sidebar-item"><a href=" {% url 'add_payment' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Payement</span></a></li>
+                                <li  class="sidebar-item">
+                                    <a href=" {% url 'cash_register_status' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Status" tabindex="5">
+                                        <i class="bi bi-list"></i> 
+                                        <span>Status</span>
+                                    </a>
+                                </li>
+                                <li  class="sidebar-item"><a href=" {% url 'transaction_list_adminf' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Transactions</span></a></li>
+                                <li  class="sidebar-item"><a href=" {% url 'student_fee_list' %} " role="button" class="sidebar-link" data-bs-placement="right"title="Comptabilité" tabindex="0"><i class="bi bi-stack"></i> <span>Frais Etudient</span></a></li>
+                                </li>
+                            </ul>
+                                
+                        
                     </ul>
                 </div>
             </div>
@@ -71,18 +126,26 @@
         <!-- sidebar menu -->
     </div>
 {% endblock sidebar %}
-    <div class="main-content">
+    <div class="main-content" style="margin-top: 20px;">
         <div class="breadcrumb-wrap mb-20">
             
             {% block body %}
             {% if messages %}
             <div class="container mt-4">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endfor %}
+              {% for message in messages %}
+              <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+              >
+                {{ message }}
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+              {% endfor %}
             </div>
             {% endif %}
 
@@ -90,6 +153,11 @@
         </div>
     </div>
     </div>
+    
+    {% block topjs %}
+        
+    {% endblock topjs %}
+        
 
     <script src=" {% static '/js/jquery-3.6.0.min.js' %}"></script>
     <script src=" {% static '/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
@@ -104,6 +172,7 @@
     <script src=" {% static '/js/dataTables.responsive.min.js' %}"></script>
     <script src=" {% static '/js/datatables-init.js' %}"></script>
     <script src=" {% static '/js/select2.min.js' %}"></script>
+    <script src=" {% static '/js/chart.js' %}"></script>
     
     {% block extrahead %}
         

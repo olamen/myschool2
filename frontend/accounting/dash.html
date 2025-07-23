@@ -1,83 +1,104 @@
 {% extends "basef.html" %}
-{% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tableau de Bord</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.min.js"></script>
-</head>
-<body>
-  <div class="container mt-5">
-    <!-- Header -->
-    <div class="text-center mb-5">
-      <h1 class="display-4">Tableau de Bord</h1>
-      <p class="text-muted">Bienvenue dans la gestion de votre école</p>
-    </div>
+{% load static i18n %}
 
-    <!-- Cards Section -->
-    <div class="row text-center">
-      <!-- Caisse -->
-      <div class="col-md-4">
-        <div class="card bg-primary text-white mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Solde Actuel de la Caisse</h5>
-            <p class="card-text fs-3"><span id="currentCash">0</span> MRU</p>
-          </div>
-          <a href="/cash-register" class="card-footer text-white text-decoration-none">
-            Gérer la Caisse <i class="bi bi-arrow-right-circle"></i>
-          </a>
+  
+  {% block <title></title> %}
+  <title>{% trans "Dashboard" %}</title>
+  {% endblock <title></title> %}
+    
+
+
+{% block body %}
+<div class="fixed-top-section bg-success text-white">
+  <div class="profile-info">
+      <img src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static 'images/default-profile.png' %}{% endif %}"
+           alt="{% trans 'Profile Picture' %}" class="profile-photo">
+      <h4>{% trans "Welcome," %} {{ request.user.username }} {{ user.last_name }}</h4>
+      
+      
+          
+  </div>
+  <div class="profile-info">
+      <h4>{% trans "Role:" %} {{ request.user.role }}</h4>
+      <h4>{% trans "Username:" %} {{ request.user.username }}</h4>
+      <img src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static 'images/default-profile.png' %}{% endif %}"
+           alt="{% trans 'Profile Picture' %}" class="profile-photo">
+  </div>
+  <a href="{% url 'logout' %}" class="btn btn-danger">{% trans "Logout" %}</a>
+</div>
+
+
+<div class="container mt-5">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4">{% trans "Dashboard" %}</h1>
+    <p class="text-muted">{% trans "Welcome to your school management system" %}</p>
+  </div>
+
+  <!-- Cards Section -->
+  <div class="row text-center">
+    <!-- Caisse -->
+    <div class="col-md-4">
+      <div class="card bg-primary text-white mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{% trans "Current Cash Balance" %}</h5>
+          <p class="card-text fs-3"><span id="currentCash">0</span> MRU</p>
         </div>
-      </div>
-      <!-- Paiements -->
-      <div class="col-md-4">
-        <div class="card bg-success text-white mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Paiements Mensuels</h5>
-            <p class="card-text fs-3" id="monthlyPayments">0 MRU</p>
-          </div>
-          <a href="/monthly-payments" class="card-footer text-white text-decoration-none">
-            Voir les Paiements <i class="bi bi-arrow-right-circle"></i>
-          </a>
-        </div>
-      </div>
-      <!-- Dépenses -->
-      <div class="col-md-4">
-        <div class="card bg-danger text-white mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Dépenses Totales</h5>
-            <p class="card-text fs-3" id="totalExpenses">0 MRU</p>
-          </div>
-          <a href="/expenses" class="card-footer text-white text-decoration-none">
-            Gérer les Dépenses <i class="bi bi-arrow-right-circle"></i>
-          </a>
-        </div>
+        <a href="/cash-register" class="card-footer text-white text-decoration-none">
+          {% trans "Manage Cash Register" %} <i class="bi bi-arrow-right-circle"></i>
+        </a>
       </div>
     </div>
-
-    <!-- Buttons for Actions -->
-    <div class="row mb-5">
-      <div class="col text-center">
-        <a href="/students" class="btn btn-primary btn-lg mx-2">Gérer les Étudiants</a>
-        <a href="/parents" class="btn btn-secondary btn-lg mx-2">Gérer les Parents</a>
-        <a href="/transactions" class="btn btn-success btn-lg mx-2">Historique des Transactions</a>
-        <a href="/reports" class="btn btn-info btn-lg mx-2">Générer des Rapports</a>
+    <!-- Paiements -->
+    <div class="col-md-4">
+      <div class="card bg-success text-white mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{% trans "Monthly Payments" %}</h5>
+          <p class="card-text fs-3" id="monthlyPayments">0 MRU</p>
+        </div>
+        <a href="/monthly-payments" class="card-footer text-white text-decoration-none">
+          {% trans "View Payments" %} <i class="bi bi-arrow-right-circle"></i>
+        </a>
       </div>
     </div>
-
-    <!-- Chart Section -->
-    <div class="card">
-      <div class="card-header">
-        <h5>Statistiques Financières</h5>
-      </div>
-      <div class="card-body">
-        <canvas id="financialChart" style="height: 300px;"></canvas>
+    <!-- Dépenses -->
+    <div class="col-md-4">
+      <div class="card bg-danger text-white mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{% trans "Total Expenses" %}</h5>
+          <p class="card-text fs-3" id="totalExpenses">0 MRU</p>
+        </div>
+        <a href="/expenses" class="card-footer text-white text-decoration-none">
+          {% trans "Manage Expenses" %} <i class="bi bi-arrow-right-circle"></i>
+        </a>
       </div>
     </div>
   </div>
+
+  <!-- Buttons for Actions -->
+  <div class="row mb-5">
+    <div class="col text-center">
+      <a href="/students" class="btn btn-primary btn-lg mx-2">{% trans "Manage Students" %}</a>
+      <a href="/parents" class="btn btn-secondary btn-lg mx-2">{% trans "Manage Parents" %}</a>
+      <a href="/transactions" class="btn btn-success btn-lg mx-2">{% trans "Transactions History" %}</a>
+      <a href="/reports" class="btn btn-info btn-lg mx-2">{% trans "Generate Reports" %}</a>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="card">
+    <div class="card-header">
+      <h5>{% trans "Financial Statistics" %}</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="financialChart" style="height: 300px;"></canvas>
+    </div>
+  </div>
+</div>
+
+{% endblock body%}
+  
+  
 
   <script>
     // Dynamically update card values (simulate fetching from API)
@@ -98,14 +119,14 @@
           labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
           datasets: [
             {
-              label: "Revenus",
+              label: "{% trans 'Revenues' %}",
               data: [12000, 15000, 18000, 20000, 22000, 24000],
               backgroundColor: "rgba(75, 192, 192, 0.6)",
               borderColor: "rgba(75, 192, 192, 1)",
               borderWidth: 1,
             },
             {
-              label: "Dépenses",
+              label: "{% trans 'Expenses' %}",
               data: [8000, 10000, 12000, 14000, 16000, 18000],
               backgroundColor: "rgba(255, 99, 132, 0.6)",
               borderColor: "rgba(255, 99, 132, 1)",

@@ -359,7 +359,7 @@ button {
   line-height: 35px;
   font-size: 25px;
   padding: 0;
-  background: #9cd02d;
+  background: #198754;
   border-radius: 50%;
   color: #fff;
 }
@@ -372,7 +372,7 @@ button {
   height: calc(100% - 135px);
 }
 .fixed-sidebar .menu .sidebar-menu {
-  padding: 0 30px;
+  padding: 0 5px;
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
   z-index: 1;
@@ -437,7 +437,7 @@ button {
   transition: all 0.3s ease-in;
 }
 .fixed-sidebar .menu .sidebar-menu ul .sidebar-item .sidebar-link.active {
-  background: linear-gradient(45deg, #9cd02d, #D2E34A);
+  background: linear-gradient(45deg, #198754, #D2E34A);
   color: #fff;
 }
 .fixed-sidebar .menu .sidebar-menu ul .sidebar-item .sidebar-link.active i {
@@ -852,8 +852,8 @@ button {
 /* breadcrumb style */
 .breadcrumb-wrap {
   background: #fff;
-  padding: 35px 30px;
-  border: 1px solid rgba(124, 165, 36, 0.15);
+    padding: 0px 1px;
+    border: 1px solid rgba(124, 165, 36, 0.15);
 }
 .breadcrumb-wrap .left {
   width: calc(100% - 290px);
@@ -2326,16 +2326,16 @@ table.dataTable thead th:last-child, table.dataTable thead td:last-child {
   }
 
   .fixed-sidebar {
-    width: 280px;
+    width: 300px;
   }
   .fixed-sidebar .logo a {
     width: 150px;
   }
 
   .main-content {
-    padding-left: 280px;
-    padding-top: 20px;
-    padding-bottom: 10px;
+    padding-left: 300px;
+    padding-top: 50px;
+    padding-bottom: 0px;
   }
 
   .top-boxes .row {
@@ -3129,3 +3129,33 @@ table.dataTable thead th:last-child, table.dataTable thead td:last-child {
     line-height: 1.5;
   }
 }
+
+/*topbar*/
+.col-md-4 {
+            overflow: visible;
+        }
+
+.fixed-top-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+            padding: 10px;
+            z-index: 1000; /* Ensure it's above other elements */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+.profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+.profile-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }

@@ -1,4 +1,6 @@
 from django.urls import path
+
+from notes.viewsquiz import QuiZListView, quiz_data_view, quiz_view, save_quiz_view
 from .views import *
 
 urlpatterns = [
@@ -25,4 +27,12 @@ urlpatterns = [
     path('get_subjects/<int:grade_id>/', get_subjects_by_grade, name='get_subjects_by_grade'),
     path('get_classes/<int:grade_id>/', get_classes_by_grade, name='get_classes_by_grade'),
     path('get_notes/', get_notes, name='get_notes'),
+
+    #quiz
+    path('quiz/', QuiZListView.as_view(), name='main_view'),
+    path('quiz/<int:pk>/', quiz_view, name='quiz_view'),
+    path('quiz/<int:pk>/save/', save_quiz_view, name='save_quiz_view'),
+    path('quiz/<int:pk>/data/', quiz_data_view, name='quiz_data_view'),
+   # path('quiz/<int:pk>/submit/', submit_quiz, name='submit_quiz'),
+
 ]

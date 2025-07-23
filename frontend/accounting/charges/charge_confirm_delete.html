@@ -1,0 +1,18 @@
+{% extends "basef.html" %} {% load static i18n %}
+{% block title %}
+    <title>Confirm Delete Charge</title>
+{% endblock title %}
+
+
+{% block body %}
+     <div class="container">
+         <h1>Confirm Delete</h1>
+         <p>Are you sure you want to delete this charge?</p>
+         <form method="POST" action="{% url 'delete_charge' charge.id %}">
+             {% csrf_token %}
+             <button type="submit" class="btn btn-danger">Yes, Delete</button>
+             <a href="{% url 'charge_form' %}" class="btn btn-secondary">Cancel</a>
+         </form>
+     </div>
+{% endblock %}
+    

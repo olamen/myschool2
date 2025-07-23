@@ -3,6 +3,10 @@
 {% block title %}
 <title>Ajouter un Paiement</title>
 {% endblock title %}
+{% block extjs %}
+<script src=" {% static '/js/jquery-3.7.1jquery.min.js' %}"></script>
+<script src=" {% static '/js/ui1.13.2jquery-ui.js' %}"></script>
+{% endblock extjs %}
 {% block body %}
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Ajouter un Paiement</h2>
@@ -13,40 +17,36 @@
         
         <!-- Section Caisse -->
         <div class="mb-3">
-          <label for="cash_register">Caisse</label>
-          {{ form.cash_register }}
-        </div> 
+            <label for="cash_register_display">Caisse</label>
+            {{ form.cash_register_display }}
+          </div>
         
         <!-- Section Parent avec Select2 -->
         <div class="mb-3">
-          <label for="id_parent">Parent</label>
-          <select 
-              id="id_parent" 
-              name="parent" 
-              class="form-control parent-select"
-              data-ajax-url="{% url 'parent_search_autocomplete' %}"
-          >
-              {% if form.parent.value %}
-                  <option value="{{ form.parent.value }}" selected>
-                      {{ form.parent.selected_label }}
-                  </option>
-              {% endif %}
-          </select>
-          <small class="form-text text-muted">Commencez à taper un nom, prénom ou NNI de parent</small>
-        </div>
+            <label for="id_parent">Parent</label>
+            <select 
+                id="id_parent" 
+                name="parent" 
+                class="form-control parent-select"
+                data-ajax-url="{% url 'parent_search_autocomplete' %}"
+            >
+                {% if form.parent.value %}
+                    <option value="{{ form.parent.value }}" selected></option>
+                {% endif %}
+            </select>
+            <small class="form-text text-muted">Commencez à taper un nom, prénom ou NNI de parent</small>
+          </div>
 
         <!-- Section Étudiant -->
         <div class="mb-3">
-          <label for="student">Étudiant</label>
-          <select id="student" name="student" class="form-control" disabled>
-            <option value="">Sélectionnez un parent d'abord</option>
-          </select>
+            <label for="{{ form.student.id_for_label }}">Étudiant</label>
+            {{ form.student }}
         </div>
         
         <!-- Section Classe (lecture seule) -->
         <div class="mb-3">
-          <label for="classe">Classe</label>
-          <input type="text" id="classe" class="form-control" readonly>
+            <label for="classe_display">Classe</label>
+            <input type="text" id="classe_display" class="form-control" readonly>
         </div>
 
         <!-- Section Mois à payer -->
@@ -66,7 +66,7 @@
         <!-- Section Montant -->
         <div class="mb-3">
           <label for="amount">Montant</label>
-          <input type="text" id="amount" class="form-control" readonly>
+          <input type="text" id="amount" name="amount" class="form-control" readonly>
         </div>
         
         <!-- Section Méthode de paiement -->
@@ -88,15 +88,14 @@
   </div>
 </div>
 
-<!-- Intégration de Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
+
 
 <script>
 $(document).ready(function() {
     // Initialisation de Select2 pour la recherche de parents
     $('#id_parent').select2({
-        placeholder: "Rechercher un parent...",
+        placeholder: "Parent Search By NNI,Name...",
         minimumInputLength: 2,
         ajax: {
             url: $('#id_parent').data('ajax-url'),
@@ -120,66 +119,104 @@ $(document).ready(function() {
         }
     });
 
-    // Gestion de la sélection d'un parent
+    // Update student selection to populate the form's student field
     $('#id_parent').on('select2:select', function(e) {
         const parentId = e.params.data.id;
-        const studentSelect = $('#student');
+        const studentSelect = $('#id_student');
         
-        studentSelect.prop('disabled', false)
-            .html('<option value="">Chargement...</option>');
+        studentSelect.prop('disabled', false).html('<option value="">Chargement...</option>');
         
         $.ajax({
             url: "{% url 'get_students_by_parent' 0 %}".replace('0', parentId),
             method: "GET",
             success: function(data) {
-                studentSelect.html('<option value="">Sélectionnez un étudiant</option>');
+                studentSelect.empty().append($('<option>', { value: '', text: 'Sélectionnez un étudiant' }));
                 data.forEach(student => {
-                    studentSelect.append(
-                        `<option value="${student.id}">${student.first_name} ${student.last_name}</option>`
-                    );
+                    studentSelect.append($('<option>', {
+                        value: student.id,
+                        text: student.first_name + ' ' + student.last_name
+                    }));
                 });
-            },
-            error: function() {
-                studentSelect.html('<option value="">Erreur de chargement</option>');
             }
         });
     });
 
-    // Gestion du changement d'étudiant
-    $('#student').change(function() {
-        const studentId = $(this).val();
-        if (studentId) {
-            $.ajax({
-                url: "{% url 'get_student_details' 0 %}".replace('0', studentId),
-                method: "GET",
-                success: function(data) {
-                    $('#classe').val(data.class_name);
-                    $('#amount').val(data.monthly_fee)
-                        .attr('data-original-amount', data.monthly_fee);
-                    updateAvailableMonths(studentId);
-                },
-                error: function() {
-                    showAlert("Erreur lors du chargement des détails", "danger");
-                }
-            });
+    // Update class and amount when student changes
+                // Update class display and hidden field
+        $('#id_student').change(function() {
+            const studentId = $(this).val();
+            if (studentId) {
+                $.ajax({
+                    url: "{% url 'get_student_details' 0 %}".replace('0', studentId),
+                    method: "GET",
+                    success: function(data) {
+                        // Update display field
+                        $('#classe_display').val(data.class_name);
+                        // Update hidden form field
+                        $('#id_classe').val(data.class_id);
+                        // Update amount
+                        $('#amount').val(data.monthly_fee).attr('data-original-amount', data.monthly_fee);
+                        populateMonthsCheckboxes(studentId); 
+                    }
+                });
+            }else {
+            // Reset if no student is selected
+            $('#classe_display').val('');
+            $('#id_classe').val('');
+            $('#amount').val('0.00').removeAttr('data-original-amount');
+            $('#months-container').empty(); // Clear months if no student
         }
-    });
+        });
 
     // Gestion de la sélection des mois
     $(document).on('change', '.month-checkbox', function() {
-        const count = $('.month-checkbox:checked').length;
+        const count = $('.month-checkbox:checked:not(:disabled)').length; // <--- MODIFIED LINE
         const fee = parseFloat($('#amount').attr('data-original-amount')) || 0;
         $('#amount').val((count * fee).toFixed(2));
     });
 
-    // Fonction de mise à jour des mois disponibles
-    function updateAvailableMonths(studentId) {
+    // --- NEW FUNCTION: Populates and checks months ---
+    function populateMonthsCheckboxes(studentId) {
+        // First, clear existing checkboxes
+        $('#months-container').empty();
+
+        // Get all possible months (assuming these are constant or fetched once)
+        // You can embed this in your template or fetch via AJAX
+        // For now, let's use the choices from your form.months_paid.field.choices
+        const allMonths = [
+            {% for value, label in form.months_paid.field.choices %}
+                { value: '{{ value }}', label: '{{ label }}' },
+            {% endfor %}
+        ];
+
+        // Fetch paid months for the selected student
         $.ajax({
-            url: "{% url 'get_unpaid_months' 0 %}".replace('0', studentId),
+            url: "{% url 'get_paid_months' 0 %}".replace('0', studentId), // <--- You'll need to create this URL/view
             method: "GET",
-            success: function(data) {
-                $('#months-container').empty();
-                data.forEach(month => {
+            success: function(paidMonthsData) {
+                const paidMonths = paidMonthsData.paid_months; // Assuming your API returns { paid_months: ['oct', 'nov'] }
+
+                allMonths.forEach(month => {
+                    const isChecked = paidMonths.includes(month.value);
+                    $('#months-container').append(`
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input month-checkbox" type="checkbox" 
+                                   value="${month.value}" id="month_${month.value}" 
+                                   name="months_paid" ${isChecked ? 'checked' : ''} ${isChecked ? 'disabled' : ''}> 
+                                   
+                            <label class="form-check-label" for="month_${month.value}">
+                                ${month.label} ${isChecked ? '(Payé)' : ''}
+                            </label>
+                        </div>
+                    `);
+                });
+                // Recalculate amount after populating and checking months
+                $('.month-checkbox').trigger('change');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching paid months:", error);
+                // Fallback: just populate all months without checking if error
+                allMonths.forEach(month => {
                     $('#months-container').append(`
                         <div class="form-check form-check-inline">
                             <input class="form-check-input month-checkbox" type="checkbox" 
@@ -191,12 +228,11 @@ $(document).ready(function() {
                         </div>
                     `);
                 });
-            },
-            error: function() {
-                showAlert("Erreur de chargement des mois", "danger");
             }
         });
     }
+    // --- END NEW FUNCTION ---
+
 
     // Fonction d'affichage des alertes
     function showAlert(message, type) {

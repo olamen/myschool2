@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 import dj_database_url
 
-SCHOOL_NAME = "École Excellence"
-SCHOOL_NAME_AR = "مدرسة التميز"
+SCHOOL_NAME = "New Birth School"
+SCHOOL_NAME_FR = "École de la Nouvelle Naissance"
+SCHOOL_NAME_AR = "مدرسة الميلاد الجديد"
 SCHOOL_ADDRESS = "Rue 123, Quartier 456, Ville 789"
 SCHOOL_PHONE = "+123 456 789"
 SCHOOL_EMAIL = "mail@gmail.com"
@@ -30,13 +31,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+#SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = 'vcj%i5xog8w+ipbv#))k)fa-p6hkh%^_1-!by+bso)t$z)j=)('
 
 APPEND_SLASH = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG","False").lower() == "true"
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(" ")
+DEBUG = True  # Or DEBUG = os.environ.get("DEBUG","True").lower() == "true"
+ALLOWED_HOSTS = ['*']  # Or ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 AUTH_USER_MODEL = 'Auth.CustomUser'
 
@@ -54,7 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'crispy_forms',
+    'crispy_bootstrap5',
     'corsheaders',
     'rest_framework',
     'compressor',
@@ -75,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Add this line
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -104,6 +108,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',  # Add this line
+
             ],
         },
     },
@@ -115,15 +121,12 @@ WSGI_APPLICATION = 'school_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')  # Default to SQLite if not set
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite44',
     }
 }
-DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -147,21 +150,33 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ar' #'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
 
+USE_I18N = True  # Enable internationalization
+USE_L10N = True  # Enable localization
 USE_TZ = True
 
+LANGUAGES = [
+    ('en', 'English'),
+    ('fr', 'Français'),
+    ('ar', 'العربية'),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-
-
-
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -171,22 +186,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer',  # Add TemplateHTMLRenderer here
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny', # Or IsAuthenticated, etc.
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer', # Optional, for the browsable API
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    )
 }
-STATIC_URL = '/static/'  # Ensure it starts with a forward slash
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Remove extra entries in STATICFILES_DIRS (just include the 'static' directory)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
 # Fix Django Compressor settings
 COMPRESS_ROOT = STATIC_ROOT  # Use STATIC_ROOT instead of static
@@ -197,3 +215,38 @@ COMPRESS_OUTPUT_DIR = 'cache'
 
 
 LOGIN_URL = '/auth/login/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5'  # Or 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'notes': {  # Replace with your app name
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # 'students': {  # Logger specific to the 'students' app
+        #     'handlers': ['file'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        # },
+    },
+}

@@ -1,7 +1,7 @@
 {% extends 'basestudent.html' %}
 {% load static %}
 
-{% block content %}
+{% block body %}
 <div class="container mt-4">
     <h2 class="text-center mb-4">Tableau de Bord de l'Étudiant</h2>
 
@@ -9,10 +9,10 @@
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    Informations de l'Étudiant
+                    {{ student.first_name }} {{ student.last_name }} Informations
                 </div>
                 <div class="card-body">
-                    <img src="{{ student.photo.url }}" alt="Photo de l'Étudiant" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
+                    <img src="{% if student.photo %}{{ student.photo.url }}{% else %}{% static 'images/child-placeholder.png' %}{% endif %}" alt="Photo de l'Étudiant" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
                     <p><strong>Nom:</strong> {{ student.first_name }} {{ student.last_name }}</p>
                     <p><strong>Classe:</strong> {{ student.student_class.name }}</p>
                     <p><strong>Email:</strong> {{ student.email }}</p>
@@ -52,15 +52,15 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Matière</th>
+                                <th>Subject</th>
                                 <th>Note</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for grade in grades %}
+                            {% for note in notes %}
                                 <tr>
-                                    <td>{{ grade.subject.name }}</td>
-                                    <td>{{ grade.score }}</td>
+                                    <td>{{ note.subject }}</td>
+                                    <td>{{ note.score }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

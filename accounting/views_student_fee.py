@@ -1,10 +1,11 @@
 import calendar
+import logging
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
-from students.models import Parent, Student
+from students.models import Parent, SessionYearModel, Student
 from .models import CashRegister, Fee, Payment
 from .forms import FeeForm, PaymentForm, StudentForm
 from django.db.models import Q
@@ -189,34 +190,50 @@ def get_students_by_parent(request, parent_id):
     students = Student.objects.filter(parents__id=parent_id).values('id', 'first_name', 'last_name')
     return JsonResponse(list(students), safe=False)
 
+
+
 @login_required
 def add_payment(request):
+    if request.user.role != 'Adminf':
+        messages.error(request, "Vous n'êtes pas autorisé à effectuer cette action.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
     if request.method == 'POST':
         form = PaymentForm(request.POST, user=request.user)
         if form.is_valid():
-            payment = form.save(commit=False)
-            
-            # Retrieve the current open cash register for the user
             try:
                 cash_register = CashRegister.objects.get(user=request.user, is_open=True)
             except CashRegister.DoesNotExist:
-                messages.error(request, "Aucune caisse ouverte. Impossible d'enregistrer le paiement.")
-                return redirect('payment_list')  # Replace with the appropriate URL name
-            
-            # Update the cash register balance
-            cash_register.current_balance += payment.amount
-            cash_register.save()
+                messages.error(request, "No open cash register.")
+                return redirect('payment_list')
+            except Exception as e:
+                messages.error(request, f"An unexpected error occurred: {e}")
+                return redirect('payment_list')
+            try:
+                current_session_year = SessionYearModel.objects.get(is_current=True) # Assuming you have an 'is_current' field
+            except SessionYearModel.DoesNotExist:
+                messages.error(request, "No open cash register.")
+                return redirect('dashf')
 
-            # Assign the cash register to the payment and save it
-            payment.cash_register = cash_register
-            payment.save()
+            try:
+                payment = form.save(commit=False)
+                payment.cash_register = cash_register
+                payment.session_year = current_session_year
+                payment.user = request.user # Assuming payment has a user field to store the person who made the payment
+                payment.save()
+                messages.success(request, "Payment saved successfully.")
+                return redirect('dashf')
 
-            messages.success(request, 'Paiement enregistré avec succès et caisse mise à jour.')
-            return redirect('payment_list')  # Replace with the appropriate URL name
+            except Exception as e:
+                messages.error(request, f"An error occurred while saving the payment: {str(e)}")
+                print(f"Error saving payment: {str(e)}")
+                return redirect('dashf')
+        else:
+            messages.error(request, "There were errors in your submission. Please correct them.")
     else:
         form = PaymentForm(user=request.user)
 
     return render(request, 'accounting/add_payment.html', {'form': form})
+
 
 @login_required
 def get_unpaid_months(request, student_id):
@@ -243,6 +260,27 @@ def get_unpaid_months(request, student_id):
     
     except Student.DoesNotExist:
         return JsonResponse([], safe=False)
+    
+def get_paid_months(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    payments = Payment.objects.filter(student=student)
+
+    paid_months_list = []
+    for payment in payments:
+        try:
+            # If months_paid is a JSONField:
+            months_data = payment.months_paid 
+            # If months_paid is a CharField storing a JSON string:
+            # months_data = json.loads(payment.months_paid)
+        except (TypeError, ValueError): # Handle cases where it might not be valid JSON/dict
+            months_data = {}
+
+        for month, status in months_data.items():
+            if status == 'paid' and month not in paid_months_list:
+                paid_months_list.append(month)
+
+    return JsonResponse({'paid_months': paid_months_list})
+    
 @login_required    
 def calculate_payment_amount(request):
     student_id = request.GET.get("student_id")
@@ -251,8 +289,9 @@ def calculate_payment_amount(request):
     student = get_object_or_404(Student, id=student_id)
     
     # Suppose que `monthly_fee` est le tarif mensuel de l'étudiant
-    monthly_fee = student.monthly_fee  
+    monthly_fee = student.student_class.monthly_fee if student.student_class else 0
     total_amount = len(selected_months) * monthly_fee
+    print(f"Total amount for student {student_id} for months {selected_months}: {total_amount}")
 
     return JsonResponse({"total_amount": total_amount})
 
@@ -277,6 +316,7 @@ def payment_list_ajax(request):
         ]
         return JsonResponse(payment_data, safe=False)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
 @login_required
 def get_student_details(request, student_id):
     """
@@ -285,12 +325,17 @@ def get_student_details(request, student_id):
     try:
         student = Student.objects.select_related('student_class').get(id=student_id)
         response_data = {
-            "class_name": student.student_class.name,
+            "class_name": student.student_class.name if student.student_class else "No Class",
+            "class_id": student.student_class.id if student.student_class else None,
             "monthly_fee": student.get_final_fee(),
         }
-        return JsonResponse(response_data, safe=False)
+        return JsonResponse(response_data)
+    
     except Student.DoesNotExist:
-        return JsonResponse({"error": "Étudiant introuvable."}, status=404)
+        return JsonResponse({"error": "Student not found."}, status=404)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
     
 @login_required
 def parent_search_autocomplete(request):
@@ -306,8 +351,8 @@ def parent_search_autocomplete(request):
         )[:10]
         
         # DEBUG: Print the query and matching parents to logs
-        print(f"Query: {query}")
-        print(f"Parents Found: {parents}")
+        #print(f"Query: {query}")
+        #print(f"Parents Found: {parents}")
 
         results = [
             {
@@ -318,5 +363,5 @@ def parent_search_autocomplete(request):
         ]
 
     # DEBUG: Print the final results being returned
-    print(f"Results: {results}")
+    #print(f"Results: {results}")
     return JsonResponse({'results': results})

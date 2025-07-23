@@ -1,7 +1,7 @@
 {% extends 'basepteacher.html' %}
 {% load static %}
 
-{% block content %}
+{% block body %}
 <div class="container mt-4">
     <h2 class="text-center mb-4">Tableau de Bord du Professeur</h2>
 
@@ -16,7 +16,7 @@
                     <ul class="list-group">
                         {% for subject in subjects %}
                             <li class="list-group-item">
-                                <a href="{% url 'teacher_dashboard' %}?subject={{ subject.id }}">{{ subject.name }}</a>
+                                <a href="{% url 'professor_dashboard' %}?subject={{ subject.id }}">{{ subject.name }}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                        {% for classroom in classrooms %}
+                        {% for classroom in classes %}
                             <li class="list-group-item">
                                 <a href="{% url 'class_management' classroom.id %}">{{ classroom.name }}</a>
                             </li>
@@ -49,13 +49,28 @@
                 <div class="card-body">
                     <a href="{% url 'upload_assignment' %}" class="btn btn-success mb-3">Télécharger un Devoir</a>
                     <!-- Display existing assignments -->
-                    <ul class="list-group">
-                        {% for assignment in assignments %}
-                            <li class="list-group-item">
-                                {{ assignment.title }} - <a href="{{ assignment.file.url }}">Télécharger</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    
+                    <table  id="myTable"
+                    class="table table-light data-table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignments %}
+                                <tr>
+                                    <td>{{ assignment.title }}</td>
+                                    <td>{{ assignment.upload_date }}</td>
+                                    <td>{{ assignment.is_active }}</td>
+                                    <td><a href="{{ assignment.file.url }}" class="btn btn-warning btn-sm">Télécharger</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

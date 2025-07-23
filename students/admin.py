@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Assignment, Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig, SessionYearModel
+from .models import Assignment, Classe, Composition, Grade, Devoir, Parent, Student, Subject, Teacher, AppConfig, SessionYearModel, TeacherSubject
 
 # Register your models here.
 class HomeworkAdmin(admin.ModelAdmin):
-    list_display = ['name','trimestre','classe','subject', 'date', 'description', 'get_weighted_score']
+    list_display = ['name','trimestre', 'date', 'description', 'get_weighted_score']
 
 admin.site.register(Devoir, HomeworkAdmin)
 admin.site.register(Student)
@@ -35,14 +35,19 @@ class ParentAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'nni', 'salary', 'salary_type', 'enrollment_date', 'is_active', 'telephone', 'get_subjects')
+    list_display = ('name', 'nni', 'salary', 'salary_type', 'enrollment_date', 'is_active', 'telephone', 'get_subjects','get_classes')
     list_filter = ('salary_type', 'is_active')
     search_fields = ('name', 'nni', 'telephone')
     ordering = ('name',)
+    filter_horizontal = ('classes',)  # Enable easier management of linked classes and subjects
 
     def get_subjects(self, obj):
         return ", ".join([subject.name for subject in obj.subject.all()])
     get_subjects.short_description = 'Subjects'
+
+    def get_classes(self, obj):
+        return ", ".join([classe.name for classe in obj.classes.all()])
+    get_classes.short_description = 'Classes'
 
     def search_by_subject(self, queryset, name, value):
         return queryset.filter(subject__name__icontains=value)
@@ -52,3 +57,7 @@ class TeacherAdmin(admin.ModelAdmin):
         if search_term:
             queryset |= self.model.objects.filter(subject__name__icontains=search_term)
         return queryset, use_distinct
+
+@admin.register(TeacherSubject)
+class TeacherSubjectAdmin(admin.ModelAdmin):
+    list_display = ('teacher', 'subject')  # Customize the display as needed

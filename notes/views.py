@@ -10,6 +10,7 @@ from students.models import Devoir, Composition, Student, Subject
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+import sys
 
 @login_required
 def ajouter_notes_devoir(request):
@@ -79,6 +80,7 @@ def get_students(request, classe_id, devoir_id):
 @csrf_exempt
 def save_note_devoir(request):
     if request.method == "POST":
+        print("Request body:", request.body)  # Debugging
         try:
             # Parse the JSON data
             data = json.loads(request.body)
@@ -110,6 +112,7 @@ def save_note_devoir(request):
 
                 # Ensure score is valid
                 if not (0 <= float(score) <= 20):
+                    print(f"Invalid score for student {student.first_name} {student.last_name}: {score}")  # Debugging
                     return JsonResponse({'success': False, 'message': f"Score invalide pour l'étudiant {student.first_name} {student.last_name}."})
 
                 # Create or update the note
@@ -128,7 +131,7 @@ def save_note_devoir(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)})
 
-    return JsonResponse({'success': False, 'message': 'Requête invalide.'})
+    return JsonResponse({'success': False, 'message': 'Requête invalide.', 'error': str(e)})
 
 #chargement des donnes pour la modification
 def get_notes(request):
@@ -201,24 +204,30 @@ def ajouter_notes_exam(request):
     return render(request, 'notes/ajouter_notes_exam.html', context)
 
 #save note exam
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
 @login_required
-@csrf_exempt
 def save_note_exam(request):
     if request.method == "POST":
         try:
-            # Parse the JSON data
+            logger.debug("Requête POST reçue.")
+
             data = json.loads(request.body)
+            logger.debug(f"Données reçues : {data}")
+
             notes = data.get('notes', [])
             subject_id = data.get('subject_id')
             exam_id = data.get('exam_id')
             session_year_id = data.get('sessionyear')
             trimestre_id = data.get('trimestre_id')
 
-            # Validate required fields
             if not all([notes, subject_id, exam_id, session_year_id, trimestre_id]):
+                logger.warning("Champs requis manquants.")
                 return JsonResponse({'success': False, 'message': 'Données manquantes.'})
 
-            # Get the related objects
             subject = Subject.objects.get(id=subject_id)
             session_year = SessionYearModel.objects.get(id=session_year_id)
             trimestre = Trimestre.objects.get(id=trimestre_id)
@@ -228,44 +237,54 @@ def save_note_exam(request):
                 student_id = note_data.get('student_id')
                 score = note_data.get('score')
                 absence = note_data.get('absence')
-                # Validation
+
+                logger.debug(f"Traitement de l'étudiant ID: {student_id} | score: {score} | absence: {absence}")
+
                 if score and absence:
+                    logger.warning(f"Note et absence toutes deux présentes pour l'étudiant ID {student_id}.")
                     return JsonResponse({'success': False, 'message': 'Note et absence incompatibles'})
+
                 if not score and not absence:
+                    logger.warning(f"Valeurs manquantes pour l'étudiant ID {student_id}.")
                     return JsonResponse({'success': False, 'message': 'Valeur manquante'})
-                # Convertir le score en float seulement s'il est présent
+
                 score_float = float(score) if score else None
 
-                # Validate student and score
                 try:
                     student = Student.objects.get(id=student_id)
                 except Student.DoesNotExist:
+                    logger.error(f"Étudiant introuvable: ID {student_id}")
                     return JsonResponse({'success': False, 'message': f"L'étudiant avec l'ID {student_id} n'existe pas."})
 
-                # Ensure score is valid
-                if score is not None and not (0 <= float(score) <= 20):
+                if score is not None and not (0 <= score_float <= 20):
+                    logger.warning(f"Score invalide ({score_float}) pour l'étudiant {student.first_name} {student.last_name}.")
                     return JsonResponse({'success': False, 'message': f"Score invalide pour l'étudiant {student.first_name} {student.last_name}."})
 
-                # Create or update the note
                 NoteComposition.objects.update_or_create(
                     student=student,
                     subject=subject,
                     sessionyear=session_year,
                     trimestre=trimestre,
-                    composition= composition,
+                    composition=composition,
                     defaults={
-                        'score': score_float,  # Utiliser score_float au lieu de score
+                        'score': score_float,
                         'absence': absence if absence else None
                     }
                 )
+                logger.info(f"Note enregistrée pour l'étudiant ID {student_id}.")
 
             return JsonResponse({'success': True, 'message': 'Notes enregistrées avec succès !'})
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Données JSON invalides.'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
 
-    return JsonResponse({'success': False, 'message': 'Requête invalide.'})
+        except json.JSONDecodeError as e:
+            logger.exception("Erreur JSON:")
+            return JsonResponse({'success': False, 'message': 'Données JSON invalides.'})
+
+        except Exception as e:
+            logger.exception("Erreur non gérée lors de l'enregistrement des notes:")
+            return JsonResponse({'success': False, 'message': 'Requête invalide.', 'error': str(e)})
+
+    logger.warning("Méthode non autorisée utilisée.")
+    return JsonResponse({'success': False, 'message': 'Requête invalide.', 'error': 'Méthode non autorisée'})
 
 #old
 def exam_list(request):
@@ -345,7 +364,7 @@ def add_composition(request):
         return redirect('composition_list')
     students = Student.objects.all()
     subjects = Subject.objects.all()
-    return render(request, 'notes/add_composition.html', {'students': students, 'subjects': subjects})
+    return render(request, 'notes/ajouter_notes_exam.html', {'students': students, 'subjects': subjects})
 
 def edit_composition(request, pk):
     """Edit composition."""

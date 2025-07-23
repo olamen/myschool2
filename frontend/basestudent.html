@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,9 +6,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    {% block script %}
+    {% endblock script %}
+
     {% block title %}
-    <title>Mon Ecole</title>
+    <title>{% trans "My School" %}</title>
     {% endblock title %}
          
 
@@ -33,27 +35,44 @@
 </head>
 
 <body>
+    <div class="fixed-top-section bg-success text-white">
+        <div class="profile-info">
+            <img src="
+            {% if student.photo %}{{ student.photo.url }}{% else %}{% static 'images/default-profile.png' %}{% endif %}
+            "
+                 alt="{% trans 'Profile Picture' %}" class="profile-photo">
+            <h4>{% trans "Welcome, Student " %} {{ request.user.first_name }} {{ request.user.last_name }}</h4>
+            
+            
+                
+        </div>
+        {% block time %}
+                
+            {% endblock time %}
+        <a href="{% url 'logout' %}" class="btn btn-danger">{% trans "Logout" %}</a>
+    </div>
 
 {% block sidebar %}
     
 
     
     <!-- main sidebar -->
-    <div class="fixed-sidebar sidebar-mini">
+    <div class="fixed-sidebar sidebar-mini" style="margin-top: 40px;">
         <div class="logo">
             <button class="sidebar-collapse"><i class="bi bi-list"></i></button>
-            <a href=" {% url 'index' %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+            <a href=" {% url 'student_dashboard' %} "><img src=" {% static 'images/logoo.png' %}" alt="{% trans "LOGO" %}"></a>
         </div>
         <!-- sidebar menu -->
         <div class="menu">
             <div class="custom-scroll">
                 <div class="sidebar-menu">
                     <ul>
-                        <li class="sidebar-title"><span>Menu</span>
+                        <li class="sidebar-title"><span>{% trans "Menu" %}</span>
                         </li>
-                        <li class="sidebar-item"><a href=" {% url 'index' %} " class=" sidebar-link active"
-                                data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
-                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a></li> 
+                        <li class="sidebar-item"><a href=" {% url 'student_dashboard' %} " class=" sidebar-link active"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Home Page" %}" tabindex="0"><i
+                                    class="bi bi-list"></i> <span>{% trans "Home Page" %}</span></a></li> 
+                                    
                     </ul>
                 </div>
             </div>
@@ -61,7 +80,7 @@
         <!-- sidebar menu -->
     </div>
 {% endblock sidebar %}
-    <div class="main-content">
+    <div class="main-content" style="margin-top: 20px;">
         <div class="breadcrumb-wrap mb-20">
             
             {% block body %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if is_edit %}
+        {% trans "Edit Schedule" %}
+    {% else %}
+        {% trans "Create Schedule" %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        {% if is_edit %}
+                            {% trans "Edit Schedule" %}
+                        {% else %}
+                            {% trans "Create New Schedule" %}
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="class_name" class="form-label">{% trans "Class" %}</label>
+                                    <select class="form-select" id="class_name" name="class_name" required>
+                                        <option value="">{% trans "Select Class" %}</option>
+                                        {% for class in classes %}
+                                            <option value="{{ class.id }}" 
+                                                {% if schedule and schedule.class_name.id == class.id %}selected{% endif %}>
+                                                {{ class.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="course_name" class="form-label">{% trans "Subject" %}</label>
+                                    <select class="form-select" id="course_name" name="course_name" required>
+                                        <option value="">{% trans "Select Subject" %}</option>
+                                        {% for subject in subjects %}
+                                            <option value="{{ subject.id }}" 
+                                                {% if schedule and schedule.course_name.id == subject.id %}selected{% endif %}>
+                                                {{ subject.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="professor" class="form-label">{% trans "Professor" %}</label>
+                                    <select class="form-select" id="professor" name="professor" required>
+                                        <option value="">{% trans "Select Professor" %}</option>
+                                        {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}" 
+                                                {% if schedule and schedule.professor.id == teacher.id %}selected{% endif %}>
+                                                {{ teacher.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="day_of_week" class="form-label">{% trans "Day of Week" %}</label>
+                                    <select class="form-select" id="day_of_week" name="day_of_week" required>
+                                        <option value="">{% trans "Select Day" %}</option>
+                                        {% for day_key, day_value in day_choices %}
+                                            <option value="{{ day_key }}" 
+                                                {% if schedule and schedule.day_of_week == day_key %}selected{% endif %}>
+                                                {{ day_value }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="start_time" class="form-label">{% trans "Start Time" %}</label>
+                                    <input type="time" class="form-control" id="start_time" name="start_time" 
+                                           value="{% if schedule %}{{ schedule.start_time|time:'H:i' }}{% endif %}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="end_time" class="form-label">{% trans "End Time" %}</label>
+                                    <input type="time" class="form-control" id="end_time" name="end_time" 
+                                           value="{% if schedule %}{{ schedule.end_time|time:'H:i' }}{% endif %}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'schedule_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if is_edit %}
+                                    {% trans "Update Schedule" %}
+                                {% else %}
+                                    {% trans "Create Schedule" %}
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    // Optional: Add dynamic loading of subjects and teachers
+    $('#class_name').change(function() {
+        const classId = $(this).val();
+        if (classId) {
+            // You can add AJAX calls here to filter subjects/teachers
+        }
+    });
+});
+</script>
+{% endblock %}

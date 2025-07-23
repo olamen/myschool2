@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
 <head>
     <meta charset="UTF-8">
@@ -53,7 +53,9 @@
                         </li>
                         <li class="sidebar-item"><a href=" {% url 'index' %} " class=" sidebar-link active"
                                 data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
-                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a></li> 
+                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a></li>
+                        <li class="sidebar-item"><a href=" {% url 'student_list' %} " class=" sidebar-link"><i
+                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a>
                     </ul>
                 </div>
             </div>
@@ -63,8 +65,8 @@
 {% endblock sidebar %}
     <div class="main-content">
         <div class="breadcrumb-wrap mb-20">
-            
-            {% block body %}
+
+{% block body %}
             {% if messages %}
             <div class="container mt-4">
                 {% for message in messages %}
@@ -76,7 +78,7 @@
             </div>
             {% endif %}
 
-            {% endblock body %}
+{% endblock body %}
         </div>
     </div>
     </div>

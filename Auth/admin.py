@@ -4,7 +4,7 @@ from Auth.models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     # Specify the fields to display in the admin list view
-    list_display = ('username', 'email', 'role', 'image', 'is_staff', 'is_active')
+    list_display = ('username', 'first_name', 'last_name', 'role', 'image', 'is_active')
     list_filter = ('role', 'is_staff', 'is_active')
 
     # Add the custom fields to the admin form

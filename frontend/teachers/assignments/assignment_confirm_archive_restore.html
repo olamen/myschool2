@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Archive/Restore Assignment</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Assignment Management</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Confirm Action</h2>
+            <p>Are you sure you want to <span id="action-type">archive</span> this assignment?</p>
+            <div class="assignment-details">
+                <p><strong>Assignment Title:</strong> <span id="assignment-title">[Assignment Title]</span></p>
+                <p><strong>Due Date:</strong> <span id="assignment-due-date">[Due Date]</span></p>
+            </div>
+            <form method="POST" action="/teachers/assignments/confirm_action/">
+                <input type="hidden" name="assignment_id" value="[Assignment ID]">
+                <input type="hidden" name="action" id="action-input" value="archive">
+                <button type="submit" class="btn btn-confirm">Confirm</button>
+                <a href="/teachers/assignments/" class="btn btn-cancel">Cancel</a>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 School Management System</p>
+    </footer>
+</body>
+</html>

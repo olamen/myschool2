@@ -1,27 +1,54 @@
 {% extends "basef.html" %} {% load static %}
 {% block body %}
+{% if messages %}
+<div class="container mt-4">
+  {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="container mt-5">
-    <h1 class="text-center">Liste des Transactions</h1>
+    <h1 class="text-center"> {% trans 'Transactions' %} </h1>
     <hr />
     <div class="row">
-        <div class="col-md-6">
-            <p><strong>Total des Revenus :</strong> {{ total_income }} MRU</p>
+            <div class="col-md-6">
+                <p><strong> {% trans 'Total des Income' %} :</strong> {{ total_income }} MRU</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong> {% trans 'Total des Expense' %} :</strong> {{ total_expense }} MRU</p>
+            </div>
         </div>
-        <div class="col-md-6">
-            <p><strong>Total des Dépenses :</strong> {{ total_expense }} MRU</p>
-        </div>
-    </div>
-    <a href="{% url 'add_transaction' %}" class="btn btn-success mt-3">Ajouter une Transaction</a>
-
-    <div class="table-responsive">
+        {% if request.user.role == 'Adminf' %}
+            <div class="row">
+                <div class="col-md-8 text-end">
+                <a href="{% url 'add_or_update_transaction' %}" class="btn btn-success mt-3"> {% trans 'Add Transaction' %} </a>
+                </div>
+                <div class="col-md-4 text-end">
+                <a href="{% url 'charge_form'  %}" class="btn btn-success mb-3"> {% trans 'Add Charge' %} </a>
+                </div>
+            </div>
+        {% endif %}
+      <div class="col-md-12">
+        <div class="table-responsive">
         <table class="table table-striped" id="myTable"
         class="table table-light data-table table-hover text-nowrap">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>caisse</th>
+                    <th> {% trans 'caisse' %} </th>
                     <th>Type</th>
-                    <th>Montant</th>
+                    <th> {% trans 'Amount' %} </th>
                     <th>Date</th>
                     <th>Actions</th>
                 </tr>
@@ -36,6 +63,7 @@
                     <td>{{ transaction.date|date:"d/m/Y H:i" }}</td>
                     <td>
                         <a href="{% url 'transaction_details' transaction.id %}" class="btn btn-primary btn-sm">Détails</a>
+                        <button class="btn btn-warning btn-sm edit-transaction-btn" data-id="{{ transaction.id }}">Edit</button>
                         <a href="{% url 'print_transaction_receipt' transaction.id %}" class="btn btn-primary">Imprimer</a>
                     </td>
                 </tr>
@@ -44,4 +72,16 @@
         </table>
     </div>
 </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.edit-transaction-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const transactionId = this.getAttribute('data-id');
+                // Redirect with ?transaction_id=...
+                window.location.href = "{% url 'add_or_update_transaction' %}" + "?transaction_id=" + transactionId;
+            });
+        });
+    });
+    </script>
 {% endblock %}

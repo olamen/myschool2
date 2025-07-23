@@ -1,35 +1,42 @@
 {% extends "base.html" %}
-{% load  static %}
+{% load static %}
+{% load i18n %} {# IMPORTANT: Load i18n for the {% url %} tag to include language prefixes #}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     {% block title %}
-         <title>Ajouter les Notes d'un Éxamen</title>
+         <title>{% trans "Ajouter les Notes d'un Éxamen" %}</title> {# Use trans tag for translatable title #}
     {% endblock title %}
-        
-
 </head>
-{% block body %}
-    <div class="container my-5">
-        <h2 class="mb-4">Ajouter ou Modifier les Notes d'un Éxamen</h2>
 
-        <!-- Formulaire principal -->
+{% block body %}
+    {# Add data-url attributes to the main container div to pass all AJAX endpoint URLs to JavaScript #}
+    <div class="container my-5"
+         data-get-subjects-url="{% url 'get_subjects_by_grade' 0 %}"  {# '0' is a placeholder for the grade_id #}
+         data-get-classes-url="{% url 'get_classes_by_grade' 0 %}"    {# '0' is a placeholder for the grade_id #}
+         data-get-exams-url="{% url 'get_exams_by_trimestre' 0 %}"    {# '0' is a placeholder for the trimestre_id #}
+         data-get-students-url="{% url 'get_students' 0 0 %}"        {# '0 0' are placeholders for classe_id and devoir_id/exam_id #}
+         data-get-notes-url="{% url 'get_notes' %}">                  {# No placeholders needed as it uses query parameters #}
+
+        <h2 class="mb-4">{% trans "Ajouter ou Modifier les Notes d'un Éxamen" %}</h2>
+
         <form id="notesForm">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="sessionYear" class="form-label">Année Scolaire</label>
+                    <label for="sessionYear" class="form-label">{% trans "Année Scolaire" %}</label>
                     <select class="form-select" id="sessionYear" name="sessionYear">
-                        <option value="">Sélectionnez une année</option>
+                        <option value="">{% trans "Sélectionnez une année" %}</option>
                         {% for session in session_years %}
                         <option value="{{ session.id }}">{{ session.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="trimestre" class="form-label">Trimestre</label>
+                    <label for="trimestre" class="form-label">{% trans "Trimestre" %}</label>
                     <select class="form-select" id="trimestre" name="trimestre">
-                        <option value="">Sélectionnez un trimestre</option>
+                        <option value="">{% trans "Sélectionnez un trimestre" %}</option>
                         {% for trimestre in trimestres %}
                         <option value="{{ trimestre.id }}">{{ trimestre.name }}</option>
                         {% endfor %}
@@ -39,40 +46,39 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="exam" class="form-label">Exam</label>
+                    <label for="exam" class="form-label">{% trans "Examen" %}</label>
                     <select class="form-select" id="exam" name="exam">
-                        <option value="">Sélectionnez un Exam</option>
+                        <option value="">{% trans "Sélectionnez un Examen" %}</option>
                         {% for exam in exams %}
                         <option value="{{ exam.id }}">{{ exam.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="grade" class="form-label">Grade</label>
+                    <label for="grade" class="form-label">{% trans "Grade" %}</label>
                     <select class="form-select" id="grade" name="grade">
-                        <option value="">Sélectionnez un grade</option>
+                        <option value="">{% trans "Sélectionnez un grade" %}</option>
                         {% for grade in grades %}
                         <option value="{{ grade.id }}">{{ grade.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="classe" class="form-label">Classe</label>
+                    <label for="classe" class="form-label">{% trans "Classe" %}</label>
                     <select class="form-select" id="classe" name="classe">
-                        <option value="">Sélectionnez une classe</option>
+                        <option value="">{% trans "Sélectionnez une classe" %}</option>
                         {% for classe in classes %}
                         <option value="{{ classe.id }}">{{ classe.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="subject" class="form-label">Matière</label>
+                    <label for="subject" class="form-label">{% trans "Matière" %}</label>
                     <select class="form-select" id="subject" name="subject">
-                        <option value="">Sélectionnez une matière</option>
+                        <option value="">{% trans "Sélectionnez une matière" %}</option>
                         {% for subject in subjects %}
                         <option value="{{ subject.id }}">{{ subject.name }}</option>
                         {% endfor %}
@@ -81,31 +87,29 @@
             </div>
         </form>
 
-        <!-- Tableau des étudiants -->
         <table class="table table-bordered mt-4">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Nom de l'Étudiant</th>
-                    <th>Note</th>
-                    <th>Absence</th>
+                    <th>{% trans "Nom de l'Étudiant" %}</th>
+                    <th>{% trans "Note" %}</th>
+                    <th>{% trans "Absence" %}</th>
                 </tr>
             </thead>
             <tbody id="studentsTable">
-                <!-- Les étudiants seront ajoutés dynamiquement ici -->
-            </tbody>
+                </tbody>
         </table>
 
-        <button type="button" class="btn btn-primary" id="saveNotes">Enregistrer les Notes</button>
+        {# The button that triggers the AJAX save, with its specific save URL #}
+        <button type="button" class="btn btn-primary" id="saveNotes"
+                data-save-url="{% url 'save_note_exam' %}">
+            {% trans "Enregistrer les Notes" %}
+        </button>
     </div>
 
-   
 {% endblock %}
 
 {% block js %}
+{# Link to your JavaScript file where the AJAX logic resides #}
 <script src="{% static 'js/notes-exam.js' %}"></script>
 {% endblock js %}
-    
-
-
-

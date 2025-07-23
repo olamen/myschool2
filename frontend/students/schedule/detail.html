@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Schedule Detail" %}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h4>{% trans "Schedule Details" %}</h4>
+            <div>
+                <a href="{% url 'edit_schedule' schedule.id %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> {% trans "Edit" %}
+                </a>
+                <a href="{% url 'schedule_list' %}" class="btn btn-secondary">
+                    {% trans "Back to List" %}
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>{% trans "Class:" %}</strong> {{ schedule.class_name.name }}</p>
+                    <p><strong>{% trans "Subject:" %}</strong> {{ schedule.course_name.name }}</p>
+                    <p><strong>{% trans "Professor:" %}</strong> {{ schedule.professor.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>{% trans "Day:" %}</strong> {{ schedule.get_day_of_week_display }}</p>
+                    <p><strong>{% trans "Start Time:" %}</strong> {{ schedule.start_time }}</p>
+                    <p><strong>{% trans "End Time:" %}</strong> {{ schedule.end_time }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>{% trans "Created:" %}</strong> {{ schedule.created_at }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>{% trans "Last Updated:" %}</strong> {{ schedule.updated_at }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

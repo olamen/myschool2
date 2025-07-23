@@ -1,19 +1,37 @@
-{% extends 'base.html' %}
+{% load  static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    Erreur
-                </div>
-                <div class="card-body">
-                    <p class="card-text">{{ message }}</p>
-                    <a href="{% url 'index' %}" class="btn btn-primary">Retour à l'accueil</a>
+    </head>
+
+<body class="bg-light container">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        Erreur
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ message }}</p>
+                        <p>Welcome, <b> {{ request.user.first_name }} {{ request.user.last_name }}</b></p>
+                        <p class="card-text">please contact the admin .</p>
+                        <a href="{% url 'index' %}" class="btn btn-success">Back To Home</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    
+</body>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+
+

@@ -7,8 +7,108 @@ shutil.move("debug.pdf", "static/debug.pdf")
 Puis, accède à : https://monecole-4jfb.onrender.com/static/debug.pdf
 
 
+print with back to back to line
+        print("\n--- GET Request Received ---")
+
+
+lang
+python manage.py makemessages -l en -l fr -l ar
+python manage.py compilemessages
+
+if request.user.role != 'Adminf':
+        return render(request, "403.html")  # Render a '403 Forbidden' page or similar
+
 rm dm/migrations/000*.py
 
 python manage.py dbshell
 DELETE FROM django_migrations WHERE app = 'students';
 
+https://render.com/docs/deploy-django?_gl=1*1drgkmw*_gcl_au*NDQ1NTA3OTAwLjE3NDA2Njc1MTk.*_ga*MzIzOTY4NTI3LjE3MzQzNjgzNDU.*_ga_QK9L9QJC5N*czE3NDczOTQxOTQkbzEwNCRnMSR0MTc0NzM5NDI0OCRqNiRsMCRoMA..#static-files
+
+
+except Exception as e:
+                logger.exception("Error saving payment:") # This will log the full traceback
+                messages.error(request, f"An error occurred while saving the payment: {str(e)}")
+                print(f"Error saving payment: {str(e)}")
+                return redirect('dashf')
+
+@login_required
+def quiz_data_view(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    questions = quiz.get_questions()
+    data = {
+        'quiz': {
+            'name': quiz.name,
+            'topic': quiz.topic,
+            'number_of_questions': quiz.number_of_questions,
+            'time': quiz.time,
+            'required_score_to_pass': quiz.required_score_to_pass,
+            'difficulty': quiz.difficulty,
+        },
+        'questions': [
+            {
+                'text': question.text,
+                'answers': [
+                    {
+                        'text': answer.text,
+                        'correct': answer.correct
+                    } for answer in question.get_answers()
+                ]
+            } for question in questions
+        ]
+    }
+    return JsonResponse(data)
+
+logger = logging.getLogger(__name__)  # Django logging setup
+
+
+@csrf_exempt
+def submit_quiz(request, pk):
+    if request.method == "POST":
+        try:
+            print("Request body:", request.body)
+            data = json.loads(request.body)
+            logger.info(f"Received quiz submission request: {data}")  # Log request data
+
+            answers = data.get("answers", {})
+            quiz = get_object_or_404(Quiz, pk=pk)
+            student = request.user.student  # Assuming user is authenticated
+
+            total_questions = quiz.number_of_questions
+            correct_answers = 0
+
+            for question_index, answer_text in answers.items():
+                logger.info(f"Processing question ID: {question_index}")
+
+                # Retrieve the question
+                question = quiz.get_questions().filter(pk=question_index).first()
+                if question:
+                    # Retrieve the correct answer
+                    correct_answer = question.get_answers().filter(correct=True).first()
+                    logger.info(f"Correct Answer for question {question_index}: {correct_answer}")
+
+                    if correct_answer and correct_answer.text == answer_text:
+                        correct_answers += 1
+                        logger.info(f"Correct answer matched for question {question_index}")
+                    else:
+                        logger.info(f"Incorrect answer for question {question_index}")
+
+            # Calculate the percentage score
+            score_percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
+            score_percentage = round(score_percentage, 2)  # Round to 2 decimal places
+            logger.info(f"Score Percentage: {score_percentage}")
+            # Check if the score is above the required score to pass
+            logger.info(f"Total Correct Answers: {correct_answers}, Score Percentage: {score_percentage}")
+
+            # Save the result to the database
+            result = Result.objects.create(student=student, quiz=quiz, score=score_percentage)
+            logger.info(f"Result saved: {result}")
+            print("Result saved:", result)
+
+            return JsonResponse({"message": "Quiz submitted successfully!", "score": score_percentage})
+
+        except Exception as e:
+            logger.error(f"Error in submit_quiz: {e}", exc_info=True)  # Log full traceback
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

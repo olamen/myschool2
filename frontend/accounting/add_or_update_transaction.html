@@ -1,0 +1,25 @@
+{% extends "basef.html" %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">
+        {% if transaction %}
+            Modifier la Transaction
+        {% else %}
+            Ajouter une Transaction
+        {% endif %}
+    </h1>
+    <hr />
+    <form method="post">
+        {% csrf_token %}
+        {% if transaction %}
+            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">
+            {% if transaction %}Mettre à jour{% else %}Enregistrer{% endif %}
+        </button>
+    </form>
+    <a href="{% url 'transaction_list' %}" class="btn btn-secondary mt-3">Retour à la liste</a>
+</div>
+{% endblock %}

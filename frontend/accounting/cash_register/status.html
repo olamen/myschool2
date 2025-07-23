@@ -49,19 +49,19 @@
                     <h5>Le Caissier :</h5>
                     <p class="fs-5">
                         {% if cash_register.user %}
-                        <p class="fs-5">{{ cash_register.user }}</p>
+                        <p class="fs-5"><b>{{ request.user.first_name }} {{ request.user.last_name }}</b></p>
                         {% else %}
                         <span class="text-muted">Non disponible</span>
                         {% endif %}
                     </p>
                 </div>
                 <div class="col-md-6 mb-3">
+                    {% if cash_register.date_closed %}
                     <h5>Date de Fermeture :</h5>
                     <p class="fs-5">
-                        {% if cash_register.date_closed %}
+                        
                         {{ cash_register.date_closed|date:"d/m/Y H:i" }}
-                        {% else %}
-                        <span class="text-muted">Non disponible</span>
+                       
                         {% endif %}
                     </p>
                 </div>

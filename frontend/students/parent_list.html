@@ -54,6 +54,7 @@
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Children</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -84,6 +85,22 @@
                     <td>{{ parent.email }}</td>
                     <td>{{ parent.phone_number }}</td>
                     <td>{{ parent.get_children_names }}</td>
+                    <td>
+                      <a
+                        href="{% url 'parent_detail' parent.id %}"
+                        class="btn btn-primary btn-sm"
+                        >Details</a
+                      >
+                      <a
+                        href="{% url 'add_edit_parent' parent.id %}"
+                        class="btn btn-warning btn-sm"
+                        >Modifier</a
+                      >
+                      <a
+                        href="{% url 'delete_parent' parent.id %}"
+                        class="btn btn-danger btn-sm"
+                        >Supprimer</a
+                      >
                   </tr>
                   {% endfor %}
                 </tbody>

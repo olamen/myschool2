@@ -5,7 +5,7 @@
     <hr />
     <p><strong>Type :</strong> {{ transaction.get_type_display }}</p>
     <p><strong>Montant :</strong> {{ transaction.amount }}</p>
-    <p><strong>Date :</strong> {{ transaction.transaction_date|date:"d/m/Y H:i" }}</p>
+    <p><strong>Date :</strong> {{ transaction.date|date:"d/m/Y H:i" }}</p>
     <p><strong>Description :</strong> {{ transaction.description }}</p>
     <a href="{% url 'print_transaction_receipt' transaction.id %}" class="btn btn-primary">Imprimer</a>
     <a href="{% url 'transaction_list' %}" class="btn btn-secondary mt-3">Retour à la liste</a>

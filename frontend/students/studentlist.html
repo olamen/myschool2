@@ -166,5 +166,23 @@
               }
           });
       });
-      </script>      
+      </script> 
+      <script>
+        <script>
+              document.addEventListener("DOMContentLoaded", function() {
+                  document.querySelectorAll(".edit-btn").forEach(button => {
+                      button.addEventListener("click", function() {
+                          let studentId = this.dataset.id;
+
+                          fetch(`/students/edit/${studentId}/`)
+                          .then(response => response.text())
+                          .then(html => {
+                              document.getElementById("edit-modal-body").innerHTML = html;
+                              new bootstrap.Modal(document.getElementById("editModal")).show();
+                          })
+                          .catch(error => console.error("Error loading edit form:", error));
+                      });
+                  });
+              });
+      </script>     
     {% endblock body %}

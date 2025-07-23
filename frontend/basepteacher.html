@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,8 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+        
     {% block title %}
-    <title>Mon Ecole</title>
+    <title>{% trans "My School" %}</title>
     {% endblock title %}
          
 
@@ -25,35 +26,99 @@
     <link rel="stylesheet" href=" {% static 'css/select2.min.css' %}">
     <link rel="stylesheet" href=" {% static 'css/style.css' %}">
     <script src=" {% static 'js/toastr.min.js' %}"></script>
+    
+    {% block extrajs %}
+        
+    {% endblock extrajs %}
+        
     <style>
         .col-md-4 {
             overflow: visible;
+        }
+
+        .fixed-top-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+            padding: 10px;
+            z-index: 1000; /* Ensure it's above other elements */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
     </style>
 </head>
 
 <body>
 
+    <div class="fixed-top-section bg-success text-white">
+        <div class="profile-info">
+            <img src="
+            {% if teacher.photo %}{{ teacher.photo.url }}{% else %}{% static 'images/default-profile.png' %}{% endif %}
+            "
+                 alt="{% trans 'Profile Picture' %}" class="profile-photo">
+            <h4>{% trans "Welcome, Teacher " %} {{ request.user.first_name }} {{ request.user.last_name }}</h4>
+            
+            
+                
+        </div>
+        
+        {% block lang %}
+        <form action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input name="language" type="hidden" value="{{ language_code }}">
+            <button type="submit">{% trans "Change language" %}</button>
+        </form>
+            
+        {% endblock lang %}
+            
+        {% block time %}
+                
+            {% endblock time %}
+
+        <a href="{% url 'logout' %}" class="btn btn-danger">{% trans "Logout" %}</a>
+    </div>
+
 {% block sidebar %}
     
 
     
     <!-- main sidebar -->
-    <div class="fixed-sidebar sidebar-mini">
+    <div class="fixed-sidebar sidebar-mini" style="margin-top: 70px;">
         <div class="logo">
             <button class="sidebar-collapse"><i class="bi bi-list"></i></button>
-            <a href=" {% url 'index' %} "><img src=" {% static 'images/logoo.png' %}" alt="LOGO"></a>
+            <a href=" {% url 'index' %} "><img src=" {% static 'images/logoo.png' %}" alt="{% trans 'LOGO' %}"></a>
         </div>
         <!-- sidebar menu -->
         <div class="menu">
             <div class="custom-scroll">
                 <div class="sidebar-menu">
                     <ul>
-                        <li class="sidebar-title"><span>Menu</span>
+                        <li class="sidebar-title"><span>{% trans "Menu" %}</span>
                         </li>
-                        <li class="sidebar-item"><a href=" {% url 'index' %} " class=" sidebar-link active"
-                                data-bs-toggle="tooltip" data-bs-placement="right" title="Page d'Accueil" tabindex="0"><i
-                                    class="bi bi-list"></i> <span>Page d'Accueil</span></a></li> 
+                        <li class="sidebar-item"><a href=" {% url 'professor_dashboard' %} " class=" sidebar-link active"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Home Page" %}" tabindex="0"><i
+                                    class="bi bi-list"></i> <span>{% trans "Home Page" %}</span></a></li> 
+                        <li  class="sidebar-item"><a href=" {% url 'upload_assignment' %} " role="button" class="sidebar-link" data-bs-placement="right"title="{% trans "Add assignment" %}" tabindex="0"><i class="bi bi-stack"></i> <span>{% trans "Add assignment" %}</span></a>
+                        </li>
+                        <li class="sidebar-item"><a href=" {% url 'assignments_list' %} " class=" sidebar-link"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="{% trans "Assignments" %}" tabindex="0"><i
+                                    class="bi bi-list"></i> <span>{% trans "Assignments" %}</span></a></li>
+
                     </ul>
                 </div>
             </div>
@@ -61,7 +126,7 @@
         <!-- sidebar menu -->
     </div>
 {% endblock sidebar %}
-    <div class="main-content">
+    <div class="main-content" style="margin-top: 70px;">
         <div class="breadcrumb-wrap mb-20">
             
             {% block body %}
@@ -93,6 +158,7 @@
     <script src=" {% static '/js/jquery.dataTables.min.js' %}"></script>
     <script src=" {% static '/js/dataTables.responsive.min.js' %}"></script>
     <script src=" {% static '/js/datatables-init.js' %}"></script>
+    
 </body>
 
 </html>

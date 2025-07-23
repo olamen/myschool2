@@ -1,0 +1,67 @@
+{% extends 'basestudent.html' %}
+{% load static %}
+
+{% block title %}
+<title>My School - Quiz</title>
+{% endblock title %}
+
+{% block script %}
+<script src=" {% static '/js/quiz.js' %}" defer></script>
+{% endblock script %}
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-orange text-white">
+                {% if request.GET.message == 'congrats' %}
+                <div class="alert alert-success" role="alert">
+                    Congratulations! You passed the quiz.
+                </div>
+            {% elif request.GET.message == 'failed' %}
+                <div class="alert alert-danger" role="alert">
+                    Sorry, you did not pass the quiz. Please try again.
+                </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+  <!-- Modal -->
+  <div class="modal fade" id="quizStartModal" tabindex="-1" aria-labelledby="quizStartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Start?</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal-body-confirm">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+          <button type="button" id="start-button" class="btn btn-success">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="h1">QuiZ List</div>
+  <hr>
+{% for obj in object_list %}
+            <button 
+            
+            class="btn btn-link modal-button" 
+            data-pk="{{ obj.pk }}"
+            data-quiz="{{ obj.name }}"
+            data-questions="{{ obj.number_of_questions }}"
+            data-difficulty="{{ obj.difficulty }}"
+            data-time="{{ obj.time }}"
+            data-required_score_to_pass="{{ obj.required_score_to_pass }} %"
+            data-bs-toggle="modal" 
+            data-bs-target="#quizStartModal">
+                Launch  {{ obj.name }} Quiz
+            
+        </button>
+        <br>
+    {% endfor %}
+
+{% endblock %}

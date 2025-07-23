@@ -1,11 +1,13 @@
 # students/views.py
 from datetime import date
+import datetime
+from decimal import Decimal
 from django.http import HttpResponseForbidden, JsonResponse
 from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum, Count
-from accounting.models import  Fee, Transaction
+from accounting.models import  CashRegister, ChargeType, Fee, Payment, Transaction
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import action
 from django.contrib.auth import authenticate, login
@@ -15,9 +17,15 @@ from django.contrib import messages
 from django.utils import timezone
 from Auth.models import CustomUser, RoleChoices
 from rest_framework.permissions import BasePermission
+
+from students.forms import StudentForm
 from .models import AppConfig, Grade, Devoir, Student, Subject, Teacher, Classe, SessionYearModel, Attendance, Composition
 from .serializers import AppConfigSerializer , StudentSerializer, SubjectSerializer, TeacherSerializer, ClassSerializer, SessionYearSerializer, AttendanceSerializer
-from datetime import date, timedelta
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
+from django.utils.timezone import now
+from django.db import transaction
+from django.utils.translation import gettext as _
 
 
 def forbidden_view(request, exception=None):
@@ -105,13 +113,20 @@ def indexview(request):
         # This is the correct page for Super Admin; no redirect needed
         pass
     elif request.user.role == 'Admins':
+        messages.success(request, "Welcome to the Admin dashboard!")
         return redirect('dashs')
     elif request.user.role == 'Adminf':
+        messages.success(request, "Welcome to the finance dashboard!")
         return redirect('dashf')
     elif request.user.role == 'Professor':
+        messages.success(request, "Welcome to the Teacher dashboard!")
         return redirect('professor_dashboard')
     elif request.user.role == 'Parent/Student':
+        messages.success(request, "Welcome to the Parent dashboard!")
         return redirect('parent_student_dashboard')
+    elif request.user.role == 'Student':
+        messages.success(request, "Welcome to the Student dashboard!")
+        return redirect('student_dashboard')
 
     # Logic for the Super Admin view
     total_students = Student.objects.count()
@@ -124,6 +139,7 @@ def indexview(request):
 
     # Get the count of students per class
     class_counts = Classe.objects.annotate(student_count=Count('students'))
+    from django.utils.translation import get_language
 
     context = {
         'total_students': total_students,
@@ -133,53 +149,45 @@ def indexview(request):
         'clsses_counts': clsses,
         'transactions':     transactions,
         'students' : students,
+        'hello': _('Welcome to the Super Admin Dashboard'),
 
     }
     return render(request, 'index.html', context)
 
-# def student_fees_by_month(request):
-#     current_year = date.today().year
-#     fees_by_month = (
-#         Fee.objects.filter(due_date__year=current_year)
-#         .values('due_date__month')
-#         .annotate(total_amount=Sum('amount_due'))
-#         .order_by('due_date__month')
-#     )
-
-#     # Create a list of 12 months with default value 0 for missing months
-#     fees_data = [0] * 12
-#     for fee in fees_by_month:
-#         month_index = fee['due_date__month'] - 1  # Months are 1-indexed
-#         fees_data[month_index] = float(fee['total_amount'])
-
-#     return JsonResponse({"series": fees_data})
 
 
+
+@login_required
 def student_fees_by_month(request):
     # Calculer la date il y a 12 mois à partir d'aujourd'hui
-    today = date.today()
-    start_date = (today - timedelta(days=365)).replace(day=1)  # Premier jour du mois il y a 12 mois
+    # Convert today's date to a timezone-aware datetime object
+    #print('Payment:',Payment.objects.all().values('date', 'amount'))
 
-    # Filtrer les frais sur les 12 derniers mois
-    fees_by_month = (
-        Fee.objects.filter(due_date__gte=start_date, due_date__lte=today)
-        .values('due_date__month', 'due_date__year')
-        .annotate(total_amount=Sum('amount_due'))
-        .order_by('due_date__year', 'due_date__month')
+    today = now()
+    start_date = today - timedelta(days=365)
+
+    # Fetch payments within the last 12 months
+    payments_by_month = (
+        Payment.objects.filter(date__gte=start_date, date__lte=today)
+        .values('date__month', 'date__year')
+        .annotate(total_amount=Sum('amount'))
     )
+
+    #print(payments_by_month)
 
     # Créer un tableau des 12 derniers mois avec des valeurs par défaut à 0
     fees_data = [0] * 12
     current_month = today.month
     current_year = today.year
 
-    for fee in fees_by_month:
+    for payment in payments_by_month:
         # Calculer l'index correct pour les 12 derniers mois
-        month_diff = (current_year - fee['due_date__year']) * 12 + (current_month - fee['due_date__month'])
+        month_diff = (current_year - payment['date__year']) * 12 + (current_month - payment['date__month'])
         if 0 <= month_diff < 12:
-            fees_data[11 - month_diff] = float(fee['total_amount'])
+            fees_data[11 - month_diff] = float(payment['total_amount'])
 
     return JsonResponse({"series": fees_data})
+
 
     
     
@@ -251,54 +259,73 @@ class StudentViewSet(viewsets.ModelViewSet):
         }
         return render(request, 'students/student_detail.html', context)
         
+
     @action(detail=False, methods=['get', 'post'], renderer_classes=[TemplateHTMLRenderer])
     def add_student(self, request):
-        """Rendre et traiter le formulaire pour ajouter un étudiant."""
+        """Render and process the form to add a student using Django's form handling."""
+        
         if request.method == 'POST':
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            nni = request.POST.get('nni')
-            mobile = request.POST.get('mobile')
-            enrollment_date = request.POST.get('enrollment_date')
-            student_class_id = request.POST.get('student_class')
-            gender = request.POST.get('gender')
-            has_discount = request.POST.get('has_discount') == 'on'
-            photo = request.FILES.get('photo')  # Handle uploaded photo
+            form = StudentForm(request.POST, request.FILES)
 
-            # Vérifie si la classe existe
-            try:
-                student_class = Classe.objects.get(id=student_class_id)
-            except Classe.DoesNotExist:
-                return Response({"error": "Classe introuvable"}, status=404)
-            # Create a user for the parent
-            user = CustomUser.objects.create_user(
-                username=nni,
-                password='defaultpassword',  # Replace this with a secure password
-                first_name=first_name,
-                last_name = last_name,
-                email='',
-            )
-            user.is_approved = True
-            user.role = RoleChoices.STUDENT
-            user.save()
-            # Créer un nouvel étudiant
-            Student.objects.create(
-                first_name=first_name,
-                last_name=last_name,
-                nni=nni,
-                mobile=mobile,
-                enrollment_date=enrollment_date,
-                student_class=student_class,
-                gender=gender,
-                has_discount=has_discount,
-                photo=photo  # Save the uploaded photo
+            if form.is_valid():
+                # Extract form data
+                student_class_id = form.cleaned_data['student_class'].id
+                nni = form.cleaned_data['nni']
 
-            )
-            return redirect('students_list')  # Rediriger vers la liste des étudiants
+                # Ensure the student class exists
+                try:
+                    student_class = Classe.objects.get(id=student_class_id)
+                except Classe.DoesNotExist:
+                    messages.error(request, "Class not found.")
+                    return render(request, 'students/add_student.html', {'form': form})
 
-        # Afficher le formulaire si la requête est GET
-        context = {'classes': Classe.objects.all(),}
-        return render(request, 'students/add_student.html', context)
+                # Ensure unique NNI
+                if CustomUser.objects.filter(username=nni).exists():
+                    messages.error(request, "A user with this NNI already exists.")
+                    return render(request, 'students/add_student.html', {'form': form})
+
+                # Ensure an open cash register exists
+                try:
+                    cash_register = CashRegister.objects.get(is_open=True, user=request.user)
+                except CashRegister.DoesNotExist:
+                    messages.error(request, "No open cash register found.")
+                    return render(request, 'students/add_student.html', {'form': form})
+
+                # Process the transaction safely
+                with transaction.atomic():
+                    # Create a user for the student
+                    user = CustomUser.objects.create_user(
+                        username=nni,
+                        password='defaultpassword',  # Change for better security
+                        first_name=form.cleaned_data['first_name'],
+                        last_name=form.cleaned_data['last_name'],
+                        email='',
+                    )
+                    user.is_approved = True
+                    user.role = RoleChoices.STUDENT
+                    user.save()
+
+                    # Create student and set fixed registration fee
+                    student = form.save(commit=False)
+                    student.user = user
+                    student.registration_fee = 10000  # Set fixed fee
+                    student.student_class = student_class  # Assign validated class
+                    student.save()
+
+                    # Update cash register balance
+                    cash_register.update_current_balance(10000, "income")
+
+                messages.success(request, "Student added successfully!")
+                return redirect('students_list')
+
+            else:
+                messages.error(request, "Please correct the errors below.")
+
+        else:
+            form = StudentForm()  # Empty form for GET request
+        
+        return render(request, 'students/add_student.html', {'form': form})
+
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -371,4 +398,61 @@ class AppConfigViewSet(viewsets.ModelViewSet):
         except AppConfig.DoesNotExist:
             return Response({"error": "AppConfig not found"}, status=404)
         
+
+@login_required
+def student_create_update_view(request, pk=None):
+    student = get_object_or_404(Student, pk=pk) if pk else None
+    is_new_student = student is None  # Check if this is a new student
+
+    if request.method == 'POST':
+        form = StudentForm(request.POST, request.FILES, instance=student)
+        if form.is_valid():
+            new_student = form.save(commit=False)
+
+            # Create user only for new students
+            if is_new_student:
+                user = CustomUser.objects.create_user(
+                    username=new_student.nni,
+                    password='defaultpassword',  # Consider generating a secure password
+                    first_name=new_student.first_name,
+                    last_name=new_student.last_name,
+                    image=new_student.photo,
+                    email='',  
+                )
+                user.is_approved = True
+                user.role = RoleChoices.STUDENT
+                user.save()
+                new_student.user = user
+
+            else:
+                new_student.user.nni = new_student.nni  
+                new_student.user.first_name = new_student.first_name  
+                new_student.user.last_name = new_student.last_name 
+                new_student.user.image = new_student.photo  
+                new_student.user.save()
+
+            new_student.save()
+
+            # Create a transaction **only if it's a new student**
+            if is_new_student:
+                cash_register = CashRegister.objects.filter(is_open=True).first()
+                transaction = Transaction.objects.create(
+                    cash_register=cash_register,
+                    amount=Decimal(new_student.registration_fee),  
+                    transaction_type='income',  
+                    description=f"Registration Fee for {new_student.first_name} {new_student.last_name}",
+                    user=new_student.user
+                )
+
+                # **Update the Cash Register balance**
+                if cash_register:
+                    cash_register.update_current_balance(transaction.amount, transaction.transaction_type)
+            messages.success(request, "Student created successfully!")
+            return redirect('students_list')
+
+    else:
+        form = StudentForm(instance=student)
+    messages.error(request, "Please correct the errors below.")
+    return render(request, 'students/student_form.html', {'form': form})
+
 

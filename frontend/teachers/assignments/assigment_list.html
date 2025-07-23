@@ -1,0 +1,115 @@
+{% extends 'basepteacher.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+    <title>{% trans 'Assignment List' %}</title>
+{% endblock title %}
+{% block extrajs %}
+<script src=" {% static '/js/jquery-3.6.0.min.js' %}"></script>
+<script src=" {% static '/js/bootstrap.bundle.min.js' %}"></script>
+{% endblock extrajs %}
+
+{% block body %}
+    <div class="container">
+        <h1>{% trans 'Assignment List' %}</h1>
+        <a href="{% url 'upload_assignment' %}" class="btn btn-primary mb-3"> {% trans 'Add Assignment' %} </a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{% trans 'Title' %}</th>
+                    <th>{% trans 'Description' %}</th>
+                    <th>{% trans 'Due Date' %}</th>
+                    <th>{% trans 'Actions' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ assignment.title }}</td>
+                        <td>{{ assignment.description }}</td>
+                        <td>{{ assignment.due_date }}</td>
+                        <td>
+                            <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-primary btn-sm">{% trans 'View' %}</a>
+                            <a href="{% url 'assignment_update' assignment.id %}" class="btn btn-warning btn-sm">{% trans 'Edit' %}</a>
+                            <button type="button" class="archive-btn btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmationModal"
+                                data-assignment-id="{{ assignment.id }}" data-is-active="{{ assignment.is_active }}">
+                                {% if assignment.is_active %}
+                                    {% trans 'Archive' %}
+                                {% else %}
+                                    {% trans 'Restore' %}
+                                {% endif %}
+                            </button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">{% trans 'No assignments found.' %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Modal -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">{% trans 'Confirmation' %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% trans 'Are you sure you want to' %} <span id="action-text"></span> {% trans 'this assignment?' %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
+                        <button type="button" class="btn btn-primary" id="confirmActionBtn">{% trans 'Confirm' %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% csrf_token %}  {# Include CSRF token #}
+
+
+    <script>
+        $(document).ready(function() {
+            let assignmentId;
+            let isActive;  // Changed isArchived to isActive
+
+            $('.archive-btn').click(function() {
+                assignmentId = $(this).data('assignment-id');
+                isActive = $(this).data('is-active');  // Corrected this line
+                const actionText = isActive ? "{% trans 'Archive' %}" : "{% trans 'Restore' %}";  // Corrected logic
+
+                $('#action-text').text(actionText);
+                // No need to manually show the modal, the data-bs-toggle attribute does it
+            });
+
+            $('#confirmActionBtn').click(function() {
+                $.ajax({
+                    url: '/assignment/' + assignmentId + '/archive/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#confirmationModal').modal('hide'); // Hide modal first
+                            location.reload(); // Reload page for UI updates
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(error) {
+                        alert('{% trans "An error occurred." %}');
+                    }
+                });
+            });
+
+        });
+    </script>
+{% endblock body %}

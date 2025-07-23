@@ -1,20 +1,31 @@
 from django import forms
 from django.urls import reverse_lazy
-from .models import CashRegister, Fee, Payment, Transaction, StudentFee
+from .models import CashRegister, ChargeType, Fee, Payment, Transaction, StudentFee
 from students.models import  Classe, Parent, Student
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['first_name', 'last_name', 'nni', 'mobile', 'student_class', 'has_discount', 'gender', 'photo']
-
-    parent = forms.CharField(
-        max_length=200,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search Parent...'}),
-        required=False,
+        labels = {
+            'first_name': _('First Name'),
+            'last_name': _('Last Name'),
+            'nni': _('NNI'),
+            'mobile': _('Mobile'),
+            'student_class': _('Class'),
+            'has_discount': _('Has Discount'),
+            'gender': _('Gender'),
+            'photo': _('Photo'),
+        }
+    # Fixed registration fee
+    registration_fee = forms.DecimalField(
+        initial=10000, 
+        disabled=True, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -23,7 +34,7 @@ class StudentForm(forms.ModelForm):
         
 class CashRegisterForm(forms.ModelForm):
     """
-    Formulaire pour ouvrir une caisse avec un solde initial.
+    Form to open a cash register with an initial balance.
     """
     class Meta:
         model = CashRegister
@@ -31,47 +42,50 @@ class CashRegisterForm(forms.ModelForm):
         widgets = {
             'initial_balance': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Solde d\'ouverture',
+                'placeholder': _('Opening Balance'),
                 'min': '0'
             }),
         }
         labels = {
-            'initial_balance': 'Solde d\'ouverture',
+            'initial_balance': _('Opening Balance'),
         }
 
 
 class TransactionForm(forms.ModelForm):
     """
-    Formulaire pour enregistrer une transaction.
+    Form to record a transaction.
     """
     class Meta:
         model = Transaction
-        fields = ['transaction_type', 'amount', 'description']
+        fields = ['transaction_type', 'chargetype','amount', 'description']
         widgets = {
             'transaction_type': forms.Select(attrs={
                 'class': 'form-select',
             }),
+            'chargetype': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Montant',
+                'placeholder': _('Amount'),
                 'min': '0',
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Description de la transaction (optionnel)',
+                'placeholder': _('Transaction description (optional)'),
                 'rows': 3,
             }),
+            
         }
         labels = {
-            'transaction_type': 'Type de transaction',
-            'amount': 'Montant',
-            'description': 'Description',
+            'chargetype': _('Charge Type'),
+            'transaction_type': _('Transaction Type'),
+            'amount': _('Amount'),
+            'description': _('Description'),
         }
 
 
 class StudentFeeForm(forms.ModelForm):
     """
-    Formulaire pour gérer les frais des étudiants.
+    Form to manage student fees.
     """
     class Meta:
         model = StudentFee
@@ -82,7 +96,7 @@ class StudentFeeForm(forms.ModelForm):
             }),
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Montant dû',
+                'placeholder': _('Amount Due'),
                 'min': '0',
             }),
             'due_date': forms.DateInput(attrs={
@@ -98,11 +112,11 @@ class StudentFeeForm(forms.ModelForm):
             }),
         }
         labels = {
-            'student': 'Étudiant',
-            'amount_due': 'Montant dû',
-            'due_date': 'Date d\'échéance',
-            'is_paid': 'Payé ?',
-            'payment_date': 'Date de paiement',
+            'student': _('Student'),
+            'amount': _('Amount Due'),
+            'due_date': _('Due Date'),
+            'is_paid': _('Paid?'),
+            'payment_date': _('Payment Date'),
         }
 
     def clean(self):
@@ -111,7 +125,7 @@ class StudentFeeForm(forms.ModelForm):
         payment_date = cleaned_data.get('payment_date')
 
         if is_paid and not payment_date:
-            raise forms.ValidationError("Veuillez spécifier une date de paiement pour les frais payés.")
+            raise forms.ValidationError(_("Please specify a payment date for paid fees."))
         return cleaned_data
     
 class FeeForm(forms.ModelForm):
@@ -123,14 +137,15 @@ class FeeForm(forms.ModelForm):
         }
         parent = forms.CharField(
         max_length=200,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search Parent...'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Search Parent...')}),
         required=False,
+        label=_('Parent')
     )
         labels = {
-            'student': 'Étudiant',
-            'amount_due': 'Montant dû',
-            'due_date': 'Date d\'échéance',
-            'paid': 'Payé',
+            'student': _('Student'),
+            'amount_due': _('Amount Due'),
+            'due_date': _('Due Date'),
+            'paid': _('Paid'),
         }
         widgets = {
             'parent': forms.Select(attrs={
@@ -158,13 +173,13 @@ class PaymentForm(forms.ModelForm):
         choices=[],
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label=_("Mois à payer")
+        label=_("Months to be paid"),
     )
 
     class Meta:
         model = Payment
         fields = [
-            'cash_register',
+            # 'cash_register',
             'student',
             'parent',
             'classe',
@@ -174,59 +189,73 @@ class PaymentForm(forms.ModelForm):
             'notes',
         ]
         widgets = {
-            'cash_register': forms.TextInput(attrs={
-                'class': 'form-control',
-                'readonly': 'readonly'
-            }),
-            'student': forms.Select(attrs={
-                'class': 'form-control',
-                'disabled': 'disabled'
-            }),
+            # 'cash_register': forms.TextInput(attrs={
+            #     'class': 'form-control',
+            #     'readonly': 'readonly'
+            # }),
+            'student': forms.Select(attrs={'class': 'form-control'}),
+            # 'student': forms.Select(attrs={
+            #     'class': 'form-control',
+            #     'disabled': 'disabled'
+            # }),
             'parent': forms.Select(attrs={
                 'class': 'form-control parent-select',
                 'data-ajax-url': reverse_lazy('parent_search_autocomplete')
             }),
-            'classe': forms.Select(attrs={
-                'class': 'form-control',
-                'disabled': 'disabled'
-            }),
+            # 'classe': forms.Select(attrs={
+            #     'class': 'form-control',
+            #     'disabled': 'disabled'
+            # }),
+            'classe': forms.HiddenInput(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': _('Montant')
+                'placeholder': _('Amount')
             }),
             'method': forms.Select(attrs={'class': 'form-control'}),
             'notes': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': _('Notes (facultatif)')
+                'placeholder': _('Notes (optional)')
             }),
         }
         labels = {
-            'cash_register': _('Caisse'),
-            'student': _('Étudiant'),
+            # 'cash_register': _('Cash Register'),
+            'student': _('Student'),
             'parent': _('Parent'),
-            'classe': _('Classe'),
-            'amount': _('Montant'),
-            'method': _('Méthode de paiement'),
+            'classe': _('Class'),
+            'amount': _('Amount'),
+            'method': _('Payment Method'),
             'notes': _('Notes'),
         }
 
+        # Add a separate field for displaying cash register info, not for submission
+    cash_register_display = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        required=False,
+        label=_("Cash Register")
+    )
+        
+   #     # Initialize the form with dynamic data
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['parent'].queryset = Parent.objects.none()
-        self.fields['student'].queryset = Student.objects.none()
+        self.fields['parent'].queryset = Parent.objects.all()
+        self.fields['student'].queryset = Student.objects.all()
+
         
-        # Initialisation dynamique de la caisse
+        # Dynamic initialization of the cash register
         if user:
             try:
                 cash_register = CashRegister.objects.get(user=user, is_open=True)
-                self.fields['cash_register'].initial = _("Caisse ouverte - %(balance)s MRU") % {
+                self.fields['cash_register_display'].initial = _("Open Cash Register - %(balance)s MRU") % {
                     'balance': cash_register.current_balance
                 }
             except CashRegister.DoesNotExist:
-                self.fields['cash_register'].initial = _("Aucune caisse ouverte")
+                self.fields['cash_register_display'].initial = _("No open cash register")
+        else:
+            # If no user, set initial for display field as well
+            self.fields['cash_register_display'].initial = _("No user provided")
 
-        # Initialisation des mois payés
+        # Initialization of paid months
         if self.instance and self.instance.pk:
             student = self.instance.student
             if student:
@@ -243,18 +272,71 @@ class PaymentForm(forms.ModelForm):
         else:
             self.fields['months_paid'].choices = Payment.MONTH_CHOICES
 
+    
+    
     def clean(self):
         cleaned_data = super().clean()
-        student = cleaned_data.get('student')
+        student = cleaned_data.get('student') # student is already a Student object here
         parent = cleaned_data.get('parent')
-        classe = cleaned_data.get('classe')
 
-        # Validation: Au moins un des trois champs doit être rempli
-        if not any([student, parent, classe]):
-            raise forms.ValidationError(
-                _("Vous devez sélectionner au moins un étudiant, un parent ou une classe.")
-            )
+        print("Raw student data from form:", student) # This will print the Student object
+
+        if not student and not parent:
+            raise forms.ValidationError("Select a student or parent.")
+
+        # If student is selected, it's already a valid Student object due to ModelForm's handling
+        # No need to re-validate existence or get it again by ID.
+
+        # Auto-set classe if student is selected
+        if student: # Check if student object exists
+            cleaned_data['classe'] = student.student_class # Assign the class object directly
+                                                          # Or student.student_class.id if 'classe' expects an ID
+
+        months_paid = cleaned_data.get('months_paid', [])
+        # Ensure months_paid is stored as a JSONField if 'months_paid' on Payment model is JSONField
+        # Or if it's a CharField/TextField, ensure the format matches what your model expects
+        # If your Payment model's months_paid is a JSONField, this format is usually correct:
+        cleaned_data['months_paid'] = {month: 'paid' for month in months_paid}
+        # If your Payment model's months_paid expects a list/array for MultipleChoiceField,
+        # then the line below would be sufficient, but based on your `cleaned_data['months_paid'] = {month: 'paid' for month in months_paid}`
+        # it seems like you're storing it as a dict/JSON. Ensure your model field matches.
+        # cleaned_data['months_paid'] = months_paid
+
 
         return cleaned_data
-    
+
+
+
+
+
+#ChargeType forms
+class ChargeTypeForm(forms.ModelForm):
+    class Meta:
+        model = ChargeType
+        fields = ['name', 'amount', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'name': _('Name'),
+            'amount': _('Amount'),
+            'description': _('Description'),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_action = reverse_lazy('charge_from', args=[self.instance.pk])
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Charge Type Details'),
+                'name',
+                'amount',
+                'description',
+            ),
+            ButtonHolder(
+                Submit('submit', _('Save'), css_class='btn btn-primary')
+            )
+        )
 

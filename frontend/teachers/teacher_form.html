@@ -1,32 +1,25 @@
 {% extends "base.html" %} {% load static %}
-<html lang="fr">
+{% load crispy_forms_tags %}
 
-<head>
+
     {% block title %}
     <title>{% if teacher %}Modifier l'enseignant{% else %}Ajouter un enseignant{% endif %}</title>
     {% endblock title %}
-</head>
 
-<body>
+
+
     {% block body %}
-    <!-- main sidebar -->
     <div class="main-content">
             <div class="d-md-flex d-block justify-content-between align-items-center">
                 <div class="left">
-                    <div class="container">
-                        <div class="container">
-                            <div class="container mt-5">
+                            <div class="container mt-4">
                                 <h1>{% if form.instance.pk %}Update{% else %}Create{% endif %} Teacher</h1>
                                 <form method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Update{% else %}Submit{% endif %}</button>
+                                    {% crispy form 'bootstrap5' %}
                                 </form>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     {% endblock %}
-</body>

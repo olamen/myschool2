@@ -75,55 +75,70 @@ $(document).ready(function () {
     });
         // Sauvegarde des notes avec gestion des absences
     $('#saveNotes').click(function () {
-            let notes = [];
-            let hasError = false;
-    
-            $('#studentsTable tr[data-student-id]').each(function () {
-                const studentId = $(this).data('student-id');
-                const score = $(this).find('.student-score').val();
-                const absence = $(this).find('.student-absence').val();
-    
-                if (score && absence) {
-                    alert(`Erreur pour ${studentId}: Vous ne pouvez pas saisir une note et une absence`);
-                    hasError = true;
-                    return false; // Break loop
-                }
-    
-                notes.push({
-                    student_id: studentId,
-                    score: score || null,
-                    absence: absence || null
-                });
-            });
-    
-            if (hasError) return;
-    
-            if (notes.length > 0) {
-                const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-                $.ajax({
-                    url: '/notes/notes_exam/save/',
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        notes: notes,
-                        sessionyear: $('#sessionYear').val(),
-                        subject_id: $('#subject').val(),
-                        exam_id: $('#exam').val(),
-                        trimestre_id: $('#trimestre').val()
-                    }),
-                    headers: { 'X-CSRFToken': csrfToken },
-                    success: function (response) { 
-                        alert(response.message);
-                        loadNotes(); // Recharger les données après sauvegarde
-                    },
-                    error: function (xhr) { 
-                        alert(xhr.responseJSON?.message || "Erreur lors de l'enregistrement."); 
-                    }
-                });
-            } else {
-                alert("Veuillez entrer des notes ou sélectionner des absences.");
+        let notes = [];
+        let hasError = false;
+
+        $('#studentsTable tr[data-student-id]').each(function () {
+            const studentId = $(this).data('student-id');
+            const score = $(this).find('.student-score').val();
+            const absence = $(this).find('.student-absence').val();
+
+            if (score && absence) {
+                alert(`Erreur pour ${studentId}: Vous ne pouvez pas saisir une note et une absence`);
+                hasError = true;
+                return false; // Break loop
             }
+
+            // Ensure score is stored as number or null, absence as string or null
+            const finalScore = score !== '' ? parseFloat(score) : null;
+            const finalAbsence = absence !== '' ? absence : null;
+
+            notes.push({
+                student_id: studentId,
+                score: finalScore,
+                absence: finalAbsence
+            });
         });
+
+        if (hasError) return;
+
+        if (notes.length > 0) {
+            const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+            // Get the URL from the data attribute of the #saveNotes button
+            const saveUrl = $(this).data('save-url'); // <--- CHANGE HERE
+
+            $.ajax({
+                url: saveUrl, // <--- USE THE DYNAMIC URL HERE
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    notes: notes,
+                    sessionyear: $('#sessionYear').val(),
+                    subject_id: $('#subject').val(),
+                    exam_id: $('#exam').val(),
+                    trimestre_id: $('#trimestre').val()
+                }),
+                headers: { 'X-CSRFToken': csrfToken },
+                success: function (response) {
+                    alert(response.message);
+                    loadNotes(); // Recharger les données après sauvegarde
+                },
+                error: function (xhr) {
+                    // Improved error handling
+                    let errorMessage = "Erreur lors de l'enregistrement.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        errorMessage = `Erreur serveur: ${xhr.status} ${xhr.statusText} - ${xhr.responseText.substring(0, 100)}...`;
+                    }
+                    alert(errorMessage);
+                    console.error("AJAX Error:", xhr);
+                }
+            });
+        } else {
+            alert("Veuillez entrer des notes ou sélectionner des absences.");
+        }
+    });
 
     // Charger les notes existantes
     function loadNotes() {
